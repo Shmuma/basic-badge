@@ -27,22 +27,4 @@ void draw_vert_line(uint16_t x, uint8_t y, uint8_t height, uint32_t color);
 void animate_splash(void);
 uint8_t overlaps_logo(int16_t x, uint8_t row);
 
-const uint16_t b_cipher[12] = {
-    0b0000101010111101,
-    0b0000010111100110,
-    0b0000101101111101,
-    
-    0b0000010110010101,
-    0b0000111101111010,
-    0b0000101110101010,
-    
-    0b0000100111100110,
-    0b0000111110100101,
-    0b0000111111111111,
-    
-    0b0000111010110111,
-    0b0000110111101110,
-    0b0000101101110111
-};
-
 #endif

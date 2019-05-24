@@ -116,7 +116,7 @@ extern volatile uint16_t bufsize;
 volatile uint32_t ticks;			// millisecond timer incremented in ISR
 
 extern const uint8_t ram_image[65536];
-extern const uint8_t b2_rom[2048];
+//extern const uint8_t b2_rom[2048];
 extern const uint8_t ram_init [30];
 extern uint8_t ram_disk[RAMDISK_SIZE];
 
@@ -334,8 +334,10 @@ void badge_menu(void)
 					}			
 				else if (strcmp(menu_buff,"3")==0)
 					{
-					init_8080_basic();
-					while (1) loop_8080_basic();
+					/* init_8080_basic(); */
+					/* while (1) loop_8080_basic(); */
+					  enable_display_scanning(0);
+					  play_snake();
 					}
 				else if (strcmp(menu_buff,"4")==0)
 					{
@@ -345,14 +347,15 @@ void badge_menu(void)
 				//B_BDG006		
 				else if (strcmp(menu_buff,"5")==0)
 					{
-					stdio_local_buffer_puts("c:\nzork1\n");
-					video_clrscr();
-					video_set_color(0,14);
-					stdio_write("\n\n\n\n\n\nPROTIP:\n\tUse Shift-Enter when playing ZORK!\n\n");
-					video_set_color(15,0);
-					wait_ms(2000);
-					init_z80_cpm();
-					while (1) loop_z80_cpm();
+					/* stdio_local_buffer_puts("c:\nzork1\n"); */
+					/* video_clrscr(); */
+					/* video_set_color(0,14); */
+					/* stdio_write("\n\n\n\n\n\nPROTIP:\n\tUse Shift-Enter when playing ZORK!\n\n"); */
+					/* video_set_color(15,0); */
+					/* wait_ms(2000); */
+					/* init_z80_cpm(); */
+					/* while (1) loop_z80_cpm(); */
+					  play_mario_tune();
 					}
 				else if (strcmp(menu_buff,"6")==0)
 					{
@@ -530,11 +533,11 @@ void showmenu(void)
 	video_gotoxy(TEXT_LEFT,7);
 	stdio_write("2 - CP/M @ Z80");
 	video_gotoxy(TEXT_LEFT,8);
-	stdio_write("3 - Tiny Basic @ 8080");
+       	stdio_write("3 - Play snake");
 	video_gotoxy(TEXT_LEFT,9);
 	stdio_write("4 - Play Badgetris!");
 	video_gotoxy(TEXT_LEFT,10);
-	stdio_write("5 - Zork @ CP/M @ Z80");
+	stdio_write("5 - Mario tune");
 	video_gotoxy(TEXT_LEFT,11);
 	stdio_write("6 - User Program");
 	
@@ -688,6 +691,7 @@ uint32_t millis(void)
 	return ticks;
 	}
 
+#if 0
 void init_8080_basic (void)
 	{
 	video_set_color(15,0);
@@ -700,8 +704,9 @@ void init_8080_basic (void)
 void loop_8080_basic (void)
 	{
 	cpu_error = NONE;
-	cpu();	
+	cpu();
 	}
+#endif
 
 void init_z80_cpm (void)
 	{
