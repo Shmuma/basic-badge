@@ -363,7 +363,7 @@ void badge_menu(void)
 					while (1) loop_userprog();
 					}
 				else if (strcmp(menu_buff, "7") == 0) {
-				  play_xonix();
+				  xonix_main();
 				}
 				else
 					{

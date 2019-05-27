@@ -1,6 +1,11 @@
 #ifndef	__DISP_H
 #define	__DISP_H
 
+#include "hw.h"
+
+#define TFT_WIDTH 320
+#define TFT_HEIGHT 240
+
 
 void TFT_24_7789_Init(void);
 inline void TFT_24_7789_Write_Data(uint16_t data1);
