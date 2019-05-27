@@ -13,6 +13,7 @@
 #include "Z80/hwz.h"
 #include "hw.h"
 #include "disp.h"
+#include "xonix.h"
 #include <setjmp.h>
 
 

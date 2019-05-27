@@ -361,7 +361,10 @@ void badge_menu(void)
 					{
 					init_userprog();
 					while (1) loop_userprog();
-					}	
+					}
+				else if (strcmp(menu_buff, "7") == 0) {
+				  play_xonix();
+				}
 				else
 					{
 					switch (get_command_index(hash(menu_buff)))
@@ -540,6 +543,8 @@ void showmenu(void)
 	stdio_write("5 - Mario tune");
 	video_gotoxy(TEXT_LEFT,11);
 	stdio_write("6 - User Program");
+	video_gotoxy(TEXT_LEFT, 12);
+	stdio_write("7 - Play Xonix");
 	
 	show_version();
 	clear_prompt();
