@@ -25,6 +25,7 @@
       <itemPath>src/user_program.h</itemPath>
       <itemPath>src/badge_user.h</itemPath>
       <itemPath>src/xonix.h</itemPath>
+      <itemPath>src/snake.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -86,7 +87,7 @@
         <platformTool>PICkit3PlatformTool</platformTool>
         <languageToolchain>XC32</languageToolchain>
         <languageToolchainVersion>2.15</languageToolchainVersion>
-        <platform>2</platform>
+        <platform>4</platform>
       </toolsSet>
       <packs>
         <pack name="PIC32MX_DFP" vendor="Microchip" version="1.0.28"/>
