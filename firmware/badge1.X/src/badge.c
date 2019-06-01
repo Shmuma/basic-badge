@@ -363,7 +363,8 @@ void badge_menu(void)
 					while (1) loop_userprog();
 					}
 				else if (strcmp(menu_buff, "7") == 0) {
-				  xonix_main();
+                    enable_display_scanning(0);
+                    xonix_main();
 				}
 				else
 					{
@@ -517,6 +518,8 @@ void showmenu(void)
 	video_gotoxy(3,10);
 	stdio_write("                                  ");
 	video_gotoxy(3,11);
+	stdio_write("                                  ");
+	video_gotoxy(3,12);
 	stdio_write("                                  ");
 	
 	//Draw frame
