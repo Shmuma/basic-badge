@@ -1,3 +1,5 @@
+#include "hw.h"
+#include "log.h"
 #include "xonix.h"
 #include <stdlib.h>
 #include <stdint.h>
@@ -19,10 +21,11 @@ void xonix_main() {
     
     while (1) {
         if (millis() >= wait_until) {
+            xonix_step();
+            log_str("step");;
             wait_until = millis() + DEFAULT_DELAY;
-
         }
-        xonix_step();
+        
         // read input
     }
 }

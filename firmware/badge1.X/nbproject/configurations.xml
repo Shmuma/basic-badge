@@ -26,6 +26,8 @@
       <itemPath>src/badge_user.h</itemPath>
       <itemPath>src/xonix.h</itemPath>
       <itemPath>src/snake.h</itemPath>
+      <itemPath>src/log.h</itemPath>
+      <itemPath>src/log.c</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
