@@ -30,6 +30,7 @@ void xonix_draw_field(void);
 void xonix_draw_enemies(void);
 void xonix_undraw_enemies(void);
 void xonix_step_enemies(void);
+void xonix_add_enemy(void);
 
 uint8_t is_grass(uint8_t x, uint8_t y);
 

@@ -6,8 +6,10 @@
 
 #if UART3_LOG_ENABLED
 void log_str(const char* s);
+void log_strln(const char* s);
 #else
 #define log_str(s)
+#define log_strln(s)
 #endif
 
 
