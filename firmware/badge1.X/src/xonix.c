@@ -123,8 +123,7 @@ void xonix_draw_field() {
 }
 
 // checks that cell of the field contains grass
-uint8_t is_grass(uint8_t x, uint8_t y) {
-    // ISSUE with borders
+inline uint8_t is_grass(uint8_t x, uint8_t y) {
     return field[y][x / 8] & (1 << (7 - x % 8));
     
     // x=0 -> 0, 7
@@ -136,7 +135,7 @@ uint8_t is_grass(uint8_t x, uint8_t y) {
 
 
 inline void xonix_draw_cell(uint8_t r, uint8_t c, uint32_t color) {
-    tft_fill_area(c*CELL_SIZE, r*CELL_SIZE, CELL_SIZE, CELL_SIZE, color);
+    tft_fill_area(c*CELL_SIZE, r*CELL_SIZE, CELL_SIZE-1, CELL_SIZE-1, color);
 }
 
 
@@ -206,9 +205,7 @@ void xonix_add_enemy() {
 
 
 void xonix_step() {
-//    xonix_undraw_enemies();
     xonix_step_enemies();
-//    xonix_draw_enemies();
 }
 
 
