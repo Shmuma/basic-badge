@@ -19,12 +19,14 @@ uint8_t enemies_d[ENEMIES_MAX];
 uint8_t player_x;
 uint8_t player_y;
 int8_t player_dx = 0;
-int8_t player_dy = 1;
+int8_t player_dy = 0;
 
 
 void xonix_main() {
     uint32_t wait_until = millis() + DEFAULT_DELAY;
     uint32_t steps_count = 0;
+    uint8_t keys_got;
+    int8_t keys[3];
     
     xonix_init();
     
@@ -40,6 +42,25 @@ void xonix_main() {
         }
         
         // read input
+		keys_got = stdio_get(keys);
+		if (keys_got) {
+			if (keys[0] == K_UP) {
+                player_dx = 0;
+                player_dy = -1;
+            }
+			if (keys[0] == K_LT) {
+                player_dx = -1;
+                player_dy = 0;
+            }
+			if (keys[0] == K_DN) {
+                player_dx = 0;
+                player_dy = 1;
+            }
+			if (keys[0] == K_RT) {
+                player_dx = 1;
+                player_dy = 0;
+            }
+		}
     }
 }
 
@@ -60,6 +81,7 @@ void xonix_init() {
 void xonix_wake() {
     xonix_draw_field();
     xonix_draw_enemies();
+    xonix_draw_player();
 }
 
 void xonix_init_field() {
