@@ -168,9 +168,11 @@ void xonix_step_enemies() {
         nx = enemies_x[i];
         ny = enemies_y[i];
 
+#if UART3_LOG_ENABLED        
         sprintf(buf, "x=%d y=%d d=%d", enemies_x[i], 
                 enemies_y[i], enemies_d[i]);
         log_str(buf);
+#endif   
         
         if (!is_grass(nx+dx, ny+dy)) {
             if (is_grass(nx+dx, ny-dy))
@@ -186,9 +188,11 @@ void xonix_step_enemies() {
         xonix_draw_cell(ny, nx, COLOR_GRASS);
         enemies_x[i] = nx + dx;
         enemies_y[i] = ny + dy;
+#if UART3_LOG_ENABLED        
         sprintf(buf, " -> x=%d y=%d d=%d ", enemies_x[i], 
                 enemies_y[i], enemies_d[i]);
         log_strln(buf);
+#endif        
     }
 }
 
