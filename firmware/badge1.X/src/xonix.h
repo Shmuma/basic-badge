@@ -27,6 +27,7 @@ void xonix_wake(void);
 void xonix_init_field(void);
 void xonix_init_enemies(void);
 void xonix_draw_field(void);
+void xoinx_draw_cell(uint8_t r, uint8_t c, uint32_t color);
 void xonix_draw_enemies(void);
 void xonix_undraw_enemies(void);
 void xonix_step_enemies(void);

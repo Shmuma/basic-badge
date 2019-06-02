@@ -135,12 +135,16 @@ uint8_t is_grass(uint8_t x, uint8_t y) {
 }
 
 
+inline void xonix_draw_cell(uint8_t r, uint8_t c, uint32_t color) {
+    tft_fill_area(c*CELL_SIZE, r*CELL_SIZE, CELL_SIZE, CELL_SIZE, color);
+}
+
+
 void xonix_draw_enemies() {
     uint8_t i;
     
     for (i = 0; i < enemies_count; i++) {
-        tft_fill_area(enemies_x[i]*CELL_SIZE, enemies_y[i]*CELL_SIZE,
-                CELL_SIZE, CELL_SIZE, COLOR_ENEMY);
+        xonix_draw_cell(enemies_y[i], enemies_x[i], COLOR_ENEMY);
     }
 }
 
@@ -148,8 +152,7 @@ void xonix_undraw_enemies() {
     uint8_t i;
     
     for (i = 0; i < enemies_count; i++) {
-        tft_fill_area(enemies_x[i]*CELL_SIZE, enemies_y[i]*CELL_SIZE,
-                CELL_SIZE, CELL_SIZE, COLOR_GRASS);
+        xonix_draw_cell(enemies_y[i], enemies_x[i], COLOR_GRASS);
     }
 }
 
@@ -179,6 +182,8 @@ void xonix_step_enemies() {
             continue;
         }
         
+        xonix_draw_cell(ny+dy, nx+dx, COLOR_ENEMY);
+        xonix_draw_cell(ny, nx, COLOR_GRASS);
         enemies_x[i] = nx + dx;
         enemies_y[i] = ny + dy;
         sprintf(buf, " -> x=%d y=%d d=%d ", enemies_x[i], 
@@ -197,9 +202,9 @@ void xonix_add_enemy() {
 
 
 void xonix_step() {
-    xonix_undraw_enemies();
+//    xonix_undraw_enemies();
     xonix_step_enemies();
-    xonix_draw_enemies();
+//    xonix_draw_enemies();
 }
 
 
