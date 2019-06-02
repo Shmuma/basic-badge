@@ -9,10 +9,17 @@
 
 // bitmask representation of cells in the field
 uint8_t field[FIELD_HEIGHT][FIELD_BYTES];
+// enemies
 uint8_t enemies_count = 1;
 uint8_t enemies_x[ENEMIES_MAX];
 uint8_t enemies_y[ENEMIES_MAX];
 uint8_t enemies_d[ENEMIES_MAX];
+
+// player
+uint8_t player_x;
+uint8_t player_y;
+int8_t player_dx = 0;
+int8_t player_dy = 1;
 
 
 void xonix_main() {
@@ -44,6 +51,9 @@ void xonix_init() {
     
     xonix_init_enemies();
     xonix_draw_enemies();
+    player_x = FIELD_WIDTH/2;
+    player_y = 0;
+    xonix_draw_player();
 }
 
 
@@ -156,7 +166,7 @@ void xonix_undraw_enemies() {
 }
 
 void xonix_step_enemies() {
-    uint8_t i, nx, ny;
+    uint8_t i, x, y;
     int8_t dy, dx;
     char buf[50];
     
@@ -164,29 +174,28 @@ void xonix_step_enemies() {
         dx = (enemies_d[i] & 0b01) ? 1 : -1;
         dy = (enemies_d[i] & 0b10) ? 1 : -1;
         
-        nx = enemies_x[i];
-        ny = enemies_y[i];
+        x = enemies_x[i];
+        y = enemies_y[i];
 
 #if UART3_LOG_ENABLED        
-        sprintf(buf, "x=%d y=%d d=%d", enemies_x[i], 
-                enemies_y[i], enemies_d[i]);
+        sprintf(buf, "x=%d y=%d d=%d", x, y, enemies_d[i]);
         log_str(buf);
 #endif   
         
-        if (!is_grass(nx+dx, ny+dy)) {
-            if (is_grass(nx+dx, ny-dy))
+        if (!is_grass(x+dx, y+dy)) {
+            if (is_grass(x+dx, y-dy))
                 enemies_d[i] ^= 0b10;           // invert y dir
-            else if (is_grass(nx-dx, ny+dy))
+            else if (is_grass(x-dx, y+dy))
                 enemies_d[i] ^= 0b01;           // invert x dir
             else
                 enemies_d[i] ^= 0b11;           // invert both
             continue;
         }
         
-        xonix_draw_cell(ny+dy, nx+dx, COLOR_ENEMY);
-        xonix_draw_cell(ny, nx, COLOR_GRASS);
-        enemies_x[i] = nx + dx;
-        enemies_y[i] = ny + dy;
+        xonix_draw_cell(y+dy, x+dx, COLOR_ENEMY);
+        xonix_draw_cell(y, x, COLOR_GRASS);
+        enemies_x[i] = x + dx;
+        enemies_y[i] = y + dy;
 #if UART3_LOG_ENABLED        
         sprintf(buf, " -> x=%d y=%d d=%d ", enemies_x[i], 
                 enemies_y[i], enemies_d[i]);
@@ -195,17 +204,54 @@ void xonix_step_enemies() {
     }
 }
 
-
 void xonix_add_enemy() {
+    if (enemies_count+1 == ENEMIES_MAX)
+        return;
     xonix_undraw_enemies();
     enemies_count++;
     xonix_init_enemies();
     xonix_draw_enemies();
 }
 
-
 void xonix_step() {
     xonix_step_enemies();
+    xonix_step_player();
+}
+
+inline void xonix_draw_player() {
+    xonix_draw_cell(player_y, player_x, COLOR_PLAYER);
 }
 
 
+void xonix_step_player() {
+    uint8_t x, y;
+    
+    if (player_dx == 0 && player_dy == 0)
+        return;
+    
+    // if we're reached bounds
+    if ((player_dx < 0 && player_x == 0) || \
+        (player_dx > 0 && player_x == FIELD_WIDTH-1))
+    {
+        player_dx = 0;
+        return;
+    }
+
+    if ((player_dy < 0 && player_y == 0) || \
+        (player_dy > 0 && player_y == FIELD_HEIGHT-1))
+    {
+        player_dy = 0;
+        return;
+    }
+    
+    x = player_x + player_dx;
+    y = player_y + player_dy;
+    
+    xonix_draw_cell(y, x, COLOR_PLAYER);
+    if (is_grass(player_x, player_y))
+        xonix_draw_cell(player_y, player_x, COLOR_GRASS);
+    else
+        xonix_draw_cell(player_y, player_x, COLOR_ROAD);
+    player_x = x;
+    player_y = y;
+}

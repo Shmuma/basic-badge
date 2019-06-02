@@ -32,7 +32,10 @@ void xonix_undraw_enemies(void);
 void xonix_step_enemies(void);
 void xonix_add_enemy(void);
 
-inline void xoinx_draw_cell(uint8_t r, uint8_t c, uint32_t color);
 inline uint8_t is_grass(uint8_t x, uint8_t y);
+inline void xonix_draw_cell(uint8_t r, uint8_t c, uint32_t color);
+inline void xonix_draw_player();
+
+void xonix_step_player();
 
 #endif
