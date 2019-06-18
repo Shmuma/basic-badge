@@ -12,10 +12,11 @@
 #define GRASS_WIDTH         (FIELD_WIDTH-4)
 #define GRASS_HEIGHT        (FIELD_HEIGHT-4)
 
-#define COLOR_GRASS     0x00FF00
-#define COLOR_ROAD      0x0000F0
-#define COLOR_PLAYER    0xFFFF00
-#define COLOR_ENEMY     0xFF0000
+#define COLOR_GRASS     0x00FF00    // green
+#define COLOR_HOT_GRASS 0xA040F0    // purple
+#define COLOR_ROAD      0x0000F0    // blue
+#define COLOR_PLAYER    0xFFFF00    // yellow
+#define COLOR_ENEMY     0xFF0000    // red
 
 #define ENEMIES_MAX     10
 
@@ -33,9 +34,13 @@ void xonix_step_enemies(void);
 void xonix_add_enemy(void);
 
 inline uint8_t is_grass(uint8_t x, uint8_t y);
+inline void set_hot(uint8_t x, uint8_t y);
+inline void clear_hot(void);
+
 inline void xonix_draw_cell(uint8_t r, uint8_t c, uint32_t color);
 inline void xonix_draw_player();
 
 void xonix_step_player();
+void xonix_player_lost();
 
 #endif

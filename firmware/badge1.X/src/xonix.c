@@ -2,6 +2,7 @@
 #include "log.h"
 #include "xonix.h"
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include <stdint.h>
 
@@ -9,6 +10,9 @@
 
 // bitmask representation of cells in the field
 uint8_t field[FIELD_HEIGHT][FIELD_BYTES];
+// bitmasked representation of hot area we're currently trying to capture
+uint8_t hot_field[FIELD_HEIGHT][FIELD_BYTES];
+
 // enemies
 uint8_t enemies_count = 1;
 uint8_t enemies_x[ENEMIES_MAX];
@@ -99,6 +103,8 @@ void xonix_init_field() {
             field[r][c] = v;
         }
     }
+    
+    clear_hot();
 }
 
 
@@ -165,6 +171,18 @@ inline uint8_t is_grass(uint8_t x, uint8_t y) {
     // x=8 -> 1, 7
 }
 
+// the same as is_grass, but for hot_field
+inline uint8_t is_hot(uint8_t x, uint8_t y) {
+    return hot_field[y][x / 8] & (1 << (7 - x % 8));
+}
+
+inline void set_hot(uint8_t x, uint8_t y) {
+    hot_field[y][x / 8] |= 1 << (7 - x % 8);
+}
+
+inline void clear_hot() {
+   memset(hot_field, 0, sizeof(hot_field)); 
+}
 
 inline void xonix_draw_cell(uint8_t r, uint8_t c, uint32_t color) {
     tft_fill_area(c*CELL_SIZE, r*CELL_SIZE, CELL_SIZE-1, CELL_SIZE-1, color);
@@ -214,6 +232,11 @@ void xonix_step_enemies() {
             continue;
         }
         
+        if (is_hot(x+dx, y+dy)) {
+            xonix_player_lost();
+            return;
+        }
+        
         xonix_draw_cell(y+dy, x+dx, COLOR_ENEMY);
         xonix_draw_cell(y, x, COLOR_GRASS);
         enemies_x[i] = x + dx;
@@ -251,7 +274,7 @@ void xonix_step_player() {
     if (player_dx == 0 && player_dy == 0)
         return;
     
-    // if we're reached bounds
+    // if we've reached bounds
     if ((player_dx < 0 && player_x == 0) || \
         (player_dx > 0 && player_x == FIELD_WIDTH-1))
     {
@@ -270,10 +293,24 @@ void xonix_step_player() {
     y = player_y + player_dy;
     
     xonix_draw_cell(y, x, COLOR_PLAYER);
-    if (is_grass(player_x, player_y))
-        xonix_draw_cell(player_y, player_x, COLOR_GRASS);
+
+    if (is_hot(player_x, player_y)) {
+        xonix_player_lost();
+        return;
+    }
+        
+    if (is_grass(player_x, player_y)) {
+        xonix_draw_cell(player_y, player_x, COLOR_HOT_GRASS);
+        set_hot(player_x, player_y);
+    }
     else
         xonix_draw_cell(player_y, player_x, COLOR_ROAD);
     player_x = x;
     player_y = y;
+}
+
+
+// TODO: should lose life, but not restart
+void xonix_player_lost() {
+    xonix_init();
 }
