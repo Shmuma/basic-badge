@@ -24,6 +24,7 @@ uint8_t player_x;
 uint8_t player_y;
 int8_t player_dx = 0;
 int8_t player_dy = 0;
+uint8_t player_hot = 0;
 
 
 void xonix_main() {
@@ -78,6 +79,8 @@ void xonix_init() {
     xonix_draw_enemies();
     player_x = FIELD_WIDTH/2;
     player_y = 0;
+    player_dx = player_dy = 0;
+    player_hot = 0;
     xonix_draw_player();
 }
 
@@ -294,17 +297,28 @@ void xonix_step_player() {
     
     xonix_draw_cell(y, x, COLOR_PLAYER);
 
-    if (is_hot(player_x, player_y)) {
+    if (is_hot(x, y)) {
         xonix_player_lost();
         return;
     }
-        
-    if (is_grass(player_x, player_y)) {
-        xonix_draw_cell(player_y, player_x, COLOR_HOT_GRASS);
-        set_hot(player_x, player_y);
+
+    if (is_grass(x, y)) {
+        set_hot(x, y);
+        player_hot = 1;
     }
+    else {
+        // we finished the drawing of hot area
+        if (player_hot) {
+            xonix_commit_hot();
+            player_hot = player_dx = player_dy = 0;
+        }
+    }
+  
+    if (is_grass(player_x, player_y))
+        xonix_draw_cell(player_y, player_x, COLOR_HOT_GRASS);
     else
         xonix_draw_cell(player_y, player_x, COLOR_ROAD);
+    
     player_x = x;
     player_y = y;
 }
@@ -313,4 +327,37 @@ void xonix_step_player() {
 // TODO: should lose life, but not restart
 void xonix_player_lost() {
     xonix_init();
+}
+
+
+// finalize our drawing
+void xonix_commit_hot() {
+    xonix_commit_path();
+}
+
+
+// mark our path in hot area as road and draw it
+void xonix_commit_path() {
+    uint8_t r, c, mask, ofs, v;
+    
+    for (r = 0; r < FIELD_HEIGHT; r++) {
+        for (c = 0; c < FIELD_BYTES; c++) {
+            v = hot_field[r][c];
+            if (!v)
+                continue;
+            field[r][c] &= ~v;
+            
+            mask = 1 << 7;
+            ofs = 0;
+            while (mask) {
+                if (v & mask) {
+                    xonix_draw_cell(r, c*8 + ofs, COLOR_ROAD);
+                }
+                ofs++;
+                mask >>= 1;
+            }
+        }
+    }
+    
+    clear_hot();
 }

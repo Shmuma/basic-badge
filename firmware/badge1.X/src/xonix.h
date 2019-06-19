@@ -43,4 +43,8 @@ inline void xonix_draw_player();
 void xonix_step_player();
 void xonix_player_lost();
 
+// commit functions
+void xonix_commit_hot();
+void xonix_commit_path();
+
 #endif
