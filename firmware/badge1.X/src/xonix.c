@@ -338,6 +338,7 @@ void xonix_commit_hot() {
 // mark our path in hot area as road and draw it
 void xonix_commit_path() {
     uint8_t r, c, mask, ofs, v, i;
+    uint8_t x, y;
     
     for (r = 0; r < FIELD_HEIGHT; r++) {
         for (c = 0; c < FIELD_BYTES; c++) {
@@ -361,53 +362,73 @@ void xonix_commit_path() {
     clear_hot();
     
     for (i = 0; i < enemies_count; i++) {
-        xonix_fill_hot(enemies_x[i], enemies_y[i], 0);
+        if (!is_hot(enemies_x[i], enemies_y[i])) {
+            xonix_fill_hot(enemies_x[i], enemies_y[i]);
+        }
     }
+    
+    // Temporary
+    clear_hot();
 }
 
 
-// scanning from this point right and left and copy grass area into the hot
-// do recursive call for up/down areas according to scan_dir value
-void xonix_fill_hot(uint8_t x, uint8_t y, int8_t scan_dir) {
-    uint8_t xx = x, up_grass = 0, dn_grass = 0;
-    int8_t dx = -1;
-    
+// method taken from http://www.adammil.net/blog/v126_A_More_Efficient_Flood_Fill.html
+void xonix_fill_hot(uint8_t x, uint8_t y) {
+    uint8_t ox, oy;
     while (1) {
-        if (scan_dir >= 0) {
-            if (is_grass(xx, y-1)) {
-                if (!up_grass) {
-                    xonix_fill_hot(xx, y-1, 1);
-                    up_grass = 1;
-                }
-            }
-            else
-                up_grass = 0;
-        }
-        
-        if (scan_dir <= 0) {
-            if (is_grass(xx, y+1)) {
-                if (!dn_grass) {
-                    xonix_fill_hot(xx, y+1, -1);
-                    dn_grass = 1;
-                }
-            }
-            else
-                dn_grass = 0;
-        }
-        
-        xx += dx;
-        
-        if (is_grass(xx, y))
-            set_hot(xx, y);
-        else {
-            if (dx > 0)
-                break;
-            else {
-                xx = x;
-                dx = 1; 
-                // to prevent double fill of up/down grass
-                up_grass = dn_grass = 1;
-            }
-        }
+        ox = x;
+        oy = y;
+        while (is_grass(x, y-1)) y--;
+        while (is_grass(x-1, y)) x--;
+        if (ox == x && oy == y)
+            break;
     }
+    
+    xonix_fill_hot_core(x, y);
+}
+
+void xonix_fill_hot_core(uint8_t x, uint8_t y) {
+    uint8_t last_row_len = 0, row_len, sx;
+    uint8_t ux;
+    
+    do {
+        row_len = 0;
+        sx = x;
+        
+        if (last_row_len != 0 && (!is_grass(x, y) || is_hot(x, y))) {
+            do {
+                if (--last_row_len == 0)
+                    return;                
+            } while (!is_grass(++x, y) || is_hot(x, y));
+            sx = x;
+        }
+        else {
+            for (; is_grass(x-1, y) && !is_hot(x-1, y); row_len++, last_row_len++) {
+                set_hot(--x, y);
+                xonix_draw_cell(y, x, COLOR_HOT_GRASS);
+                if (is_grass(x, y-1) && !is_hot(x, y-1))
+                    xonix_fill_hot(x, y-1);
+            }
+        }
+        
+        for(; is_grass(sx, y) && !is_hot(sx, y); row_len++, sx++) {
+            set_hot(sx, y);
+            xonix_draw_cell(y, sx, COLOR_HOT_GRASS);
+        }
+        
+        if (row_len < last_row_len) {
+            for (ux = x + last_row_len; ++sx < ux;) {
+                if (is_grass(sx, y) && !is_hot(sx, y))
+                    xonix_fill_hot_core(sx, y);
+            }
+        }
+        else if (row_len > last_row_len) {
+            for (ux = x + last_row_len; ++ux < sx;) {
+                if (is_grass(ux, y-1) && !is_hot(ux, y-1))
+                    xonix_fill_hot(ux, y-1);
+            }
+        }
+        last_row_len = row_len;
+        ++y;
+    } while (last_row_len != 0);
 }
