@@ -46,5 +46,6 @@ void xonix_player_lost();
 // commit functions
 void xonix_commit_hot();
 void xonix_commit_path();
+void xonix_fill_hot(uint8_t x, uint8_t y, int8_t scan_dir);
 
 #endif

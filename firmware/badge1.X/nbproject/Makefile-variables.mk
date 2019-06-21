@@ -11,3 +11,10 @@ CND_ARTIFACT_PATH_default=dist/default/production/badge1.X.production.hex
 CND_PACKAGE_DIR_default=${CND_DISTDIR}/default/package
 CND_PACKAGE_NAME_default=badge1.x.tar
 CND_PACKAGE_PATH_default=${CND_DISTDIR}/default/package/badge1.x.tar
+# optimize configuration
+CND_ARTIFACT_DIR_optimize=dist/optimize/production
+CND_ARTIFACT_NAME_optimize=badge1.X.production.hex
+CND_ARTIFACT_PATH_optimize=dist/optimize/production/badge1.X.production.hex
+CND_PACKAGE_DIR_optimize=${CND_DISTDIR}/optimize/package
+CND_PACKAGE_NAME_optimize=badge1.x.tar
+CND_PACKAGE_PATH_optimize=${CND_DISTDIR}/optimize/package/badge1.x.tar

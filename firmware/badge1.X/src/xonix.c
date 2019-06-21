@@ -121,7 +121,6 @@ void xonix_init_enemies() {
 }
 
 
-
 void xonix_draw_field() {
     uint8_t cur_bit = 0, start = 0, end = 0;
     uint8_t mask, val, same, r, c;
@@ -338,7 +337,7 @@ void xonix_commit_hot() {
 
 // mark our path in hot area as road and draw it
 void xonix_commit_path() {
-    uint8_t r, c, mask, ofs, v;
+    uint8_t r, c, mask, ofs, v, i;
     
     for (r = 0; r < FIELD_HEIGHT; r++) {
         for (c = 0; c < FIELD_BYTES; c++) {
@@ -360,4 +359,55 @@ void xonix_commit_path() {
     }
     
     clear_hot();
+    
+    for (i = 0; i < enemies_count; i++) {
+        xonix_fill_hot(enemies_x[i], enemies_y[i], 0);
+    }
+}
+
+
+// scanning from this point right and left and copy grass area into the hot
+// do recursive call for up/down areas according to scan_dir value
+void xonix_fill_hot(uint8_t x, uint8_t y, int8_t scan_dir) {
+    uint8_t xx = x, up_grass = 0, dn_grass = 0;
+    int8_t dx = -1;
+    
+    while (1) {
+        if (scan_dir >= 0) {
+            if (is_grass(xx, y-1)) {
+                if (!up_grass) {
+                    xonix_fill_hot(xx, y-1, 1);
+                    up_grass = 1;
+                }
+            }
+            else
+                up_grass = 0;
+        }
+        
+        if (scan_dir <= 0) {
+            if (is_grass(xx, y+1)) {
+                if (!dn_grass) {
+                    xonix_fill_hot(xx, y+1, -1);
+                    dn_grass = 1;
+                }
+            }
+            else
+                dn_grass = 0;
+        }
+        
+        xx += dx;
+        
+        if (is_grass(xx, y))
+            set_hot(xx, y);
+        else {
+            if (dx > 0)
+                break;
+            else {
+                xx = x;
+                dx = 1; 
+                // to prevent double fill of up/down grass
+                up_grass = dn_grass = 1;
+            }
+        }
+    }
 }
