@@ -27,6 +27,7 @@ int8_t player_dy = 0;
 uint8_t player_hot = 0;
 uint8_t player_lives = 3;
 uint8_t player_score = 0;
+uint16_t player_area = 0;
 
 
 void xonix_main() {
@@ -34,6 +35,7 @@ void xonix_main() {
     uint8_t keys_got;
     int8_t keys[3];
     
+    start_after_wake = &xonix_wake;
     xonix_init();
     
     while (1) {
@@ -65,9 +67,7 @@ void xonix_main() {
     }
 }
 
-void xonix_init() {
-    start_after_wake = &xonix_wake;
-    
+void xonix_init() {    
     xonix_init_field();
     xonix_draw_field();
     
@@ -77,6 +77,7 @@ void xonix_init() {
     player_y = 0;
     player_dx = player_dy = 0;
     player_hot = 0;
+    player_area = 0;
     xonix_draw_player();
 }
 
@@ -247,14 +248,14 @@ void xonix_step_enemies() {
     }
 }
 
-void xonix_add_enemy() {
-    if (enemies_count+1 == ENEMIES_MAX)
-        return;
-    xonix_undraw_enemies();
-    enemies_count++;
-    xonix_init_enemies();
-    xonix_draw_enemies();
-}
+//void xonix_add_enemy() {
+//    if (enemies_count+1 == ENEMIES_MAX)
+//        return;
+//    xonix_undraw_enemies();
+//    enemies_count++;
+//    xonix_init_enemies();
+//    xonix_draw_enemies();
+//}
 
 void xonix_step() {
     xonix_step_enemies();
@@ -304,7 +305,8 @@ void xonix_step_player() {
     else {
         // we finished the drawing of hot area
         if (player_hot) {
-            xonix_commit_hot();
+            if (xonix_commit_path())
+                return;
             player_hot = player_dx = player_dy = 0;
         }
     }
@@ -319,23 +321,24 @@ void xonix_step_player() {
 }
 
 
-// TODO: should lose life, but not restart
 void xonix_player_lost() {
-    xonix_init();
-}
-
-
-// finalize our drawing
-void xonix_commit_hot() {
-    xonix_commit_path();
+    player_x = FIELD_WIDTH/2;
+    player_y = 0;
+    player_dx = player_dy = 0;
+    player_hot = 0;
+    
+    clear_hot();
+    xonix_draw_field();
+    xonix_draw_enemies();
+    xonix_draw_player();
 }
 
 
 // mark our path in hot area as road and draw it
-void xonix_commit_path() {
+uint8_t xonix_commit_path() {
     uint8_t r, c, mask, ofs, v, i;
     uint8_t x, y;
-    uint8_t cells_got = 0;
+    uint16_t cells_got = 0;
     
     for (r = 0; r < FIELD_HEIGHT; r++) {
         for (c = 0; c < FIELD_BYTES; c++) {
@@ -367,9 +370,15 @@ void xonix_commit_path() {
     
     // compare hot and grass fields to find spaces we might have occupied
     cells_got += xonix_reclaim_hot();
-    
-    // Temporary
     clear_hot();
+    
+    // calculate score
+    player_area += cells_got;
+    if (GRASS_WIDTH*GRASS_HEIGHT < player_area*2) {
+        xonix_next_level();
+        return 1;
+    }
+    return 0;
 }
 
 
@@ -433,8 +442,8 @@ void xonix_fill_hot_core(uint8_t x, uint8_t y) {
 }
 
 
-uint8_t xonix_reclaim_hot() {
-    uint8_t res = 0;
+uint16_t xonix_reclaim_hot() {
+    uint16_t res = 0;
     uint8_t r, c, mask, v, ofs;
     uint8_t s_col;
     
@@ -468,4 +477,11 @@ uint8_t xonix_reclaim_hot() {
         }
     }
     return res;
+}
+
+
+void xonix_next_level() {
+    if (enemies_count < ENEMIES_MAX)
+        enemies_count++;
+    xonix_init();
 }
