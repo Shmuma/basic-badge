@@ -5,8 +5,9 @@
 #include "disp.h"
 
 #define CELL_SIZE           4             // how large one item of the field
+#define FIELD_OFFSET        4
 #define FIELD_WIDTH         (TFT_WIDTH/CELL_SIZE)
-#define FIELD_HEIGHT        (TFT_HEIGHT/CELL_SIZE)
+#define FIELD_HEIGHT        (TFT_HEIGHT/CELL_SIZE - FIELD_OFFSET)
 #define FIELD_BYTES         (FIELD_WIDTH/8)
 
 #define GRASS_WIDTH         (FIELD_WIDTH-4)
@@ -48,5 +49,6 @@ void xonix_commit_hot();
 void xonix_commit_path();
 void xonix_fill_hot(uint8_t x, uint8_t y);
 void xonix_fill_hot_core(uint8_t x, uint8_t y);
+uint8_t xonix_reclaim_hot();
 
 #endif

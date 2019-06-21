@@ -25,11 +25,12 @@ uint8_t player_y;
 int8_t player_dx = 0;
 int8_t player_dy = 0;
 uint8_t player_hot = 0;
+uint8_t player_lives = 3;
+uint8_t player_score = 0;
 
 
 void xonix_main() {
     uint32_t wait_until = millis() + DEFAULT_DELAY;
-    uint32_t steps_count = 0;
     uint8_t keys_got;
     int8_t keys[3];
     
@@ -39,11 +40,6 @@ void xonix_main() {
         if (millis() >= wait_until) {
             xonix_step();
             wait_until = millis() + DEFAULT_DELAY;
-            steps_count = (steps_count + 1) % 300; // 30 seconds
-            
-            if (!steps_count) {
-                xonix_add_enemy();
-            }
         }
         
         // read input
@@ -141,9 +137,7 @@ void xonix_draw_field() {
                 if (same)
                     end += 1;
                 else {
-                    tft_fill_area(start*CELL_SIZE, r*CELL_SIZE,
-                            (end-start)*CELL_SIZE, CELL_SIZE, 
-                            cur_bit ? COLOR_GRASS : COLOR_ROAD);
+                    xonix_draw_row(r, start, end-start, cur_bit ? COLOR_GRASS : COLOR_ROAD);
                     cur_bit = 1-cur_bit;
                     start = end;
                     end = start+1;
@@ -155,9 +149,7 @@ void xonix_draw_field() {
         }
 
         if (end > start) {
-            tft_fill_area(start*CELL_SIZE, r*CELL_SIZE, 
-                    (end-start)*CELL_SIZE, CELL_SIZE, 
-                    cur_bit ? COLOR_GRASS : COLOR_ROAD);
+            xonix_draw_row(r, start, end-start, cur_bit ? COLOR_GRASS : COLOR_ROAD);
         }
     }
 }
@@ -187,7 +179,11 @@ inline void clear_hot() {
 }
 
 inline void xonix_draw_cell(uint8_t r, uint8_t c, uint32_t color) {
-    tft_fill_area(c*CELL_SIZE, r*CELL_SIZE, CELL_SIZE-1, CELL_SIZE-1, color);
+    tft_fill_area(c*CELL_SIZE, (r + FIELD_OFFSET)*CELL_SIZE, CELL_SIZE-1, CELL_SIZE-1, color);
+}
+
+inline void xonix_draw_row(uint8_t r, uint8_t c, uint8_t w, uint32_t color) {
+    tft_fill_area(c*CELL_SIZE, (r + FIELD_OFFSET)*CELL_SIZE, w*CELL_SIZE-1, CELL_SIZE-1, color);
 }
 
 
@@ -339,6 +335,7 @@ void xonix_commit_hot() {
 void xonix_commit_path() {
     uint8_t r, c, mask, ofs, v, i;
     uint8_t x, y;
+    uint8_t cells_got = 0;
     
     for (r = 0; r < FIELD_HEIGHT; r++) {
         for (c = 0; c < FIELD_BYTES; c++) {
@@ -352,6 +349,7 @@ void xonix_commit_path() {
             while (mask) {
                 if (v & mask) {
                     xonix_draw_cell(r, c*8 + ofs, COLOR_ROAD);
+                    cells_got++;
                 }
                 ofs++;
                 mask >>= 1;
@@ -366,6 +364,9 @@ void xonix_commit_path() {
             xonix_fill_hot(enemies_x[i], enemies_y[i]);
         }
     }
+    
+    // compare hot and grass fields to find spaces we might have occupied
+    cells_got += xonix_reclaim_hot();
     
     // Temporary
     clear_hot();
@@ -405,7 +406,6 @@ void xonix_fill_hot_core(uint8_t x, uint8_t y) {
         else {
             for (; is_grass(x-1, y) && !is_hot(x-1, y); row_len++, last_row_len++) {
                 set_hot(--x, y);
-                xonix_draw_cell(y, x, COLOR_HOT_GRASS);
                 if (is_grass(x, y-1) && !is_hot(x, y-1))
                     xonix_fill_hot(x, y-1);
             }
@@ -413,7 +413,6 @@ void xonix_fill_hot_core(uint8_t x, uint8_t y) {
         
         for(; is_grass(sx, y) && !is_hot(sx, y); row_len++, sx++) {
             set_hot(sx, y);
-            xonix_draw_cell(y, sx, COLOR_HOT_GRASS);
         }
         
         if (row_len < last_row_len) {
@@ -431,4 +430,42 @@ void xonix_fill_hot_core(uint8_t x, uint8_t y) {
         last_row_len = row_len;
         ++y;
     } while (last_row_len != 0);
+}
+
+
+uint8_t xonix_reclaim_hot() {
+    uint8_t res = 0;
+    uint8_t r, c, mask, v, ofs;
+    uint8_t s_col;
+    
+    for (r = 0; r < FIELD_HEIGHT; r++) {
+        s_col = 0;
+        for (c = 0; c < FIELD_BYTES; c++) {
+            v = field[r][c] ^ hot_field[r][c];
+            if (!v) {
+                if (s_col)
+                    xonix_draw_row(r, s_col, c*8 - s_col + 1, COLOR_ROAD);
+                s_col = 0;
+                continue;
+            }
+            
+            field[r][c] = hot_field[r][c];
+            mask = 1 << 7;
+            ofs = 0;
+            while (mask) {
+                if (v & mask) {
+                    res++;
+                    if (!s_col)
+                        s_col = c*8 + ofs;
+                }
+                else if (s_col) {
+                    xonix_draw_row(r, s_col, c*8 + ofs - s_col + 1, COLOR_ROAD);
+                    s_col = 0;
+                }
+                ofs++;
+                mask >>= 1;
+            }
+        }
+    }
+    return res;
 }
