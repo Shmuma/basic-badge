@@ -122,7 +122,7 @@ void xonix_draw_field() {
     uint8_t cur_bit = 0, start = 0, end = 0;
     uint8_t mask, val, same, r, c;
 
-    tft_fill_area(0, 0, TFT_WIDTH-1, TFT_HEIGHT-1, 0x0F0000);
+    xonix_draw_row(-1, 0, FIELD_WIDTH, 0x000000);
     
     for (r = 0; r < FIELD_HEIGHT; r++) {
         cur_bit = start = end = 0;
@@ -322,6 +322,7 @@ void xonix_step_player() {
 
 
 void xonix_player_lost() {
+    wait_ms(100);
     player_x = FIELD_WIDTH/2;
     player_y = 0;
     player_dx = player_dy = 0;
@@ -481,6 +482,7 @@ uint16_t xonix_reclaim_hot() {
 
 
 void xonix_next_level() {
+    wait_ms(100);
     if (enemies_count < ENEMIES_MAX)
         enemies_count++;
     xonix_init();

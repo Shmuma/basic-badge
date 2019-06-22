@@ -5,7 +5,7 @@
 #include "disp.h"
 
 #define CELL_SIZE           4             // how large one item of the field
-#define FIELD_OFFSET        4
+#define FIELD_OFFSET        1
 #define FIELD_WIDTH         (TFT_WIDTH/CELL_SIZE)
 #define FIELD_HEIGHT        ((TFT_HEIGHT/CELL_SIZE) - FIELD_OFFSET)
 #define FIELD_BYTES         (FIELD_WIDTH/8)
