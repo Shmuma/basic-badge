@@ -1,5 +1,4 @@
 #include "hw.h"
-#include "log.h"
 #include "xonix.h"
 #include <stdio.h>
 #include <string.h>
@@ -25,8 +24,7 @@ uint8_t player_y;
 int8_t player_dx = 0;
 int8_t player_dy = 0;
 uint8_t player_hot = 0;
-uint8_t player_lives = 3;
-uint8_t player_score = 0;
+uint8_t player_lives = MAX_LIVES;
 uint16_t player_area = 0;
 
 
@@ -78,6 +76,7 @@ void xonix_init() {
     player_dx = player_dy = 0;
     player_hot = 0;
     player_area = 0;
+    xonix_draw_header();
     xonix_draw_player();
 }
 
@@ -86,6 +85,7 @@ void xonix_wake() {
     xonix_draw_field();
     xonix_draw_enemies();
     xonix_draw_player();
+    xonix_draw_header();
 }
 
 void xonix_init_field() {
@@ -204,10 +204,23 @@ void xonix_undraw_enemies() {
     }
 }
 
+void xonix_draw_header() {
+    const uint8_t prog = (uint8_t)((uint32_t)PROGRESS_LEN * (uint32_t)player_area / (uint32_t)AREA_TO_WIN);
+    uint8_t i;
+    
+    if (prog)
+        xonix_draw_row(-1, 0, prog, COLOR_GRASS);
+    xonix_draw_row(-1, prog, PROGRESS_LEN-prog, COLOR_ENEMY);
+    xonix_draw_row(-1, PROGRESS_LEN, FIELD_WIDTH-PROGRESS_LEN, COLOR_HEADER);
+    
+    for (i = 1; i <= player_lives; i++) {
+        xonix_draw_cell(-1, PROGRESS_LEN + 2 + (MAX_LIVES-i)*2, COLOR_PLAYER);
+    }
+}
+
 void xonix_step_enemies() {
     uint8_t i, x, y;
     int8_t dy, dx;
-    char buf[50];
     
     for (i = 0; i < enemies_count; i++) {
         dx = (enemies_d[i] & 0b01) ? 1 : -1;
@@ -216,11 +229,6 @@ void xonix_step_enemies() {
         x = enemies_x[i];
         y = enemies_y[i];
 
-#if UART3_LOG_ENABLED        
-        sprintf(buf, "x=%d y=%d d=%d", x, y, enemies_d[i]);
-        log_str(buf);
-#endif   
-        
         if (!is_grass(x+dx, y+dy)) {
             if (is_grass(x+dx, y-dy))
                 enemies_d[i] ^= 0b10;           // invert y dir
@@ -240,11 +248,6 @@ void xonix_step_enemies() {
         xonix_draw_cell(y, x, COLOR_GRASS);
         enemies_x[i] = x + dx;
         enemies_y[i] = y + dy;
-#if UART3_LOG_ENABLED        
-        sprintf(buf, " -> x=%d y=%d d=%d ", enemies_x[i], 
-                enemies_y[i], enemies_d[i]);
-        log_strln(buf);
-#endif        
     }
 }
 
@@ -321,20 +324,6 @@ void xonix_step_player() {
 }
 
 
-void xonix_player_lost() {
-    wait_ms(100);
-    player_x = FIELD_WIDTH/2;
-    player_y = 0;
-    player_dx = player_dy = 0;
-    player_hot = 0;
-    
-    clear_hot();
-    xonix_draw_field();
-    xonix_draw_enemies();
-    xonix_draw_player();
-}
-
-
 // mark our path in hot area as road and draw it
 uint8_t xonix_commit_path() {
     uint8_t r, c, mask, ofs, v, i;
@@ -373,12 +362,13 @@ uint8_t xonix_commit_path() {
     cells_got += xonix_reclaim_hot();
     clear_hot();
     
-    // calculate score
+    // calculate percentage
     player_area += cells_got;
-    if (GRASS_WIDTH*GRASS_HEIGHT < player_area*2) {
+    if (AREA_TO_WIN <= player_area) {
         xonix_next_level();
         return 1;
     }
+    xonix_draw_header();
     return 0;
 }
 
@@ -481,9 +471,40 @@ uint16_t xonix_reclaim_hot() {
 }
 
 
+void xonix_player_lost() {
+    wait_ms(1000);
+    player_lives--;
+    if (!player_lives) {
+        xonix_game_over();
+    }
+    else {
+        player_x = FIELD_WIDTH/2;
+        player_y = 0;
+        player_dx = player_dy = 0;
+        player_hot = 0;
+
+        clear_hot();
+        xonix_draw_field();
+        xonix_draw_enemies();
+        xonix_draw_header();
+        xonix_draw_player();
+    }
+}
+
+
 void xonix_next_level() {
-    wait_ms(100);
+    wait_ms(1000);
     if (enemies_count < ENEMIES_MAX)
         enemies_count++;
+    xonix_init();
+}
+
+
+void xonix_game_over() {
+    wait_ms(1000);
+    // show game over message
+    // wait for key press
+    player_lives = MAX_LIVES;
+    enemies_count = 1;
     xonix_init();
 }
