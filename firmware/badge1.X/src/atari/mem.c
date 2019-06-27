@@ -100,3 +100,8 @@ int read_rom(const char* file_name) {
 }
 #endif
 
+
+void set_rom(uint8_t* data, uint16_t size) {
+    rom = data;
+    rom_size = size;
+}
