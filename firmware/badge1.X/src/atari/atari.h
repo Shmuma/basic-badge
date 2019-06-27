@@ -1,7 +1,6 @@
 #ifndef _ATARI_H
 #define _ATARI_H
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>

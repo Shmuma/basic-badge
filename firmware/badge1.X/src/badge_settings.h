@@ -59,4 +59,7 @@
 // Enable Basic (requires Z80, for some weird reason)
 #define ENABLE_BASIC 0
 
+// Enable Atari emulator
+#define ENABLE_ATARI 1
+
 #endif

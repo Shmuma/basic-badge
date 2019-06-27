@@ -17,6 +17,9 @@ void init_z80_cpm (void);
 void loop_z80_cpm (void);
 #endif
 
+#if ENABLE_ATARI
+#include "atari/atari_badge.h"
+#endif
 
 #if ENABLE_BASIC
 uint16_t basic_loads (int8_t * data, uint16_t maxlen);
@@ -386,6 +389,12 @@ void badge_menu(void)
                     enable_display_scanning(0);
                     xonix_main();
 				}
+#if ENABLE_ATARI
+                else if (strcmp(menu_buff, "8") == 0) {
+                    enable_display_scanning(0);
+                    atari_menu();
+                }
+#endif               
 				else
 					{
 					switch (get_command_index(hash(menu_buff)))
@@ -513,6 +522,8 @@ void clear_crack(void)
 
 void showmenu(void)
 	{
+    uint8_t c;
+    
 	//Set some background boxes
 	video_clrscr();
 	video_set_color(MENU_BANNER_FG,MENU_BANNER_BG);
@@ -527,20 +538,10 @@ void showmenu(void)
 	video_gotoxy(3,5);
 	stdio_write("                                  ");
 	video_set_color(MENU_ENTRY_FG,MENU_ENTRY_BG);
-	video_gotoxy(3,6);
-	stdio_write("                                  ");
-	video_gotoxy(3,7);
-	stdio_write("                                  ");
-	video_gotoxy(3,8);
-	stdio_write("                                  ");
-	video_gotoxy(3,9);
-	stdio_write("                                  ");
-	video_gotoxy(3,10);
-	stdio_write("                                  ");
-	video_gotoxy(3,11);
-	stdio_write("                                  ");
-	video_gotoxy(3,12);
-	stdio_write("                                  ");
+    for (c = 6; c <= 13; c++) {
+        video_gotoxy(3, c);
+        stdio_write("                                  ");
+    }
 	
 	//Draw frame
 	video_set_color(MENU_FRAME_FG,MENU_FRAME_BG);
@@ -572,6 +573,8 @@ void showmenu(void)
 	stdio_write("6 - User Program");
 	video_gotoxy(TEXT_LEFT, 12);
 	stdio_write("7 - Play Xonix");
+	video_gotoxy(TEXT_LEFT, 13);
+	stdio_write("8 - Atari emulator");
 	
 	show_version();
 	clear_prompt();

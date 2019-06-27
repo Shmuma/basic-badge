@@ -1,6 +1,6 @@
 #include "atari.h"
 
-struct tia_state tia;// = {0};
+struct tia_state tia = {0};
 
 
 void init_tia() {
@@ -34,22 +34,23 @@ void draw_pixels(uint8_t count) {
   while (count--) {
     if (tia.color_clock >= CLK_HORBLANK) {
       if (tia.scanline >= SCN_VIS_START && tia.scanline < SCN_VIS_END) {
-	// TODO: need to combine image, but have read only about background :)
-	tia.fb[tia.scanline - SCN_VIS_START][tia.color_clock - CLK_HORBLANK] = tia.colu[3];
+        // TODO: need to combine image, but have read only about background :)
+        tia.fb[tia.color_clock - CLK_HORBLANK] = tia.colu[3];
       }
     }
     if (++tia.color_clock >= CLK_HOR) {
       tia.color_clock = 0;
+      tia_line_ready();
       if (++tia.scanline >= SCN_VERT) {
-	frame_ready();
-	tia.scanline = 0;
+    	tia.scanline = 0;
       }
     }
   }
 }
 
 
-void frame_ready() {
+#ifdef ATARI_POSIX
+void line_ready() {
   uint8_t r, c;
   
   printf("Frame ready!\n");
@@ -60,3 +61,4 @@ void frame_ready() {
     printf("\n");
   }
 }
+#endif

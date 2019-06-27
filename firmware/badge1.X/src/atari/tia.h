@@ -22,7 +22,7 @@ struct tia_state {
 
   uint8_t colu[4]; 	// P0, P1, PF, BK
   
-  uint8_t fb[FB_HEIGHT][FB_WIDTH];
+  uint8_t fb[FB_WIDTH];
 };
 
 
@@ -39,6 +39,6 @@ uint8_t peek_tia(uint16_t);
 
 void do_wsync();			// draw the next of the line
 void draw_pixels(uint8_t count);	// draw given amount of pixels
-void frame_ready();
+void tia_line_ready();
 
 #endif
