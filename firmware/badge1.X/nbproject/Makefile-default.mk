@@ -57,17 +57,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=src/log.c src/basic/tokenizer.c src/basic/ubasic.c src/Z80/hwz.c src/Z80/iosim.c src/Z80/sim1.c src/Z80/sim2.c src/Z80/sim3.c src/Z80/sim4.c src/Z80/sim5.c src/Z80/sim6.c src/Z80/sim7.c src/Z80/simfun.c src/Z80/simglb.c src/disp.c src/hw.c src/images.c src/vt100.c src/main.c src/splash.c src/tetrapuzz.c src/box_game.c src/tune_player.c src/post.c src/snake.c src/user_program.c src/badge.c src/xonix.c
+SOURCEFILES_QUOTED_IF_SPACED=src/log.c src/disp.c src/hw.c src/images.c src/vt100.c src/main.c src/splash.c src/tetrapuzz.c src/box_game.c src/tune_player.c src/post.c src/snake.c src/user_program.c src/badge.c src/xonix.c src/atari/6502.c src/atari/mem.c src/atari/tia.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/src/log.o ${OBJECTDIR}/src/basic/tokenizer.o ${OBJECTDIR}/src/basic/ubasic.o ${OBJECTDIR}/src/Z80/hwz.o ${OBJECTDIR}/src/Z80/iosim.o ${OBJECTDIR}/src/Z80/sim1.o ${OBJECTDIR}/src/Z80/sim2.o ${OBJECTDIR}/src/Z80/sim3.o ${OBJECTDIR}/src/Z80/sim4.o ${OBJECTDIR}/src/Z80/sim5.o ${OBJECTDIR}/src/Z80/sim6.o ${OBJECTDIR}/src/Z80/sim7.o ${OBJECTDIR}/src/Z80/simfun.o ${OBJECTDIR}/src/Z80/simglb.o ${OBJECTDIR}/src/disp.o ${OBJECTDIR}/src/hw.o ${OBJECTDIR}/src/images.o ${OBJECTDIR}/src/vt100.o ${OBJECTDIR}/src/main.o ${OBJECTDIR}/src/splash.o ${OBJECTDIR}/src/tetrapuzz.o ${OBJECTDIR}/src/box_game.o ${OBJECTDIR}/src/tune_player.o ${OBJECTDIR}/src/post.o ${OBJECTDIR}/src/snake.o ${OBJECTDIR}/src/user_program.o ${OBJECTDIR}/src/badge.o ${OBJECTDIR}/src/xonix.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/src/log.o.d ${OBJECTDIR}/src/basic/tokenizer.o.d ${OBJECTDIR}/src/basic/ubasic.o.d ${OBJECTDIR}/src/Z80/hwz.o.d ${OBJECTDIR}/src/Z80/iosim.o.d ${OBJECTDIR}/src/Z80/sim1.o.d ${OBJECTDIR}/src/Z80/sim2.o.d ${OBJECTDIR}/src/Z80/sim3.o.d ${OBJECTDIR}/src/Z80/sim4.o.d ${OBJECTDIR}/src/Z80/sim5.o.d ${OBJECTDIR}/src/Z80/sim6.o.d ${OBJECTDIR}/src/Z80/sim7.o.d ${OBJECTDIR}/src/Z80/simfun.o.d ${OBJECTDIR}/src/Z80/simglb.o.d ${OBJECTDIR}/src/disp.o.d ${OBJECTDIR}/src/hw.o.d ${OBJECTDIR}/src/images.o.d ${OBJECTDIR}/src/vt100.o.d ${OBJECTDIR}/src/main.o.d ${OBJECTDIR}/src/splash.o.d ${OBJECTDIR}/src/tetrapuzz.o.d ${OBJECTDIR}/src/box_game.o.d ${OBJECTDIR}/src/tune_player.o.d ${OBJECTDIR}/src/post.o.d ${OBJECTDIR}/src/snake.o.d ${OBJECTDIR}/src/user_program.o.d ${OBJECTDIR}/src/badge.o.d ${OBJECTDIR}/src/xonix.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/src/log.o ${OBJECTDIR}/src/disp.o ${OBJECTDIR}/src/hw.o ${OBJECTDIR}/src/images.o ${OBJECTDIR}/src/vt100.o ${OBJECTDIR}/src/main.o ${OBJECTDIR}/src/splash.o ${OBJECTDIR}/src/tetrapuzz.o ${OBJECTDIR}/src/box_game.o ${OBJECTDIR}/src/tune_player.o ${OBJECTDIR}/src/post.o ${OBJECTDIR}/src/snake.o ${OBJECTDIR}/src/user_program.o ${OBJECTDIR}/src/badge.o ${OBJECTDIR}/src/xonix.o ${OBJECTDIR}/src/atari/6502.o ${OBJECTDIR}/src/atari/mem.o ${OBJECTDIR}/src/atari/tia.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/src/log.o.d ${OBJECTDIR}/src/disp.o.d ${OBJECTDIR}/src/hw.o.d ${OBJECTDIR}/src/images.o.d ${OBJECTDIR}/src/vt100.o.d ${OBJECTDIR}/src/main.o.d ${OBJECTDIR}/src/splash.o.d ${OBJECTDIR}/src/tetrapuzz.o.d ${OBJECTDIR}/src/box_game.o.d ${OBJECTDIR}/src/tune_player.o.d ${OBJECTDIR}/src/post.o.d ${OBJECTDIR}/src/snake.o.d ${OBJECTDIR}/src/user_program.o.d ${OBJECTDIR}/src/badge.o.d ${OBJECTDIR}/src/xonix.o.d ${OBJECTDIR}/src/atari/6502.o.d ${OBJECTDIR}/src/atari/mem.o.d ${OBJECTDIR}/src/atari/tia.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/src/log.o ${OBJECTDIR}/src/basic/tokenizer.o ${OBJECTDIR}/src/basic/ubasic.o ${OBJECTDIR}/src/Z80/hwz.o ${OBJECTDIR}/src/Z80/iosim.o ${OBJECTDIR}/src/Z80/sim1.o ${OBJECTDIR}/src/Z80/sim2.o ${OBJECTDIR}/src/Z80/sim3.o ${OBJECTDIR}/src/Z80/sim4.o ${OBJECTDIR}/src/Z80/sim5.o ${OBJECTDIR}/src/Z80/sim6.o ${OBJECTDIR}/src/Z80/sim7.o ${OBJECTDIR}/src/Z80/simfun.o ${OBJECTDIR}/src/Z80/simglb.o ${OBJECTDIR}/src/disp.o ${OBJECTDIR}/src/hw.o ${OBJECTDIR}/src/images.o ${OBJECTDIR}/src/vt100.o ${OBJECTDIR}/src/main.o ${OBJECTDIR}/src/splash.o ${OBJECTDIR}/src/tetrapuzz.o ${OBJECTDIR}/src/box_game.o ${OBJECTDIR}/src/tune_player.o ${OBJECTDIR}/src/post.o ${OBJECTDIR}/src/snake.o ${OBJECTDIR}/src/user_program.o ${OBJECTDIR}/src/badge.o ${OBJECTDIR}/src/xonix.o
+OBJECTFILES=${OBJECTDIR}/src/log.o ${OBJECTDIR}/src/disp.o ${OBJECTDIR}/src/hw.o ${OBJECTDIR}/src/images.o ${OBJECTDIR}/src/vt100.o ${OBJECTDIR}/src/main.o ${OBJECTDIR}/src/splash.o ${OBJECTDIR}/src/tetrapuzz.o ${OBJECTDIR}/src/box_game.o ${OBJECTDIR}/src/tune_player.o ${OBJECTDIR}/src/post.o ${OBJECTDIR}/src/snake.o ${OBJECTDIR}/src/user_program.o ${OBJECTDIR}/src/badge.o ${OBJECTDIR}/src/xonix.o ${OBJECTDIR}/src/atari/6502.o ${OBJECTDIR}/src/atari/mem.o ${OBJECTDIR}/src/atari/tia.o
 
 # Source Files
-SOURCEFILES=src/log.c src/basic/tokenizer.c src/basic/ubasic.c src/Z80/hwz.c src/Z80/iosim.c src/Z80/sim1.c src/Z80/sim2.c src/Z80/sim3.c src/Z80/sim4.c src/Z80/sim5.c src/Z80/sim6.c src/Z80/sim7.c src/Z80/simfun.c src/Z80/simglb.c src/disp.c src/hw.c src/images.c src/vt100.c src/main.c src/splash.c src/tetrapuzz.c src/box_game.c src/tune_player.c src/post.c src/snake.c src/user_program.c src/badge.c src/xonix.c
+SOURCEFILES=src/log.c src/disp.c src/hw.c src/images.c src/vt100.c src/main.c src/splash.c src/tetrapuzz.c src/box_game.c src/tune_player.c src/post.c src/snake.c src/user_program.c src/badge.c src/xonix.c src/atari/6502.c src/atari/mem.c src/atari/tia.c
 
 
 CFLAGS=
@@ -111,84 +111,6 @@ ${OBJECTDIR}/src/log.o: src/log.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/src/log.o.d 
 	@${RM} ${OBJECTDIR}/src/log.o 
 	@${FIXDEPS} "${OBJECTDIR}/src/log.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -funroll-loops -D_SUPPRESS_PLIB_WARNING -MMD -MF "${OBJECTDIR}/src/log.o.d" -o ${OBJECTDIR}/src/log.o src/log.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
-	
-${OBJECTDIR}/src/basic/tokenizer.o: src/basic/tokenizer.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/src/basic" 
-	@${RM} ${OBJECTDIR}/src/basic/tokenizer.o.d 
-	@${RM} ${OBJECTDIR}/src/basic/tokenizer.o 
-	@${FIXDEPS} "${OBJECTDIR}/src/basic/tokenizer.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -funroll-loops -D_SUPPRESS_PLIB_WARNING -MMD -MF "${OBJECTDIR}/src/basic/tokenizer.o.d" -o ${OBJECTDIR}/src/basic/tokenizer.o src/basic/tokenizer.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
-	
-${OBJECTDIR}/src/basic/ubasic.o: src/basic/ubasic.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/src/basic" 
-	@${RM} ${OBJECTDIR}/src/basic/ubasic.o.d 
-	@${RM} ${OBJECTDIR}/src/basic/ubasic.o 
-	@${FIXDEPS} "${OBJECTDIR}/src/basic/ubasic.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -funroll-loops -D_SUPPRESS_PLIB_WARNING -MMD -MF "${OBJECTDIR}/src/basic/ubasic.o.d" -o ${OBJECTDIR}/src/basic/ubasic.o src/basic/ubasic.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
-	
-${OBJECTDIR}/src/Z80/hwz.o: src/Z80/hwz.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/src/Z80" 
-	@${RM} ${OBJECTDIR}/src/Z80/hwz.o.d 
-	@${RM} ${OBJECTDIR}/src/Z80/hwz.o 
-	@${FIXDEPS} "${OBJECTDIR}/src/Z80/hwz.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -funroll-loops -D_SUPPRESS_PLIB_WARNING -MMD -MF "${OBJECTDIR}/src/Z80/hwz.o.d" -o ${OBJECTDIR}/src/Z80/hwz.o src/Z80/hwz.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
-	
-${OBJECTDIR}/src/Z80/iosim.o: src/Z80/iosim.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/src/Z80" 
-	@${RM} ${OBJECTDIR}/src/Z80/iosim.o.d 
-	@${RM} ${OBJECTDIR}/src/Z80/iosim.o 
-	@${FIXDEPS} "${OBJECTDIR}/src/Z80/iosim.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -funroll-loops -D_SUPPRESS_PLIB_WARNING -MMD -MF "${OBJECTDIR}/src/Z80/iosim.o.d" -o ${OBJECTDIR}/src/Z80/iosim.o src/Z80/iosim.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
-	
-${OBJECTDIR}/src/Z80/sim1.o: src/Z80/sim1.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/src/Z80" 
-	@${RM} ${OBJECTDIR}/src/Z80/sim1.o.d 
-	@${RM} ${OBJECTDIR}/src/Z80/sim1.o 
-	@${FIXDEPS} "${OBJECTDIR}/src/Z80/sim1.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -funroll-loops -D_SUPPRESS_PLIB_WARNING -MMD -MF "${OBJECTDIR}/src/Z80/sim1.o.d" -o ${OBJECTDIR}/src/Z80/sim1.o src/Z80/sim1.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
-	
-${OBJECTDIR}/src/Z80/sim2.o: src/Z80/sim2.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/src/Z80" 
-	@${RM} ${OBJECTDIR}/src/Z80/sim2.o.d 
-	@${RM} ${OBJECTDIR}/src/Z80/sim2.o 
-	@${FIXDEPS} "${OBJECTDIR}/src/Z80/sim2.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -funroll-loops -D_SUPPRESS_PLIB_WARNING -MMD -MF "${OBJECTDIR}/src/Z80/sim2.o.d" -o ${OBJECTDIR}/src/Z80/sim2.o src/Z80/sim2.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
-	
-${OBJECTDIR}/src/Z80/sim3.o: src/Z80/sim3.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/src/Z80" 
-	@${RM} ${OBJECTDIR}/src/Z80/sim3.o.d 
-	@${RM} ${OBJECTDIR}/src/Z80/sim3.o 
-	@${FIXDEPS} "${OBJECTDIR}/src/Z80/sim3.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -funroll-loops -D_SUPPRESS_PLIB_WARNING -MMD -MF "${OBJECTDIR}/src/Z80/sim3.o.d" -o ${OBJECTDIR}/src/Z80/sim3.o src/Z80/sim3.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
-	
-${OBJECTDIR}/src/Z80/sim4.o: src/Z80/sim4.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/src/Z80" 
-	@${RM} ${OBJECTDIR}/src/Z80/sim4.o.d 
-	@${RM} ${OBJECTDIR}/src/Z80/sim4.o 
-	@${FIXDEPS} "${OBJECTDIR}/src/Z80/sim4.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -funroll-loops -D_SUPPRESS_PLIB_WARNING -MMD -MF "${OBJECTDIR}/src/Z80/sim4.o.d" -o ${OBJECTDIR}/src/Z80/sim4.o src/Z80/sim4.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
-	
-${OBJECTDIR}/src/Z80/sim5.o: src/Z80/sim5.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/src/Z80" 
-	@${RM} ${OBJECTDIR}/src/Z80/sim5.o.d 
-	@${RM} ${OBJECTDIR}/src/Z80/sim5.o 
-	@${FIXDEPS} "${OBJECTDIR}/src/Z80/sim5.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -funroll-loops -D_SUPPRESS_PLIB_WARNING -MMD -MF "${OBJECTDIR}/src/Z80/sim5.o.d" -o ${OBJECTDIR}/src/Z80/sim5.o src/Z80/sim5.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
-	
-${OBJECTDIR}/src/Z80/sim6.o: src/Z80/sim6.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/src/Z80" 
-	@${RM} ${OBJECTDIR}/src/Z80/sim6.o.d 
-	@${RM} ${OBJECTDIR}/src/Z80/sim6.o 
-	@${FIXDEPS} "${OBJECTDIR}/src/Z80/sim6.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -funroll-loops -D_SUPPRESS_PLIB_WARNING -MMD -MF "${OBJECTDIR}/src/Z80/sim6.o.d" -o ${OBJECTDIR}/src/Z80/sim6.o src/Z80/sim6.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
-	
-${OBJECTDIR}/src/Z80/sim7.o: src/Z80/sim7.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/src/Z80" 
-	@${RM} ${OBJECTDIR}/src/Z80/sim7.o.d 
-	@${RM} ${OBJECTDIR}/src/Z80/sim7.o 
-	@${FIXDEPS} "${OBJECTDIR}/src/Z80/sim7.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -funroll-loops -D_SUPPRESS_PLIB_WARNING -MMD -MF "${OBJECTDIR}/src/Z80/sim7.o.d" -o ${OBJECTDIR}/src/Z80/sim7.o src/Z80/sim7.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
-	
-${OBJECTDIR}/src/Z80/simfun.o: src/Z80/simfun.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/src/Z80" 
-	@${RM} ${OBJECTDIR}/src/Z80/simfun.o.d 
-	@${RM} ${OBJECTDIR}/src/Z80/simfun.o 
-	@${FIXDEPS} "${OBJECTDIR}/src/Z80/simfun.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -funroll-loops -D_SUPPRESS_PLIB_WARNING -MMD -MF "${OBJECTDIR}/src/Z80/simfun.o.d" -o ${OBJECTDIR}/src/Z80/simfun.o src/Z80/simfun.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
-	
-${OBJECTDIR}/src/Z80/simglb.o: src/Z80/simglb.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/src/Z80" 
-	@${RM} ${OBJECTDIR}/src/Z80/simglb.o.d 
-	@${RM} ${OBJECTDIR}/src/Z80/simglb.o 
-	@${FIXDEPS} "${OBJECTDIR}/src/Z80/simglb.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -funroll-loops -D_SUPPRESS_PLIB_WARNING -MMD -MF "${OBJECTDIR}/src/Z80/simglb.o.d" -o ${OBJECTDIR}/src/Z80/simglb.o src/Z80/simglb.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
 ${OBJECTDIR}/src/disp.o: src/disp.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/src" 
@@ -274,90 +196,30 @@ ${OBJECTDIR}/src/xonix.o: src/xonix.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/src/xonix.o 
 	@${FIXDEPS} "${OBJECTDIR}/src/xonix.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -funroll-loops -D_SUPPRESS_PLIB_WARNING -MMD -MF "${OBJECTDIR}/src/xonix.o.d" -o ${OBJECTDIR}/src/xonix.o src/xonix.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
+${OBJECTDIR}/src/atari/6502.o: src/atari/6502.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/src/atari" 
+	@${RM} ${OBJECTDIR}/src/atari/6502.o.d 
+	@${RM} ${OBJECTDIR}/src/atari/6502.o 
+	@${FIXDEPS} "${OBJECTDIR}/src/atari/6502.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -funroll-loops -D_SUPPRESS_PLIB_WARNING -MMD -MF "${OBJECTDIR}/src/atari/6502.o.d" -o ${OBJECTDIR}/src/atari/6502.o src/atari/6502.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	
+${OBJECTDIR}/src/atari/mem.o: src/atari/mem.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/src/atari" 
+	@${RM} ${OBJECTDIR}/src/atari/mem.o.d 
+	@${RM} ${OBJECTDIR}/src/atari/mem.o 
+	@${FIXDEPS} "${OBJECTDIR}/src/atari/mem.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -funroll-loops -D_SUPPRESS_PLIB_WARNING -MMD -MF "${OBJECTDIR}/src/atari/mem.o.d" -o ${OBJECTDIR}/src/atari/mem.o src/atari/mem.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	
+${OBJECTDIR}/src/atari/tia.o: src/atari/tia.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/src/atari" 
+	@${RM} ${OBJECTDIR}/src/atari/tia.o.d 
+	@${RM} ${OBJECTDIR}/src/atari/tia.o 
+	@${FIXDEPS} "${OBJECTDIR}/src/atari/tia.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -funroll-loops -D_SUPPRESS_PLIB_WARNING -MMD -MF "${OBJECTDIR}/src/atari/tia.o.d" -o ${OBJECTDIR}/src/atari/tia.o src/atari/tia.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	
 else
 ${OBJECTDIR}/src/log.o: src/log.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/src" 
 	@${RM} ${OBJECTDIR}/src/log.o.d 
 	@${RM} ${OBJECTDIR}/src/log.o 
 	@${FIXDEPS} "${OBJECTDIR}/src/log.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -funroll-loops -D_SUPPRESS_PLIB_WARNING -MMD -MF "${OBJECTDIR}/src/log.o.d" -o ${OBJECTDIR}/src/log.o src/log.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
-	
-${OBJECTDIR}/src/basic/tokenizer.o: src/basic/tokenizer.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/src/basic" 
-	@${RM} ${OBJECTDIR}/src/basic/tokenizer.o.d 
-	@${RM} ${OBJECTDIR}/src/basic/tokenizer.o 
-	@${FIXDEPS} "${OBJECTDIR}/src/basic/tokenizer.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -funroll-loops -D_SUPPRESS_PLIB_WARNING -MMD -MF "${OBJECTDIR}/src/basic/tokenizer.o.d" -o ${OBJECTDIR}/src/basic/tokenizer.o src/basic/tokenizer.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
-	
-${OBJECTDIR}/src/basic/ubasic.o: src/basic/ubasic.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/src/basic" 
-	@${RM} ${OBJECTDIR}/src/basic/ubasic.o.d 
-	@${RM} ${OBJECTDIR}/src/basic/ubasic.o 
-	@${FIXDEPS} "${OBJECTDIR}/src/basic/ubasic.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -funroll-loops -D_SUPPRESS_PLIB_WARNING -MMD -MF "${OBJECTDIR}/src/basic/ubasic.o.d" -o ${OBJECTDIR}/src/basic/ubasic.o src/basic/ubasic.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
-	
-${OBJECTDIR}/src/Z80/hwz.o: src/Z80/hwz.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/src/Z80" 
-	@${RM} ${OBJECTDIR}/src/Z80/hwz.o.d 
-	@${RM} ${OBJECTDIR}/src/Z80/hwz.o 
-	@${FIXDEPS} "${OBJECTDIR}/src/Z80/hwz.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -funroll-loops -D_SUPPRESS_PLIB_WARNING -MMD -MF "${OBJECTDIR}/src/Z80/hwz.o.d" -o ${OBJECTDIR}/src/Z80/hwz.o src/Z80/hwz.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
-	
-${OBJECTDIR}/src/Z80/iosim.o: src/Z80/iosim.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/src/Z80" 
-	@${RM} ${OBJECTDIR}/src/Z80/iosim.o.d 
-	@${RM} ${OBJECTDIR}/src/Z80/iosim.o 
-	@${FIXDEPS} "${OBJECTDIR}/src/Z80/iosim.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -funroll-loops -D_SUPPRESS_PLIB_WARNING -MMD -MF "${OBJECTDIR}/src/Z80/iosim.o.d" -o ${OBJECTDIR}/src/Z80/iosim.o src/Z80/iosim.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
-	
-${OBJECTDIR}/src/Z80/sim1.o: src/Z80/sim1.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/src/Z80" 
-	@${RM} ${OBJECTDIR}/src/Z80/sim1.o.d 
-	@${RM} ${OBJECTDIR}/src/Z80/sim1.o 
-	@${FIXDEPS} "${OBJECTDIR}/src/Z80/sim1.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -funroll-loops -D_SUPPRESS_PLIB_WARNING -MMD -MF "${OBJECTDIR}/src/Z80/sim1.o.d" -o ${OBJECTDIR}/src/Z80/sim1.o src/Z80/sim1.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
-	
-${OBJECTDIR}/src/Z80/sim2.o: src/Z80/sim2.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/src/Z80" 
-	@${RM} ${OBJECTDIR}/src/Z80/sim2.o.d 
-	@${RM} ${OBJECTDIR}/src/Z80/sim2.o 
-	@${FIXDEPS} "${OBJECTDIR}/src/Z80/sim2.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -funroll-loops -D_SUPPRESS_PLIB_WARNING -MMD -MF "${OBJECTDIR}/src/Z80/sim2.o.d" -o ${OBJECTDIR}/src/Z80/sim2.o src/Z80/sim2.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
-	
-${OBJECTDIR}/src/Z80/sim3.o: src/Z80/sim3.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/src/Z80" 
-	@${RM} ${OBJECTDIR}/src/Z80/sim3.o.d 
-	@${RM} ${OBJECTDIR}/src/Z80/sim3.o 
-	@${FIXDEPS} "${OBJECTDIR}/src/Z80/sim3.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -funroll-loops -D_SUPPRESS_PLIB_WARNING -MMD -MF "${OBJECTDIR}/src/Z80/sim3.o.d" -o ${OBJECTDIR}/src/Z80/sim3.o src/Z80/sim3.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
-	
-${OBJECTDIR}/src/Z80/sim4.o: src/Z80/sim4.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/src/Z80" 
-	@${RM} ${OBJECTDIR}/src/Z80/sim4.o.d 
-	@${RM} ${OBJECTDIR}/src/Z80/sim4.o 
-	@${FIXDEPS} "${OBJECTDIR}/src/Z80/sim4.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -funroll-loops -D_SUPPRESS_PLIB_WARNING -MMD -MF "${OBJECTDIR}/src/Z80/sim4.o.d" -o ${OBJECTDIR}/src/Z80/sim4.o src/Z80/sim4.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
-	
-${OBJECTDIR}/src/Z80/sim5.o: src/Z80/sim5.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/src/Z80" 
-	@${RM} ${OBJECTDIR}/src/Z80/sim5.o.d 
-	@${RM} ${OBJECTDIR}/src/Z80/sim5.o 
-	@${FIXDEPS} "${OBJECTDIR}/src/Z80/sim5.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -funroll-loops -D_SUPPRESS_PLIB_WARNING -MMD -MF "${OBJECTDIR}/src/Z80/sim5.o.d" -o ${OBJECTDIR}/src/Z80/sim5.o src/Z80/sim5.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
-	
-${OBJECTDIR}/src/Z80/sim6.o: src/Z80/sim6.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/src/Z80" 
-	@${RM} ${OBJECTDIR}/src/Z80/sim6.o.d 
-	@${RM} ${OBJECTDIR}/src/Z80/sim6.o 
-	@${FIXDEPS} "${OBJECTDIR}/src/Z80/sim6.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -funroll-loops -D_SUPPRESS_PLIB_WARNING -MMD -MF "${OBJECTDIR}/src/Z80/sim6.o.d" -o ${OBJECTDIR}/src/Z80/sim6.o src/Z80/sim6.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
-	
-${OBJECTDIR}/src/Z80/sim7.o: src/Z80/sim7.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/src/Z80" 
-	@${RM} ${OBJECTDIR}/src/Z80/sim7.o.d 
-	@${RM} ${OBJECTDIR}/src/Z80/sim7.o 
-	@${FIXDEPS} "${OBJECTDIR}/src/Z80/sim7.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -funroll-loops -D_SUPPRESS_PLIB_WARNING -MMD -MF "${OBJECTDIR}/src/Z80/sim7.o.d" -o ${OBJECTDIR}/src/Z80/sim7.o src/Z80/sim7.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
-	
-${OBJECTDIR}/src/Z80/simfun.o: src/Z80/simfun.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/src/Z80" 
-	@${RM} ${OBJECTDIR}/src/Z80/simfun.o.d 
-	@${RM} ${OBJECTDIR}/src/Z80/simfun.o 
-	@${FIXDEPS} "${OBJECTDIR}/src/Z80/simfun.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -funroll-loops -D_SUPPRESS_PLIB_WARNING -MMD -MF "${OBJECTDIR}/src/Z80/simfun.o.d" -o ${OBJECTDIR}/src/Z80/simfun.o src/Z80/simfun.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
-	
-${OBJECTDIR}/src/Z80/simglb.o: src/Z80/simglb.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/src/Z80" 
-	@${RM} ${OBJECTDIR}/src/Z80/simglb.o.d 
-	@${RM} ${OBJECTDIR}/src/Z80/simglb.o 
-	@${FIXDEPS} "${OBJECTDIR}/src/Z80/simglb.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -funroll-loops -D_SUPPRESS_PLIB_WARNING -MMD -MF "${OBJECTDIR}/src/Z80/simglb.o.d" -o ${OBJECTDIR}/src/Z80/simglb.o src/Z80/simglb.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
 ${OBJECTDIR}/src/disp.o: src/disp.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/src" 
@@ -442,6 +304,24 @@ ${OBJECTDIR}/src/xonix.o: src/xonix.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/src/xonix.o.d 
 	@${RM} ${OBJECTDIR}/src/xonix.o 
 	@${FIXDEPS} "${OBJECTDIR}/src/xonix.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -funroll-loops -D_SUPPRESS_PLIB_WARNING -MMD -MF "${OBJECTDIR}/src/xonix.o.d" -o ${OBJECTDIR}/src/xonix.o src/xonix.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	
+${OBJECTDIR}/src/atari/6502.o: src/atari/6502.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/src/atari" 
+	@${RM} ${OBJECTDIR}/src/atari/6502.o.d 
+	@${RM} ${OBJECTDIR}/src/atari/6502.o 
+	@${FIXDEPS} "${OBJECTDIR}/src/atari/6502.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -funroll-loops -D_SUPPRESS_PLIB_WARNING -MMD -MF "${OBJECTDIR}/src/atari/6502.o.d" -o ${OBJECTDIR}/src/atari/6502.o src/atari/6502.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	
+${OBJECTDIR}/src/atari/mem.o: src/atari/mem.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/src/atari" 
+	@${RM} ${OBJECTDIR}/src/atari/mem.o.d 
+	@${RM} ${OBJECTDIR}/src/atari/mem.o 
+	@${FIXDEPS} "${OBJECTDIR}/src/atari/mem.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -funroll-loops -D_SUPPRESS_PLIB_WARNING -MMD -MF "${OBJECTDIR}/src/atari/mem.o.d" -o ${OBJECTDIR}/src/atari/mem.o src/atari/mem.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	
+${OBJECTDIR}/src/atari/tia.o: src/atari/tia.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/src/atari" 
+	@${RM} ${OBJECTDIR}/src/atari/tia.o.d 
+	@${RM} ${OBJECTDIR}/src/atari/tia.o 
+	@${FIXDEPS} "${OBJECTDIR}/src/atari/tia.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -funroll-loops -D_SUPPRESS_PLIB_WARNING -MMD -MF "${OBJECTDIR}/src/atari/tia.o.d" -o ${OBJECTDIR}/src/atari/tia.o src/atari/tia.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
 endif
 

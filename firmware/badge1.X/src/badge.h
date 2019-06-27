@@ -10,7 +10,10 @@
 #include "snake.h"
 #include "user_program.h"
 #include "vt100.h"
+
+#if ENABLE_Z80
 #include "Z80/hwz.h"
+#endif
 #include "hw.h"
 #include "disp.h"
 #include "xonix.h"

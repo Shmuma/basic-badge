@@ -8,25 +8,34 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <stdint.h>
+
+#if ENABLE_Z80
 #include "Z80/sim.h"
 #include "Z80/simglb.h"
 
+void init_z80_cpm (void);
+void loop_z80_cpm (void);
+#endif
 
 
+#if ENABLE_BASIC
 uint16_t basic_loads (int8_t * data, uint16_t maxlen);
 uint16_t basic_saves (int8_t * data, uint16_t maxlen);
-void init_z80_cpm (void);
+
 void init_basic (void);
-void init_userprog(void);
-void loop_z80_cpm (void);
 void loop_basic (void);
-void loop_userprog(void);
-void boot_animation(void);
+
 void init_8080_basic (void);
 void loop_8080_basic (void);
-uint8_t cmd_exec (int8_t * cmd);
+
 uint8_t basic_save_program (uint8_t * data, uint8_t slot);
 uint8_t basic_load_program (uint8_t * data, uint8_t slot);
+#endif
+
+void init_userprog(void);
+void loop_userprog(void);
+void boot_animation(void);
+uint8_t cmd_exec (int8_t * cmd);
 uint16_t get_free_mem(uint8_t * prog, uint16_t max_mem);
 uint8_t add_prog_line (int8_t * line, int8_t * prog, int16_t linenum);
 void list_more (void);
@@ -74,6 +83,7 @@ uint8_t playriff(unsigned char);
 /************* Function Prototypes ***************/
 /*** End Function Prototypes **********************88*/
 
+#if ENABLE_BASIC
 int8_t bprog[BPROG_LEN+1];
 int8_t bprog_init[700] =
 "10 c = 1 + rnd 4\n\
@@ -100,9 +110,11 @@ int8_t bprog_init[700] =
 220 println \" \"\n\
 230 println \"Find documentation: hac.io/Mz3r \" \n";
 
+int8_t tprog[100],stdio_buff[50];
+#endif
 
 //a lot of magic numbers here, should be done properly
-int8_t tprog[100],stdio_buff[50],key_buffer[10],char_out, stdio_local_buff[STDIO_LOCAL_BUFF_SIZE];
+int8_t key_buffer[10],char_out, stdio_local_buff[STDIO_LOCAL_BUFF_SIZE];
 
 uint8_t get_stat,key_buffer_ptr =0,cmd_line_buff[80], cmd_line_pointer,cmd_line_key_stat_old,prompt;
 uint8_t stdio_local_len=0;
@@ -115,11 +127,12 @@ volatile int8_t brk_key,stdio_src;
 extern volatile uint16_t bufsize;
 volatile uint32_t ticks;			// millisecond timer incremented in ISR
 
+#if ENABLE_Z80
 extern const uint8_t ram_image[65536];
 //extern const uint8_t b2_rom[2048];
 extern const uint8_t ram_init [30];
 extern uint8_t ram_disk[RAMDISK_SIZE];
-
+#endif
 
 int8_t disp_buffer[DISP_BUFFER_HIGH+1][DISP_BUFFER_WIDE];
 int8_t color_buffer[DISP_BUFFER_HIGH+1][DISP_BUFFER_WIDE];
@@ -241,7 +254,9 @@ void badge_init (void)
 	stdio_src = STDIO_LOCAL;
 //	stdio_src = STDIO_TTY1;
 	term_init();
+#if ENABLE_BASIC    
 	strcpy(bprog,bprog_init);
+#endif
 	set_cursor_state(1);
 	}
 
@@ -320,18 +335,23 @@ void badge_menu(void)
 					menu_pointer = 0;
 					continue;
 					}
-				if (strcmp(menu_buff,"1")==0)
+                if (0) {}
+#if ENABLE_BASIC                
+				else if (strcmp(menu_buff,"1")==0)
 					{
 					video_clrscr();
 					init_basic();
 					while (1) loop_basic();
 					}
+#endif                
+#if ENABLE_Z80                
 				else if (strcmp(menu_buff,"2")==0)
 					{
 					video_clrscr();
 					init_z80_cpm();
 					while (1) loop_z80_cpm();
 					}			
+#endif                
 				else if (strcmp(menu_buff,"3")==0)
 					{
 					/* init_8080_basic(); */
@@ -533,11 +553,15 @@ void showmenu(void)
 	video_gotoxy(TEXT_LEFT,5);
 	video_set_color(MENU_HEADER_FG,MENU_HEADER_BG);
 	stdio_write("Type a command and hit ENTER");
-	video_gotoxy(TEXT_LEFT,6);
 	video_set_color(MENU_ENTRY_FG,MENU_ENTRY_BG);
+#if ENABLE_BASIC
+    video_gotoxy(TEXT_LEFT,6);
 	stdio_write("1 - Hackaday BASIC");
+#endif
+#if ENABLE_Z80
 	video_gotoxy(TEXT_LEFT,7);
 	stdio_write("2 - CP/M @ Z80");
+#endif
 	video_gotoxy(TEXT_LEFT,8);
        	stdio_write("3 - Play snake");
 	video_gotoxy(TEXT_LEFT,9);
@@ -699,7 +723,7 @@ uint32_t millis(void)
 	return ticks;
 	}
 
-#if 0
+#if ENABLE_BASIC
 void init_8080_basic (void)
 	{
 	video_set_color(15,0);
@@ -716,6 +740,7 @@ void loop_8080_basic (void)
 	}
 #endif
 
+#if ENABLE_Z80
 void init_z80_cpm (void)
 	{
 	video_set_color(15,0);
@@ -734,7 +759,9 @@ void loop_z80_cpm (void)
 	cpu_error = NONE;
 	cpu();	
 	}
+#endif
 
+#if ENABLE_BASIC
 //B_BAS005
 void init_basic (void)
 	{
@@ -777,6 +804,7 @@ void loop_basic (void)
 			}
 	    }	
 	}
+#endif
 
 //B_BDG007
 void init_userprog (void)
@@ -806,6 +834,7 @@ const char* get_firmware_string(void) {
 	return FIRMWARE_VERSION;
 	}
 
+#if ENABLE_BASIC
 uint16_t get_free_mem(uint8_t * prog, uint16_t max_mem)
 	{
 	uint16_t prog_len;
@@ -1062,6 +1091,7 @@ void list_more (void)
 		stdio_c(bprog[list_cnt++]);
 		}	
 	}
+#endif 
 
 //B_BDG003
 

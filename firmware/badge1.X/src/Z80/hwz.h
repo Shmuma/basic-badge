@@ -19,8 +19,6 @@
 #define	CPM1_DISK2_OFFSET	2*4096
 #define	CPM1_DISK3_OFFSET	3*4096
 
-//#define	USE_EEPROM
-
 uint8_t rx_sta (void);
 uint8_t rx_read (void);
 void tx_write (uint8_t data);
@@ -48,19 +46,6 @@ void init_termint (void);
 
 
 uint8_t init_first_x_sects (uint8_t i, uint8_t verify);
-
-void fl_write(uint32_t  addr,uint8_t data);
-void fl_erase_4k(uint32_t  addr);
-void fl_read_4k(uint32_t  addr, uint8_t * data);
-void fl_rst_pb(void);
-void fl_wren(void);
-void fl_write_4k(uint32_t  addr, uint8_t * data);
-void fl_read_nk(uint32_t  addr, uint8_t * data, uint16_t n);
-void fl_read_128(uint32_t sector,uint8_t * data);
-void fl_write_128(uint32_t sector,uint8_t * data);
-
-void read_sector (unsigned char *data, unsigned int addr);
-void write_sector (unsigned char *data, unsigned int addr);
 
 #define		IO_CPM_MODE		0
 #define		IO_BASIC_MODE	1
