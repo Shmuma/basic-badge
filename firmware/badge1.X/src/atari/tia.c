@@ -14,7 +14,7 @@ void poke_tia(uint16_t addr, uint8_t val) {
     do_wsync();
   }
   else if (addr >= COLUP0 && addr <= COLUBK) {
-    tia.colu[addr - COLUP0] = val;
+    tia.colu[addr - COLUP0] = val & ~1;
   }
 }
 
@@ -40,7 +40,8 @@ void draw_pixels(uint8_t count) {
     }
     if (++tia.color_clock >= CLK_HOR) {
       tia.color_clock = 0;
-      tia_line_ready();
+      if (tia.scanline >= SCN_VIS_START && tia.scanline < SCN_VIS_END)
+        tia_line_ready(tia.scanline - SCN_VIS_START);
       if (++tia.scanline >= SCN_VERT) {
     	tia.scanline = 0;
       }
@@ -50,15 +51,13 @@ void draw_pixels(uint8_t count) {
 
 
 #ifdef ATARI_POSIX
-void line_ready() {
-  uint8_t r, c;
+void tia_line_ready(uint8_t line) {
+    uint8_t c;
   
-  printf("Frame ready!\n");
-  for (r = 0; r < FB_HEIGHT; r++) {
+    printf("SC%03d: ", line);
     for (c = 0; c < FB_WIDTH; c++) {
-      printf("%02x ", tia.fb[r][c]);
+      printf("%02x ", tia.fb[c]);
     }
     printf("\n");
-  }
 }
 #endif

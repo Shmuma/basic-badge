@@ -4,7 +4,7 @@
 #include "atari.h"
 
 //#define ROM_FILE "pong.bin"
-#define ROM_FILE "kernel_01.bin"
+#define ROM_FILE "../roms/kernel_01.bin"
 
 extern struct register_file reg;
 
@@ -34,7 +34,6 @@ int main() {
   uint16_t rc;
   uint32_t step = 0;
 
-  init_mem();
   init_tia();
   if (!read_rom(ROM_FILE)) {
     printf("Error reading rom %s\n", ROM_FILE);

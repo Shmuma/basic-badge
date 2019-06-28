@@ -8,5 +8,5 @@ void poke(uint16_t, uint8_t);
 int read_rom(const char* file_name);
 #endif
 
-void set_rom(uint8_t* data, uint16_t size);
+void set_rom(const uint8_t* data, uint16_t size);
 #endif

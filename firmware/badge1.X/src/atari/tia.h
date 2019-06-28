@@ -39,6 +39,6 @@ uint8_t peek_tia(uint16_t);
 
 void do_wsync();			// draw the next of the line
 void draw_pixels(uint8_t count);	// draw given amount of pixels
-void tia_line_ready();
+void tia_line_ready(uint8_t line);
 
 #endif

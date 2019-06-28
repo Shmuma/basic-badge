@@ -10,6 +10,7 @@
         <itemPath>src/atari/mem.h</itemPath>
         <itemPath>src/atari/tia.h</itemPath>
         <itemPath>src/atari/atari_badge.h</itemPath>
+        <itemPath>src/atari/palette.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f2" displayName="basic" projectFiles="true">
         <itemPath>src/basic/tokenizer.h</itemPath>
@@ -51,6 +52,7 @@
         <itemPath>src/atari/mem.c</itemPath>
         <itemPath>src/atari/tia.c</itemPath>
         <itemPath>src/atari/atari_badge.c</itemPath>
+        <itemPath>src/atari/palette.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f2" displayName="basic" projectFiles="true">
         <itemPath>src/basic/tokenizer.c</itemPath>

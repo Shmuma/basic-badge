@@ -8,6 +8,12 @@
 #include <unistd.h>
 #include <sys/types.h>
 
+#ifdef ATARI_POSIX
+#include <stdio.h>
+
+#define TRACE_MEM
+#endif
+
 #define false (0)
 #define true (1)
 
@@ -17,5 +23,6 @@
 #include "6502.h"
 #include "mem.h"
 #include "tia.h"
+#include "palette.h"
 
 #endif
