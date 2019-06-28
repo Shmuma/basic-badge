@@ -31,7 +31,7 @@ registers()
 
 
 int main() {
-  uint16_t rc;
+  int16_t rc;
   uint32_t step = 0;
 
   init_tia();
@@ -48,7 +48,7 @@ int main() {
     rc = mpu();
     registers();
     printf("%d: rc = %d\n", step++, rc);
-    if (rc != 0)
+    if (rc > 0)
       break;
   }
 

@@ -75,6 +75,6 @@ void _NMI(void);
 /*
  * Simulate
  */
-uint16_t mpu(void);
+int16_t mpu(void);
 
 #endif

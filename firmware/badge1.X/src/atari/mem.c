@@ -34,7 +34,7 @@ peek(uint16_t address)
   address -= ROM_ADDR;
   if (address < rom_size) {
 #ifdef TRACE_MEM
-    printf("peek rom: %x -> %x\n", address + ROM_ADDR, memory[address]);
+    printf("peek rom: %x -> %x\n", address + ROM_ADDR, ROM_NAME[address]);
 #endif
     return ROM_NAME[address];
   }

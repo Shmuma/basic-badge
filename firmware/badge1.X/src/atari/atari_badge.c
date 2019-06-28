@@ -24,13 +24,13 @@ void tia_line_ready(uint8_t line) {
 
 // main function of atari menu 
 void atari_menu() {
-    uint16_t rc;
+    int16_t rc;
     
     atari_init();
     
     while (1) {
         rc = mpu();
-        if (rc != 0)
+        if (rc > 0)
             atari_init();
     }
 }
