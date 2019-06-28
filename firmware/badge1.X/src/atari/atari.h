@@ -12,6 +12,13 @@
 #include <stdio.h>
 
 #define TRACE_MEM
+
+#define ROM_NAME rom
+#define ROM_SIZE 0
+#else
+extern const uint8_t kernel_01_rom[];
+#define ROM_NAME kernel_01_rom
+#define ROM_SIZE 4096
 #endif
 
 #define false (0)

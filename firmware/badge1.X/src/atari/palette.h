@@ -1,7 +1,7 @@
 #ifndef PALETTE_H
 #define	PALETTE_H
 
-extern uint32_t* ntsc;
+extern const uint32_t ntsc[];
 
 #define COLOR_NTSC(v) (ntsc[(v)>>1])
 

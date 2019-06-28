@@ -1,8 +1,12 @@
 #include "atari.h"
 
 uint8_t memory[128];
+
+#ifdef ATARI_POSIX
 const uint8_t *rom = NULL;
-long rom_size = 0;
+#endif
+
+long rom_size = ROM_SIZE;
 
 #define RAM_ADDR (0x0080)
 #define RAM_ENDS (0x00FF)
@@ -32,7 +36,7 @@ peek(uint16_t address)
 #ifdef TRACE_MEM
     printf("peek rom: %x -> %x\n", address + ROM_ADDR, memory[address]);
 #endif
-    return rom[address];
+    return ROM_NAME[address];
   }
 
   return 0xFF;
@@ -95,9 +99,3 @@ int read_rom(const char* file_name) {
   return 1;
 }
 #endif
-
-
-void set_rom(const uint8_t* data, uint16_t size) {
-    rom = data;
-    rom_size = size;
-}
