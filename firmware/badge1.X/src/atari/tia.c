@@ -1,32 +1,50 @@
 #include "atari.h"
+#include "tia.h"
 
 struct tia_state tia = {0};
 
 
 void init_tia() {
-  // not much here for now
+    // not much here for now
+}
+
+
+// start or stop vsync. In our case, we ignore start/stop bit and always zero 
+// current scanline
+INLINE void do_vsync(uint8_t start) {
+#ifdef TRACE_TIA
+    printf("TIA: VSYNC: %d\n", start);
+#endif
+    tia.scanline = 0;
+}
+
+
+INLINE void do_wsync() {
+#ifdef TRACE_TIA
+    printf("TIA: WSYNC: draw %d pixels\n", CLK_HOR - tia.color_clock);
+#endif
+
+    // draw to the rest of scanline
+    draw_pixels(CLK_HOR - tia.color_clock);
 }
 
 
 void poke_tia(uint16_t addr, uint8_t val) {
-  if (addr == WSYNC) {
-    // Q: should we check for color_clock overflow?
-    do_wsync();
-  }
-  else if (addr >= COLUP0 && addr <= COLUBK) {
-    tia.colu[addr - COLUP0] = val & ~1;
-  }
+    if (addr == VSYNC) {
+        do_vsync(val != 0);
+    }
+    else if (addr == WSYNC) {
+        // Q: should we check for color_clock overflow?
+        do_wsync();
+    }
+    else if (addr >= COLUP0 && addr <= COLUBK) {
+        tia.colu[addr - COLUP0] = val & ~1;
+    }
 }
 
 
 uint8_t peek_tia(uint16_t addr) {
   return 0xFF;
-}
-
-
-void do_wsync() {
-  // draw to the rest of scanline
-  draw_pixels(CLK_HOR - tia.color_clock);
 }
 
 

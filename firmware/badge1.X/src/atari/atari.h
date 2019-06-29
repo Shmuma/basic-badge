@@ -12,10 +12,14 @@
 #include <stdio.h>
 
 #define TRACE_MEM
+#define TRACE_TIA
+#define INLINE
 
 #define ROM_NAME rom
 #define ROM_SIZE 0
 #else
+#define INLINE inline
+
 extern const uint8_t kernel_01_rom[];
 #define ROM_NAME kernel_01_rom
 #define ROM_SIZE 4096
