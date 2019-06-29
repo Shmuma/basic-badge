@@ -82,6 +82,10 @@ poke(uint16_t address, uint8_t value)
 	*/
 }
 
+// read reset vector from memory
+uint16_t reset_vector() {
+    return peek(0xFFFA) | (peek(0xFFFB) << 8);
+}
 
 #ifdef ATARI_POSIX
 int read_rom(const char* file_name) {

@@ -40,8 +40,8 @@ int main() {
     return -1;
   }
   printf("Rom loaded\n");
-  // TODO: implement handling of reset vector
-  reg.PC = 0xF000;
+  reg.PC = reset_vector();
+  printf("Reset vector: %04X\n", reg.PC);
 
   while (1) {
     registers();
