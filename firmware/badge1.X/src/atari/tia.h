@@ -35,6 +35,7 @@ struct tia_state {
 
 
 void init_tia();
+void tia_mpu_cycles(uint8_t cycles);
 void poke_tia(uint16_t, uint8_t);
 uint8_t peek_tia(uint16_t);
 

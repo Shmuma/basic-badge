@@ -28,6 +28,10 @@ INLINE void do_wsync() {
     draw_pixels(CLK_HOR - tia.color_clock);
 }
 
+// need to be called after execution of MPU opcode with amount of CPU cycles
+void tia_mpu_cycles(uint8_t cycles) {
+    draw_pixels(cycles*3);
+}
 
 void poke_tia(uint16_t addr, uint8_t val) {
     if (addr == VSYNC) {

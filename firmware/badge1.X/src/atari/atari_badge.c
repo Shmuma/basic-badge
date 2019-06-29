@@ -32,6 +32,9 @@ void atari_menu() {
         rc = mpu();
         if (rc > 0)
             atari_init();
+        else
+            tia_mpu_cycles(-rc);
+        
     }
 }
 
