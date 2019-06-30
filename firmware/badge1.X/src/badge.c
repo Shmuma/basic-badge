@@ -368,7 +368,6 @@ void badge_menu(void)
 				}
 #if ENABLE_ATARI
                 else if (strcmp(menu_buff, "8") == 0) {
-//                    enable_display_scanning(0);
                     atari_menu();
                 }
 #endif               
@@ -395,7 +394,7 @@ void badge_menu(void)
 						}
 					}
 
-				
+				showmenu();
 				clear_prompt();
 				menu_pointer = 0;
 				menu_buff[menu_pointer] = 0;

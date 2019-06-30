@@ -2,18 +2,28 @@
 #include "atari_badge.h"
 #include "../disp.h"
 #include "../menu.h"
+#include <stdio.h>
 
 extern struct register_file reg;
 extern struct tia_state tia;
 
+void atari_start();
+void atari_init();
+
+#define MENU_BROWSE_FLASH       1
+#define MENU_RECEIVE_FLASH      2
+#define MENU_RUN_BUILTIN        3
+
+
 struct menu_t root_menu = {
     .title = "Atari emulator",
-    .items_count = 3,
-    .items = (struct menu_item_t[3]){
-        {.id = 1, .title = "Browse flash"},
-        {.id = 2, .title = "Receive flash"},
-        {.id = 3, .title = "Some complex item", .children_count = 3, 
-            .children = (struct menu_item_t[3]){
+    .items_count = 4,
+    .items = (struct menu_t[4]){
+        {.id = MENU_BROWSE_FLASH,   .title = "Browse flash"},
+        {.id = MENU_RECEIVE_FLASH,  .title = "Receive flash"},
+        {.id = MENU_RUN_BUILTIN,    .title = "Run built-in ROM"},
+        {.title = "Some complex item", .items_count = 3, 
+            .items = (struct menu_t[3]){
                 {.id = 31, .title = "Item 1"},
                 {.id = 32, .title = "Item 2"},
                 {.id = 33, .title = "Item 3"},
@@ -38,7 +48,27 @@ void tia_line_ready(uint8_t line) {
 }
 
 void atari_menu() {
-    menu_run(&root_menu);
+    uint16_t res_id;
+    static char buf[10];
+    
+    while (1) {
+        res_id = menu_run(&root_menu);
+        if (!res_id)
+            return;
+
+        if (res_id == MENU_RUN_BUILTIN) {
+            enable_display_scanning(0);
+            atari_start();
+            enable_display_scanning(1);
+        }
+        else {
+            video_clrscr();
+            video_gotoxy(0, 0);
+            snprintf(buf, sizeof(buf), "Id: %d", res_id);
+            stdio_write(buf);
+            wait_ms(10000);
+        }
+    }
 }
 
 // start atari emulator
@@ -47,13 +77,12 @@ void atari_start() {
     
     atari_init();
     
-    while (1) {
+    while (!brk_key) {
         rc = mpu();
         if (rc > 0)
             atari_init();
         else
             tia_mpu_cycles(-rc);
-        
     }
 }
 

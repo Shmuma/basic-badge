@@ -4,20 +4,14 @@
 #include <stdint.h>
 #include "disp.h"
 
-struct menu_item_t {
+struct menu_t {
     uint16_t id;
     const char* title;
-    const uint8_t children_count;
-    const struct menu_item_t* children;
-};
-
-struct menu_t {
-    const char* title;
     const uint8_t items_count;
-    const struct menu_item_t* items;
+    const struct menu_t* items;
 };
 
-void menu_run(struct menu_t* menu);
+uint16_t menu_run(const struct menu_t* menu);
 
 #define MENU_FRAME_FG	EGA_BRED
 #define MENU_FRAME_BG	EGA_BLACK

@@ -6,20 +6,19 @@ const char* header_text = "Use arrows+ENTER or press number";
 void menu_draw_frame();
 void menu_draw_title(const char* text);
 void menu_draw_header();
-void menu_draw_menu(uint8_t active, uint8_t items_count, 
-        const struct menu_item_t* items);
-void menu_draw_item(uint8_t ofs, uint8_t is_active, 
-        const struct menu_item_t* item);
+void menu_draw_menu(uint8_t active, const struct menu_t* items);
+void menu_draw_item(uint8_t ofs, uint8_t is_active, const struct menu_t* item);
+const struct menu_t* menu_parent_items(const struct menu_t* menu, 
+        const struct menu_t* ref_item);
 
-struct menu_item_t parent_item = {
+struct menu_t parent_item = {
     .id = 0,
     .title = ".."
 };
 
 
-void menu_run(struct menu_t* menu) {
-    const struct menu_item_t* level_items = menu->items;
-    uint8_t level_count = menu->items_count;
+uint16_t menu_run(const struct menu_t* menu) {
+    const struct menu_t* cur_menu = menu;
     uint8_t active = 0;
     int8_t char_out, selected_item;
     
@@ -28,7 +27,7 @@ void menu_run(struct menu_t* menu) {
     menu_draw_frame();
     menu_draw_title(menu->title);
     menu_draw_header();
-    menu_draw_menu(active, level_count, level_items);
+    menu_draw_menu(active, cur_menu);
     
     // draw menu items
     // handle keys pressed
@@ -44,24 +43,42 @@ void menu_run(struct menu_t* menu) {
             selected_item = -1;
             if (char_out == K_UP && active > 0) {
                 active--;
-                menu_draw_menu(active, level_count, level_items);
+                menu_draw_menu(active, cur_menu);
             }
             else if (char_out == K_DN && active < menu->items_count) {
                 active++;
-                menu_draw_menu(active, level_count, level_items);
+                menu_draw_menu(active, cur_menu);
             }
             else if (char_out == K_ENT)
                 selected_item = active;
-            else if (char_out >= '0' && char_out <= '0'+level_count) {
+            else if (char_out >= '0' && char_out <= '0'+cur_menu->items_count) {
                 selected_item = char_out - '0';
+                // draw the element selected
+                menu_draw_menu(selected_item, cur_menu);
             }
             
+            // handle selected
             if (selected_item >= 0) {
-                // handle selected
+                // look for parent of current item
+                if (!selected_item) {
+                    cur_menu = menu_parent_items(menu, cur_menu);
+                    // we're at the top level and go up -- just exit with zero status
+                    if (!cur_menu)
+                        return 0;
+                }
+                else {
+                    cur_menu = menu->items + selected_item - 1;
+                    // selected item is final, return the id
+                    if (!cur_menu->items_count)
+                        return cur_menu->id;                    
+                }
+                active = 0;
+                menu_draw_menu(active, cur_menu);                
             }
         }
     };
     set_cursor_state(1);
+    return 0;
 }
 
 
@@ -111,19 +128,17 @@ void menu_draw_header() {
 }
 
 
-void menu_draw_menu(uint8_t active, uint8_t items_count, 
-        const struct menu_item_t* items)
+void menu_draw_menu(uint8_t active, const struct menu_t* menu)
 {
     uint8_t i;
-    
     menu_draw_item(0, active == 0, &parent_item);
-    for (i = 1; i <= items_count; i++) {
-        menu_draw_item(i, active == i, items + i - 1);
+    for (i = 1; i <= menu->items_count; i++) {
+        menu_draw_item(i, active == i, menu->items + i - 1);
     }
 }
 
 void menu_draw_item(uint8_t ofs, uint8_t is_active, 
-        const struct menu_item_t* item)
+        const struct menu_t* item)
 {
     if (is_active)
         video_set_color(MENU_ACTIVE_FG, MENU_ACTIVE_BG);
@@ -136,4 +151,26 @@ void menu_draw_item(uint8_t ofs, uint8_t is_active,
     stdio_write(": ");
     stdio_write(item->title);
     stdio_c_n(' ', MENU_WIDTH - 4 - strlen(item->title));
+}
+
+
+// find the parent, containing of the given menu item. 
+// If no item found, NULL is returned. 
+const struct menu_t* menu_parent_items(const struct menu_t* menu, 
+        const struct menu_t* ref_item)
+{
+    const struct menu_t* res;
+    uint8_t i;
+    
+    for (i = 0; i < menu->items_count; i++) {
+        if (menu->items + i == ref_item)
+            return menu;
+        if (menu->items[i].items_count) {
+            res = menu_parent_items(menu->items + i, ref_item);
+            if (res)
+                return res;
+        }
+    }
+    
+    return NULL;
 }
