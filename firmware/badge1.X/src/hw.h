@@ -145,6 +145,7 @@ int8_t term_k_char (int8_t * out);
 void init_io(uint8_t mode);
 uint8_t stdio_write (const int8_t * data);
 uint8_t stdio_c (uint8_t data);
+uint8_t stdio_c_n (uint8_t data, uint8_t count);
 uint8_t stdio_in (uint8_t block);
 int8_t stdio_get_state (void);
 int8_t stdio_get (int8_t * dat);

@@ -1,11 +1,26 @@
 #include "atari.h"
 #include "atari_badge.h"
 #include "../disp.h"
+#include "../menu.h"
 
 extern struct register_file reg;
 extern struct tia_state tia;
 
-void atari_init();
+struct menu_t root_menu = {
+    .title = "Atari emulator",
+    .items_count = 3,
+    .items = (struct menu_item_t[3]){
+        {.id = 1, .title = "Browse flash"},
+        {.id = 2, .title = "Receive flash"},
+        {.id = 3, .title = "Some complex item", .children_count = 3, 
+            .children = (struct menu_item_t[3]){
+                {.id = 31, .title = "Item 1"},
+                {.id = 32, .title = "Item 2"},
+                {.id = 33, .title = "Item 3"},
+            }
+        },
+    },
+};
 
 
 void tia_line_ready(uint8_t line) {
@@ -22,8 +37,12 @@ void tia_line_ready(uint8_t line) {
     }
 }
 
-// main function of atari menu 
 void atari_menu() {
+    menu_run(&root_menu);
+}
+
+// start atari emulator
+void atari_start() {
     int16_t rc;
     
     atari_init();

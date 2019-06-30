@@ -36,6 +36,7 @@
       <itemPath>src/snake.h</itemPath>
       <itemPath>src/log.h</itemPath>
       <itemPath>src/log.c</itemPath>
+      <itemPath>src/menu.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -86,6 +87,7 @@
       <itemPath>src/user_program.c</itemPath>
       <itemPath>src/badge.c</itemPath>
       <itemPath>src/xonix.c</itemPath>
+      <itemPath>src/menu.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

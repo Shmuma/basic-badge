@@ -950,6 +950,12 @@ uint8_t stdio_c (uint8_t data)
 		tx_write(data);
 	}
 
+
+uint8_t stdio_c_n (uint8_t data, uint8_t count) {
+    while (count-- > 0)
+        stdio_c(data);
+}
+
 //check, whether is there something to read from standard input
 //zero is returned when empty, nonzero when character is available
 int8_t stdio_get_state (void)
@@ -1053,10 +1059,9 @@ int8_t term_k_char (int8_t * out)
 	}
 
 
-uint32_t millis(void)
-	{
+uint32_t millis(void) {
 	return ticks;
-	}
+}
 
 
 //B_BDG003
