@@ -29,25 +29,22 @@ uint16_t menu_run(const struct menu_t* menu) {
     menu_draw_header();
     menu_draw_menu(active, cur_menu, 0);
     
-    // draw menu items
-    // handle keys pressed
-    // update the items
-    
-//	video_set_color(0, 12);
-//    video_gotoxy(1,1); 
-//    stdio_write(menu->title);
     while (1) {
         if (brk_key)
             break;
         if (stdio_get(&char_out) != 0) {
             selected_item = -1;
             if (char_out == K_UP && active > 0) {
+                menu_draw_item(active, 0, cur_menu->items + active - 1);
                 active--;
-                menu_draw_menu(active, cur_menu, 0);
+                menu_draw_item(active, 1, 
+                        active > 0 ? cur_menu->items + active - 1 : &parent_item);
             }
-            else if (char_out == K_DN && active < menu->items_count) {
+            else if (char_out == K_DN && active < cur_menu->items_count) {
+                menu_draw_item(active, 0, 
+                        active > 0 ? cur_menu->items + active - 1 : &parent_item);
                 active++;
-                menu_draw_menu(active, cur_menu, 0);
+                menu_draw_item(active, 1, cur_menu->items + active - 1);
             }
             else if (char_out == K_ENT)
                 selected_item = active;
@@ -68,7 +65,7 @@ uint16_t menu_run(const struct menu_t* menu) {
                         return 0;
                 }
                 else {
-                    cur_menu = menu->items + selected_item - 1;
+                    cur_menu = cur_menu->items + selected_item - 1;
                     // selected item is final, return the id
                     if (!cur_menu->items_count)
                         return cur_menu->id;                    

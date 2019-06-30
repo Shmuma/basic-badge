@@ -85,6 +85,7 @@ void atari_start() {
         else
             tia_mpu_cycles(-rc);
     }
+    brk_key = 0;
 }
 
 
