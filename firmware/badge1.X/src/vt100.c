@@ -39,8 +39,8 @@ static uint8_t revvideo;
 
 uint8_t cur_type,cur_blink;
 
-extern int8_t disp_buffer[DISP_BUFFER_HIGH+1][DISP_BUFFER_WIDE];
-extern int8_t color_buffer[DISP_BUFFER_HIGH+1][DISP_BUFFER_WIDE];
+int8_t disp_buffer[DISP_BUFFER_HIGH+1][DISP_BUFFER_WIDE];
+int8_t color_buffer[DISP_BUFFER_HIGH+1][DISP_BUFFER_WIDE];
 volatile uint8_t buf[MAX_BUF];
 
 void video_set_color(uint8_t fg, uint8_t bg)

@@ -3,6 +3,7 @@
 #include "Z80/hwz.h"
 #include <plib.h>
 #include <stdint.h>
+#include <string.h>
 
 // DEVCFG3
 // USERID = No Setting
@@ -873,3 +874,263 @@ void ee_wrdi (void)
 }
 
 #endif
+
+
+// Input-output
+#define STDIO_LOCAL_BUFF_SIZE	25
+uint8_t iosim_mode;
+int8_t key_buffer[10], stdio_local_buff[STDIO_LOCAL_BUFF_SIZE];
+uint8_t key_buffer_ptr = 0;
+uint8_t stdio_local_len=0;
+
+volatile int8_t stdio_src;
+volatile uint32_t ticks;			// millisecond timer incremented in ISR
+volatile uint8_t handle_display = 1;
+volatile int8_t brk_key;
+extern volatile uint16_t bufsize;
+
+/*
+ *	This function is to initiate the I/O devices.
+ *	It will be called from the CPU simulation before
+ *	any operation with the Z80 is possible.
+ *
+ *	In this sample I/O simulation we initialize all
+ *	unused port with an error trap handler, so that
+ *	simulation stops at I/O on the unused ports.
+ */
+void init_io(uint8_t mode)
+{
+iosim_mode = mode;
+}
+
+/*
+ *	This function is to stop the I/O devices. It is
+ *	called from the CPU simulation on exit.
+ *
+ */
+void exit_io()
+{
+}
+
+
+//B_BDG003
+
+//write null-terminated string to standard output
+uint8_t stdio_write (const int8_t * data)
+	{
+	if (stdio_src==STDIO_LOCAL)
+		{
+		while (*data!=0x00)
+			{
+			buf_enqueue (*data++);
+			while (bufsize)
+				receive_char(buf_dequeue());	
+			}
+		}
+	else if (stdio_src==STDIO_TTY1)
+		{
+		while (*data!=0x00)
+		tx_write(*data++);
+		}
+	}
+
+//write one character to standard output
+uint8_t stdio_c (uint8_t data)
+	{
+	int8_t tmp[3];
+	if (stdio_src==STDIO_LOCAL)
+		{
+		tmp[0] = data;
+		tmp[1] = 0;
+		buf_enqueue (data);
+		while (bufsize)
+			receive_char(buf_dequeue());
+		}
+	else if (stdio_src==STDIO_TTY1)
+		tx_write(data);
+	}
+
+//check, whether is there something to read from standard input
+//zero is returned when empty, nonzero when character is available
+int8_t stdio_get_state (void)
+	{
+	if (stdio_local_buffer_state()!=0)
+		return 1;
+	if (stdio_src==STDIO_LOCAL)
+		return term_k_stat();
+	else if (stdio_src==STDIO_TTY1)
+		return rx_sta();
+	}
+//get character from stdio
+//zero when there is nothing to read
+int8_t stdio_get (int8_t * dat)
+	{
+	if (stdio_local_buffer_state()!=0)
+		{
+		*dat = stdio_local_buffer_get();
+		return 1;
+		}
+	if (stdio_src==STDIO_LOCAL)
+		{
+		return term_k_char(dat);
+		}
+	else if (stdio_src==STDIO_TTY1)
+		{
+		if (rx_sta()!=0)
+			{
+			*dat=rx_read();
+			return 1;
+			}
+		else
+			return 0;
+		}
+	return 0;
+	}
+
+
+uint8_t stdio_local_buffer_state (void)
+	{
+	if (stdio_local_len>0) return 1;
+	else return 0;
+	}
+
+int8_t stdio_local_buffer_get (void)
+	{
+	int8_t retval=0, i;
+	if (stdio_local_len>0)
+		{
+		retval = stdio_local_buff[0];
+		for (i=1;i<STDIO_LOCAL_BUFF_SIZE;i++) stdio_local_buff[i-1] = stdio_local_buff[i];
+		stdio_local_buff[STDIO_LOCAL_BUFF_SIZE-1]=0;
+		stdio_local_len--;
+		}
+	return retval;
+	}
+
+void stdio_local_buffer_put (int8_t data)
+	{
+	if (stdio_local_len<(STDIO_LOCAL_BUFF_SIZE-1))
+		stdio_local_buff[stdio_local_len++] = data;
+	}
+
+void stdio_local_buffer_puts (int8_t * data)
+	{
+	while (*data!=0) stdio_local_buffer_put(*data++);
+	}
+
+void enable_display_scanning(uint8_t onoff)
+	{
+	//Turns vt100 scanning on or off
+	if (onoff) handle_display = 1;
+	else handle_display = 0;
+	}
+
+
+int8_t term_k_stat (void)
+	{
+	uint8_t key_len;
+	IEC0bits.T2IE = 0;
+	key_len = key_buffer_ptr;
+	IEC0bits.T2IE = 1;
+	if (key_len == 0)
+		return 0;
+	else 
+		return 1;
+	}
+
+int8_t term_k_char (int8_t * out)
+	{
+	uint8_t retval;
+	IEC0bits.T2IE = 0;
+	retval = key_buffer_ptr;
+	if (key_buffer_ptr>0)
+		{
+		strncpy(out,key_buffer,key_buffer_ptr);
+		key_buffer_ptr = 0;
+		}
+	IEC0bits.T2IE = 1;
+	return retval;
+	}
+
+
+uint32_t millis(void)
+	{
+	return ticks;
+	}
+
+
+//B_BDG003
+void __ISR(_TIMER_5_VECTOR, IPL3AUTO) Timer5Handler(void)
+{
+    uint8_t key_temp;
+    IFS0bits.T5IF = 0;
+	disp_tasks();
+	loop_badge();
+    if (handle_display)
+		tft_disp_buffer_refresh_part((uint8_t *)(disp_buffer),(uint8_t *)color_buffer);
+    key_temp = keyb_tasks();
+    if (key_temp>0)
+		key_buffer[key_buffer_ptr++] = key_temp;
+}
+
+void __ISR(_TIMER_1_VECTOR, IPL4AUTO) Timer1Handler(void)
+	{
+    IFS0bits.T1IF = 0;
+    ++ticks;
+	}
+void __ISR(_EXTERNAL_2_VECTOR, IPL4AUTO) Int2Handler(void)
+	{
+	IEC0bits.INT2IE = 0;
+	}
+
+
+void badge_init (void)
+	{
+	//B_BDG009
+	start_after_wake = &wake_return; //Function pointer for waking from sleep
+	ticks = 0;
+	stdio_src = STDIO_LOCAL;
+//	stdio_src = STDIO_TTY1;
+	term_init();
+#if ENABLE_BASIC    
+	strcpy(bprog,bprog_init);
+#endif
+	set_cursor_state(1);
+	}
+
+
+//housekeeping stuff. call this function often
+void loop_badge(void)
+	{
+	volatile uint16_t dbg;
+	static uint8_t brk_is_pressed;
+	dbg = PORTD;
+	if (K_PWR==0)
+		{
+		while (K_PWR==0);
+		wait_ms(100);
+		hw_sleep();
+		wait_ms(30);
+		while (K_PWR==0);
+		wait_ms(300);
+		}
+	if (KEY_BRK==0)
+		{
+		if (brk_is_pressed==9)
+			{
+			if ((K_SHIFTL==0)&(K_SHIFTR==0))
+				{
+				serial_flush();
+				if (stdio_src == STDIO_TTY1)
+					stdio_src = STDIO_LOCAL;
+				else
+					stdio_src = STDIO_TTY1;
+				}
+			else
+				brk_key = 1;
+			}
+		if (brk_is_pressed<10) brk_is_pressed++;
+		}
+	else
+		brk_is_pressed = 0;
+	}

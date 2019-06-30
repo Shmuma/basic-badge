@@ -138,8 +138,12 @@ uint8_t CHAR;
 #define	STDIO_LOCAL	0
 #define	STDIO_TTY1	1
 
+void terminal_init(void);
+int8_t term_k_stat (void);
+int8_t term_k_char (int8_t * out);
+
 void init_io(uint8_t mode);
-uint8_t stdio_write (int8_t * data);
+uint8_t stdio_write (const int8_t * data);
 uint8_t stdio_c (uint8_t data);
 uint8_t stdio_in (uint8_t block);
 int8_t stdio_get_state (void);
@@ -169,6 +173,21 @@ void fl_write_128(uint32_t sector,uint8_t * data);
 void read_sector (unsigned char *data, unsigned int addr);
 void write_sector (unsigned char *data, unsigned int addr);
 
+extern volatile int8_t brk_key;
+//extern volatile int8_t stdio_src;
 
+uint8_t stdio_local_buffer_state (void);
+int8_t stdio_local_buffer_get (void);
+void stdio_local_buffer_put (int8_t data);
+void stdio_local_buffer_puts (int8_t * data);
+void enable_display_scanning(uint8_t onoff);
+
+void badge_init (void);
+void loop_badge(void);
+uint32_t millis(void);
+
+// TODO: switch to vt100 functions, remove this dep
+extern int8_t disp_buffer[DISP_BUFFER_HIGH+1][DISP_BUFFER_WIDE];
+extern int8_t color_buffer[DISP_BUFFER_HIGH+1][DISP_BUFFER_WIDE];
 
 #endif

@@ -35,31 +35,6 @@
 #include "hwz.h"
 #include "../hw.h"
 
-uint8_t iosim_mode;
-
-/*
- *	This function is to initiate the I/O devices.
- *	It will be called from the CPU simulation before
- *	any operation with the Z80 is possible.
- *
- *	In this sample I/O simulation we initialize all
- *	unused port with an error trap handler, so that
- *	simulation stops at I/O on the unused ports.
- */
-void init_io(uint8_t mode)
-{
-iosim_mode = mode;
-}
-
-/*
- *	This function is to stop the I/O devices. It is
- *	called from the CPU simulation on exit.
- *
- */
-void exit_io()
-{
-}
-
 /*
  *	This is the main handler for all IN op-codes,
  *	called by the simulator. It calls the input
