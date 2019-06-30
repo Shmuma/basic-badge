@@ -6,7 +6,7 @@ const char* header_text = "Use arrows+ENTER or press number";
 void menu_draw_frame();
 void menu_draw_title(const char* text);
 void menu_draw_header();
-void menu_draw_menu(uint8_t active, const struct menu_t* items);
+void menu_draw_menu(uint8_t active, const struct menu_t* items, int8_t blank_lines);
 void menu_draw_item(uint8_t ofs, uint8_t is_active, const struct menu_t* item);
 const struct menu_t* menu_parent_items(const struct menu_t* menu, 
         const struct menu_t* ref_item);
@@ -18,7 +18,7 @@ struct menu_t parent_item = {
 
 
 uint16_t menu_run(const struct menu_t* menu) {
-    const struct menu_t* cur_menu = menu;
+    const struct menu_t* cur_menu = menu, *prev_menu;
     uint8_t active = 0;
     int8_t char_out, selected_item;
     
@@ -27,7 +27,7 @@ uint16_t menu_run(const struct menu_t* menu) {
     menu_draw_frame();
     menu_draw_title(menu->title);
     menu_draw_header();
-    menu_draw_menu(active, cur_menu);
+    menu_draw_menu(active, cur_menu, 0);
     
     // draw menu items
     // handle keys pressed
@@ -43,22 +43,23 @@ uint16_t menu_run(const struct menu_t* menu) {
             selected_item = -1;
             if (char_out == K_UP && active > 0) {
                 active--;
-                menu_draw_menu(active, cur_menu);
+                menu_draw_menu(active, cur_menu, 0);
             }
             else if (char_out == K_DN && active < menu->items_count) {
                 active++;
-                menu_draw_menu(active, cur_menu);
+                menu_draw_menu(active, cur_menu, 0);
             }
             else if (char_out == K_ENT)
                 selected_item = active;
             else if (char_out >= '0' && char_out <= '0'+cur_menu->items_count) {
                 selected_item = char_out - '0';
                 // draw the element selected
-                menu_draw_menu(selected_item, cur_menu);
+                menu_draw_menu(selected_item, cur_menu, 0);
             }
             
             // handle selected
             if (selected_item >= 0) {
+                prev_menu = cur_menu;
                 // look for parent of current item
                 if (!selected_item) {
                     cur_menu = menu_parent_items(menu, cur_menu);
@@ -73,7 +74,7 @@ uint16_t menu_run(const struct menu_t* menu) {
                         return cur_menu->id;                    
                 }
                 active = 0;
-                menu_draw_menu(active, cur_menu);                
+                menu_draw_menu(active, cur_menu, prev_menu->items_count - cur_menu->items_count);                
             }
         }
     };
@@ -128,12 +129,18 @@ void menu_draw_header() {
 }
 
 
-void menu_draw_menu(uint8_t active, const struct menu_t* menu)
+void menu_draw_menu(uint8_t active, const struct menu_t* menu, int8_t blank_lines)
 {
     uint8_t i;
     menu_draw_item(0, active == 0, &parent_item);
     for (i = 1; i <= menu->items_count; i++) {
         menu_draw_item(i, active == i, menu->items + i - 1);
+    }
+    video_set_color(0, 0);
+    while (blank_lines-- > 0) {
+        video_gotoxy((TERM_WIDTH - MENU_WIDTH) >> 1, 
+                6 + menu->items_count + blank_lines + 1);
+        stdio_c_n(' ', MENU_WIDTH);
     }
 }
 

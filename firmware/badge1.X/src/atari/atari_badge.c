@@ -62,11 +62,12 @@ void atari_menu() {
             enable_display_scanning(1);
         }
         else {
+            video_set_color(EGA_WHITE, EGA_BLACK);
             video_clrscr();
             video_gotoxy(0, 0);
             snprintf(buf, sizeof(buf), "Id: %d", res_id);
             stdio_write(buf);
-            wait_ms(10000);
+            wait_ms(2000);
         }
     }
 }
