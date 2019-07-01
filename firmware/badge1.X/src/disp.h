@@ -29,7 +29,7 @@ void set_cursor_state (uint8_t state);
 #define	EGA_LGRAY	7
 #define	EGA_DGRAY	8
 #define	EGA_BBLUE	9
-#define	EGA_BBGREEN	10
+#define	EGA_BGREEN	10
 #define	EGA_BCYAN	11
 #define	EGA_BRED	12
 #define	EGA_BMAGENTA	13
