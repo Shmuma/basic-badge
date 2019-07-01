@@ -144,6 +144,8 @@ void menu_draw_menu(uint8_t active, const struct menu_t* menu, int8_t blank_line
 void menu_draw_item(uint8_t ofs, uint8_t is_active, 
         const struct menu_t* item)
 {
+    const char* title;
+    
     if (is_active)
         video_set_color(MENU_ACTIVE_FG, MENU_ACTIVE_BG);
     else
@@ -153,8 +155,14 @@ void menu_draw_item(uint8_t ofs, uint8_t is_active,
     stdio_c(' ');
     stdio_c('0' + ofs);
     stdio_write(": ");
-    stdio_write(item->title);
-    stdio_c_n(' ', MENU_WIDTH - 4 - strlen(item->title));
+    if (item->title)
+        title = item->title;
+    else if (item->title_func)
+        title = item->title_func();
+    else
+        title = "ERROR: no item title or func";
+    stdio_write(title);
+    stdio_c_n(' ', MENU_WIDTH - 4 - strlen(title));
 }
 
 

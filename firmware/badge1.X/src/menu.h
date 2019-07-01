@@ -4,9 +4,12 @@
 #include <stdint.h>
 #include "disp.h"
 
+typedef const char* (*menu_title_func_t)(void);
+
 struct menu_t {
     uint16_t id;
     const char* title;
+    menu_title_func_t title_func;
     const uint8_t items_count;
     const struct menu_t* items;
 };

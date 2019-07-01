@@ -7,12 +7,25 @@
 extern struct register_file reg;
 extern struct tia_state tia;
 
+uint8_t settings_debug_info = 0;
+
 void atari_start();
 void atari_init();
+const char* get_menu_text_debug();
 
-#define MENU_BROWSE_FLASH       1
-#define MENU_RECEIVE_FLASH      2
-#define MENU_RUN_BUILTIN        3
+#define MENU_BROWSE_FLASH           1
+#define MENU_RECEIVE_FLASH          2
+#define MENU_RUN_BUILTIN            3
+#define MENU_SETTINGS_MENU          4
+#define MENU_SETTINGS_TOGGLE_DEBUG 40
+
+const char const * menu_text_debug_enable = "Enable debug info";
+const char const * menu_text_debug_disable = "Disable debug info";
+
+
+const char* get_menu_text_debug() {
+    return settings_debug_info ? menu_text_debug_disable : menu_text_debug_enable;
+}
 
 
 struct menu_t root_menu = {
@@ -22,9 +35,9 @@ struct menu_t root_menu = {
         {.id = MENU_BROWSE_FLASH,   .title = "Browse flash"},
         {.id = MENU_RECEIVE_FLASH,  .title = "Receive flash"},
         {.id = MENU_RUN_BUILTIN,    .title = "Run built-in ROM"},
-        {.title = "Some complex item", .items_count = 3, 
+        {.id = MENU_SETTINGS_MENU,  .title = "Settings >>>", .items_count = 3, 
             .items = (struct menu_t[3]){
-                {.id = 31, .title = "Item 1"},
+                {.id = MENU_SETTINGS_TOGGLE_DEBUG, .title_func = &get_menu_text_debug},
                 {.id = 32, .title = "Item 2"},
                 {.id = 33, .title = "Item 3"},
             }
@@ -37,6 +50,9 @@ void tia_line_ready(uint8_t line) {
     uint8_t x;
     uint32_t c;
 
+    if (line == 0) {
+    }
+    
     tft_set_write_area(0, line, FB_WIDTH*2, 1);
     TFT_24_7789_Write_Command(0x2C);
     
@@ -61,6 +77,8 @@ void atari_menu() {
             atari_start();
             enable_display_scanning(1);
         }
+        else if (res_id == MENU_SETTINGS_TOGGLE_DEBUG)
+            settings_debug_info = 1-settings_debug_info;
         else {
             video_set_color(EGA_WHITE, EGA_BLACK);
             video_clrscr();
@@ -95,4 +113,3 @@ void atari_init() {
     init_tia();
     reg.PC = reset_vector();
 }
-        
