@@ -67,7 +67,7 @@ void tia_line_ready(uint8_t line) {
 #endif
         // inlined version of the above, gives +4 fps
         LCD_WR_CLR;
-        LCD_PORT = (c >> 16) & 0xFF;
+        LCD_PORT = c >> 16;
         LCD_WR_SET;
         LCD_WR_CLR;
         LCD_PORT = (c >> 8) & 0xFF;
@@ -76,14 +76,14 @@ void tia_line_ready(uint8_t line) {
         LCD_PORT = c & 0xFF;
         LCD_WR_SET;
         LCD_WR_CLR;
-        LCD_PORT = (c >> 16) & 0xFF;
+        LCD_PORT = c >> 16;
         LCD_WR_SET;
         LCD_WR_CLR;
         LCD_PORT = (c >> 8) & 0xFF;
         LCD_WR_SET;
         LCD_WR_CLR;
         LCD_PORT = c & 0xFF;
-        LCD_WR_SET;        
+        LCD_WR_SET;
     }
 }
 
