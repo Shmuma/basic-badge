@@ -7,11 +7,12 @@
 extern struct register_file reg;
 extern struct tia_state tia;
 
-uint8_t settings_debug_info = 0;
+uint8_t settings_debug_info = ONSCREEN_DEBUG;
 
 void atari_start();
 void atari_init();
 const char* get_menu_text_debug();
+void show_debug_info();
 
 #define MENU_BROWSE_FLASH           1
 #define MENU_RECEIVE_FLASH          2
@@ -50,7 +51,8 @@ void tia_line_ready(uint8_t line) {
     uint8_t x;
     uint32_t c;
 
-    if (line == 0) {
+    if (line == 0 && settings_debug_info) {
+        show_debug_info();
     }
     
     tft_set_write_area(0, line, FB_WIDTH*2, 1);
@@ -112,4 +114,22 @@ void atari_init() {
     
     init_tia();
     reg.PC = reset_vector();
+}
+
+
+// called at every frame
+void show_debug_info() {
+    static char buf[20];
+    static uint32_t last_ms = 0;
+    uint32_t dt;
+    uint8_t i;
+    
+    if (last_ms > 0) {
+        dt = millis() - last_ms;
+        snprintf(buf, sizeof(buf), "fps=%.1f (%d ms)", 1000.0/dt, dt);
+        for (i = 0; i < sizeof(buf) && buf[i]; i++) 
+            tft_print_char(buf[i], i*8, 200, 0xFFFFFF, 0);
+    }
+    
+    last_ms = millis();
 }
