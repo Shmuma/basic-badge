@@ -19,7 +19,6 @@ void tft_disp_buffer_refresh_part(uint8_t * buff, uint8_t * color_buff);
 void disp_tasks (void);
 void set_cursor_state (uint8_t state);
 
-
 #define	EGA_BLACK	0
 #define	EGA_BLUE	1
 #define	EGA_GREEN	2

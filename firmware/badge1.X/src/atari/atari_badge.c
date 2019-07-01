@@ -3,6 +3,7 @@
 #include "../disp.h"
 #include "../menu.h"
 #include <stdio.h>
+#include <xc.h>
 
 extern struct register_file reg;
 extern struct tia_state tia;
@@ -60,8 +61,29 @@ void tia_line_ready(uint8_t line) {
 
     for (x = 0; x < FB_WIDTH; x++) {
         c = COLOR_NTSC(tia.fb[x]);
+#if 0
         TFT_24_7789_Write_Data3((c >> 16) & 0xFF, (c >> 8) & 0xFF, c & 0xFF);
         TFT_24_7789_Write_Data3((c >> 16) & 0xFF, (c >> 8) & 0xFF, c & 0xFF);
+#endif
+        // inlined version of the above, gives +4 fps
+        LCD_WR_CLR;
+        LCD_PORT = (c >> 16) & 0xFF;
+        LCD_WR_SET;
+        LCD_WR_CLR;
+        LCD_PORT = (c >> 8) & 0xFF;
+        LCD_WR_SET;
+        LCD_WR_CLR;
+        LCD_PORT = c & 0xFF;
+        LCD_WR_SET;
+        LCD_WR_CLR;
+        LCD_PORT = (c >> 16) & 0xFF;
+        LCD_WR_SET;
+        LCD_WR_CLR;
+        LCD_PORT = (c >> 8) & 0xFF;
+        LCD_WR_SET;
+        LCD_WR_CLR;
+        LCD_PORT = c & 0xFF;
+        LCD_WR_SET;        
     }
 }
 

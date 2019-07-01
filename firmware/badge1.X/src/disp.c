@@ -458,7 +458,6 @@ inline void TFT_24_7789_Write_Data3(uint16_t data1,uint16_t data2, uint16_t data
 	LCD_PORT = data3;
 	LCD_WR_SET;
 	}
-
 /*******************************************************************************/
 void TFT_24_7789_Init(void)
 	{
