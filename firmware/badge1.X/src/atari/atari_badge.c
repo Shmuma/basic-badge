@@ -54,10 +54,10 @@ void tia_line_ready(uint8_t line) {
     if (line == 0 && settings_debug_info) {
         show_debug_info();
     }
-    
+
     tft_set_write_area(0, line, FB_WIDTH*2, 1);
     TFT_24_7789_Write_Command(0x2C);
-    
+
     for (x = 0; x < FB_WIDTH; x++) {
         c = COLOR_NTSC(tia.fb[x]);
         TFT_24_7789_Write_Data3((c >> 16) & 0xFF, (c >> 8) & 0xFF, c & 0xFF);
