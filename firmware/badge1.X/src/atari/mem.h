@@ -8,6 +8,10 @@ uint16_t reset_vector();
 
 #ifdef ATARI_POSIX
 int read_rom(const char* file_name);
+#else
+extern uint8_t rom_data[];
 #endif
+
+extern const uint8_t* rom;
 
 #endif

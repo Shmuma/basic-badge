@@ -4,6 +4,9 @@ uint8_t memory[128];
 
 #ifdef ATARI_POSIX
 const uint8_t *rom = NULL;
+#else
+uint8_t rom_data[ROM_SIZE];
+const uint8_t* rom = rom_data;
 #endif
 
 long rom_size = ROM_SIZE;
@@ -34,9 +37,9 @@ peek(uint16_t address)
   address -= ROM_ADDR;
   if (address < rom_size) {
 #ifdef TRACE_MEM
-    printf("peek rom: %x -> %x\n", address + ROM_ADDR, ROM_NAME[address]);
+    printf("peek rom: %x -> %x\n", address + ROM_ADDR, rom[address]);
 #endif
-    return ROM_NAME[address];
+    return rom[address];
   }
 
   return 0xFF;

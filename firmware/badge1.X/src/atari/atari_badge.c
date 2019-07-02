@@ -13,10 +13,12 @@ uint8_t settings_debug_info = ONSCREEN_DEBUG;
 
 void atari_start();
 void atari_init();
+void atari_load_rom(uint8_t sector);
 const char* get_menu_text_debug();
 void show_debug_info();
 
 #define MENU_BROWSE_FLASH           1
+#define MENU_FLASH_SECTOR0         10
 #define MENU_RECEIVE_ROMS           2
 #define MENU_RUN_BUILTIN            3
 #define MENU_SETTINGS_MENU          4
@@ -35,7 +37,20 @@ struct menu_t root_menu = {
     .title = "Atari emulator",
     .items_count = 4,
     .items = (struct menu_t[4]){
-        {.id = MENU_BROWSE_FLASH,   .title = "Browse flash"},
+        {.id = MENU_BROWSE_FLASH,   .title = "Browse flash", .items_count = 10,
+            .items = (struct menu_t[10]){
+                {.id = MENU_FLASH_SECTOR0+0, .title = "Run sector 0"},
+                {.id = MENU_FLASH_SECTOR0+1, .title = "Run sector 1"},
+                {.id = MENU_FLASH_SECTOR0+2, .title = "Run sector 2"},
+                {.id = MENU_FLASH_SECTOR0+3, .title = "Run sector 3"},
+                {.id = MENU_FLASH_SECTOR0+4, .title = "Run sector 4"},
+                {.id = MENU_FLASH_SECTOR0+5, .title = "Run sector 5"},
+                {.id = MENU_FLASH_SECTOR0+6, .title = "Run sector 6"},
+                {.id = MENU_FLASH_SECTOR0+7, .title = "Run sector 7"},
+                {.id = MENU_FLASH_SECTOR0+8, .title = "Run sector 8"},
+                {.id = MENU_FLASH_SECTOR0+9, .title = "Run sector 9"},
+            }
+        },
         {.id = MENU_RECEIVE_ROMS,   .title = "Receive ROMs via UART3"},
         {.id = MENU_RUN_BUILTIN,    .title = "Run built-in ROM"},
         {.id = MENU_SETTINGS_MENU,  .title = "Settings >>>", .items_count = 3, 
@@ -98,9 +113,12 @@ void atari_menu() {
             return;
 
         if (res_id == MENU_RUN_BUILTIN) {
-            enable_display_scanning(0);
+            rom = ROM_NAME;
             atari_start();
-            enable_display_scanning(1);
+        }
+        else if (res_id >= MENU_FLASH_SECTOR0 && res_id <= MENU_FLASH_SECTOR0+9) {
+            atari_load_rom(res_id - MENU_FLASH_SECTOR0);
+            atari_start();
         }
         else if (res_id == MENU_SETTINGS_TOGGLE_DEBUG)
             settings_debug_info = 1-settings_debug_info;
@@ -121,6 +139,7 @@ void atari_menu() {
 void atari_start() {
     int16_t rc;
     
+    enable_display_scanning(0);
     atari_init();
     
     while (!brk_key) {
@@ -131,6 +150,7 @@ void atari_start() {
             tia_mpu_cycles(-rc);
     }
     brk_key = 0;
+    enable_display_scanning(1);
 }
 
 
@@ -159,3 +179,8 @@ void show_debug_info() {
     last_ms = millis();
 }
 
+
+void atari_load_rom(uint8_t sector) {
+    fl_read_4k(((uint32_t)sector) << 12, rom_data);
+    rom = rom_data;
+}

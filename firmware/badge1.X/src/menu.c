@@ -22,6 +22,7 @@ uint16_t menu_run(const struct menu_t* menu) {
     uint8_t active = 0;
     int8_t char_out, selected_item;
     
+    brk_key = 0;
     set_cursor_state(0);
 	video_clrscr();
     menu_draw_frame();
