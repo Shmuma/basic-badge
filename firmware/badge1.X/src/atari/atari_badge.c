@@ -110,7 +110,7 @@ void atari_menu() {
     while (1) {
         res_id = menu_run(&root_menu);
         if (!res_id)
-            return;
+            break;
 
         if (res_id == MENU_RUN_BUILTIN) {
             rom = ROM_NAME;
@@ -133,6 +133,7 @@ void atari_menu() {
             wait_ms(2000);
         }
     }
+    set_cursor_state(1);
 }
 
 // start atari emulator
