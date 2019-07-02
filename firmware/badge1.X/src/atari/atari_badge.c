@@ -37,7 +37,7 @@ struct menu_t root_menu = {
     .title = "Atari emulator",
     .items_count = 4,
     .items = (struct menu_t[4]){
-        {.id = MENU_BROWSE_FLASH,   .title = "Browse flash", .items_count = 10,
+        {.id = MENU_BROWSE_FLASH,   .title = "Run from flash", .items_count = 10,
             .items = (struct menu_t[10]){
                 {.id = MENU_FLASH_SECTOR0+0, .title = "Run sector 0"},
                 {.id = MENU_FLASH_SECTOR0+1, .title = "Run sector 1"},
