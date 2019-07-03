@@ -10,6 +10,7 @@
 #include "post.h"
 #include "disp.h"
 #include "Z80/hwz.h"
+#include "atari/atari.h"
 
 uint16_t i;
 const int8_t post_char_table[4*11] = "1234567890=qwertyuiop;/asdfghjkl\n\0zxcvbnm,.\0";
@@ -25,6 +26,7 @@ void post (void)
 	uint8_t retval,index,line,position,color;
 	uint32_t flash_id;
 	int8_t temp_string[30];
+    uint8_t error;
 	handle_display = 0;
 	set_led(0,1);
 	set_led(1,1);
@@ -241,6 +243,47 @@ void post (void)
 			}
 		}
 	video_set_color(EGA_WHITE,EGA_BLACK);
+    
+    stdio_write("Press LCTRL+ENTER to continue\n");
+    while (1) {
+        if (stdio_get(&retval)!=0) {
+            if (retval == K_ECR) break;
+        }
+    }
+
+	video_clrscr();
+	term_init();
+	video_gotoxy(1,1);
+	stdio_write("Writing flash...\n");
+    for (i = 0; i < ROM_SIZE; i++) {
+        rom_data[i] = i % 256;
+    }
+    fl_write_4k(4096, rom_data);
+    memset(rom_data, ROM_SIZE, 0);
+    stdio_write("Written, reading...\n");
+    fl_read_4k(4096, rom_data);
+    stdio_write("Comparing...\n");
+    
+    error = 0;
+    for (i = 0; i < ROM_SIZE; i++) {
+        if (rom_data[i] != (i % 256)) {
+            error = 1;
+            break;
+        }
+    }
+    
+    if (!error) {
+        video_set_color(EGA_WHITE,EGA_GREEN);
+        stdio_write("Test passed!\n");
+    }
+    else {
+        video_set_color(EGA_YELLOW,EGA_RED);
+        snprintf(temp_string, sizeof(temp_string), 
+                "Error at %d, value %02x, expected %02d\n",
+                i, rom_data[i], i % 256);
+        stdio_write(temp_string);
+    }
+    
 	stdio_write("End of test, reset badge now\n");
 	while(1);
 	}
