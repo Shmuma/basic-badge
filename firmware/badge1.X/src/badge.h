@@ -20,10 +20,6 @@
 #include <setjmp.h>
 
 
-uint8_t rx_sta (void);
-uint8_t rx_read (void);
-void tx_write (uint8_t data);
-
 const char* get_firmware_string(void);
 
 uint16_t get_user_value (void);
