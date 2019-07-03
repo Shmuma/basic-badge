@@ -258,6 +258,7 @@ void post (void)
     for (i = 0; i < ROM_SIZE; i++) {
         rom_data[i] = i % 256;
     }
+    fl_erase_4k(4096);
     fl_write_4k(4096, rom_data);
     memset(rom_data, ROM_SIZE, 0);
     stdio_write("Written, reading...\n");

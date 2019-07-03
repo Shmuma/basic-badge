@@ -78,6 +78,8 @@ void proto_receive() {
         snprintf(buf, sizeof(buf), "Sector %d received, sum = %02x", 
                 sector, sum);
         stdio_write(buf);
+        fl_erase_4k(sector << 12);
+        // TODO: this flash could be written in 256 bytes chunk in one burst
         fl_write_4k(sector << 12, rom_data);
         
         sector += 1;
