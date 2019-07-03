@@ -57,17 +57,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=src/log.c src/atari/roms/kernel_01.c src/atari/roms/kernel_11.c src/atari/6502.c src/atari/mem.c src/atari/tia.c src/atari/atari_badge.c src/atari/palette.c src/disp.c src/hw.c src/images.c src/vt100.c src/main.c src/splash.c src/tetrapuzz.c src/box_game.c src/tune_player.c src/post.c src/snake.c src/user_program.c src/badge.c src/xonix.c src/menu.c src/atari/atari_uart.c
+SOURCEFILES_QUOTED_IF_SPACED=src/log.c src/atari/roms/kernel_01.c src/atari/roms/kernel_11.c src/atari/6502.c src/atari/mem.c src/atari/tia.c src/atari/palette.c src/disp.c src/hw.c src/images.c src/vt100.c src/main.c src/splash.c src/tetrapuzz.c src/box_game.c src/tune_player.c src/post.c src/snake.c src/user_program.c src/badge.c src/xonix.c src/menu.c src/atari/atari_uart.c src/atari/atari_badge.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/src/log.o ${OBJECTDIR}/src/atari/roms/kernel_01.o ${OBJECTDIR}/src/atari/roms/kernel_11.o ${OBJECTDIR}/src/atari/6502.o ${OBJECTDIR}/src/atari/mem.o ${OBJECTDIR}/src/atari/tia.o ${OBJECTDIR}/src/atari/atari_badge.o ${OBJECTDIR}/src/atari/palette.o ${OBJECTDIR}/src/disp.o ${OBJECTDIR}/src/hw.o ${OBJECTDIR}/src/images.o ${OBJECTDIR}/src/vt100.o ${OBJECTDIR}/src/main.o ${OBJECTDIR}/src/splash.o ${OBJECTDIR}/src/tetrapuzz.o ${OBJECTDIR}/src/box_game.o ${OBJECTDIR}/src/tune_player.o ${OBJECTDIR}/src/post.o ${OBJECTDIR}/src/snake.o ${OBJECTDIR}/src/user_program.o ${OBJECTDIR}/src/badge.o ${OBJECTDIR}/src/xonix.o ${OBJECTDIR}/src/menu.o ${OBJECTDIR}/src/atari/atari_uart.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/src/log.o.d ${OBJECTDIR}/src/atari/roms/kernel_01.o.d ${OBJECTDIR}/src/atari/roms/kernel_11.o.d ${OBJECTDIR}/src/atari/6502.o.d ${OBJECTDIR}/src/atari/mem.o.d ${OBJECTDIR}/src/atari/tia.o.d ${OBJECTDIR}/src/atari/atari_badge.o.d ${OBJECTDIR}/src/atari/palette.o.d ${OBJECTDIR}/src/disp.o.d ${OBJECTDIR}/src/hw.o.d ${OBJECTDIR}/src/images.o.d ${OBJECTDIR}/src/vt100.o.d ${OBJECTDIR}/src/main.o.d ${OBJECTDIR}/src/splash.o.d ${OBJECTDIR}/src/tetrapuzz.o.d ${OBJECTDIR}/src/box_game.o.d ${OBJECTDIR}/src/tune_player.o.d ${OBJECTDIR}/src/post.o.d ${OBJECTDIR}/src/snake.o.d ${OBJECTDIR}/src/user_program.o.d ${OBJECTDIR}/src/badge.o.d ${OBJECTDIR}/src/xonix.o.d ${OBJECTDIR}/src/menu.o.d ${OBJECTDIR}/src/atari/atari_uart.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/src/log.o ${OBJECTDIR}/src/atari/roms/kernel_01.o ${OBJECTDIR}/src/atari/roms/kernel_11.o ${OBJECTDIR}/src/atari/6502.o ${OBJECTDIR}/src/atari/mem.o ${OBJECTDIR}/src/atari/tia.o ${OBJECTDIR}/src/atari/palette.o ${OBJECTDIR}/src/disp.o ${OBJECTDIR}/src/hw.o ${OBJECTDIR}/src/images.o ${OBJECTDIR}/src/vt100.o ${OBJECTDIR}/src/main.o ${OBJECTDIR}/src/splash.o ${OBJECTDIR}/src/tetrapuzz.o ${OBJECTDIR}/src/box_game.o ${OBJECTDIR}/src/tune_player.o ${OBJECTDIR}/src/post.o ${OBJECTDIR}/src/snake.o ${OBJECTDIR}/src/user_program.o ${OBJECTDIR}/src/badge.o ${OBJECTDIR}/src/xonix.o ${OBJECTDIR}/src/menu.o ${OBJECTDIR}/src/atari/atari_uart.o ${OBJECTDIR}/src/atari/atari_badge.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/src/log.o.d ${OBJECTDIR}/src/atari/roms/kernel_01.o.d ${OBJECTDIR}/src/atari/roms/kernel_11.o.d ${OBJECTDIR}/src/atari/6502.o.d ${OBJECTDIR}/src/atari/mem.o.d ${OBJECTDIR}/src/atari/tia.o.d ${OBJECTDIR}/src/atari/palette.o.d ${OBJECTDIR}/src/disp.o.d ${OBJECTDIR}/src/hw.o.d ${OBJECTDIR}/src/images.o.d ${OBJECTDIR}/src/vt100.o.d ${OBJECTDIR}/src/main.o.d ${OBJECTDIR}/src/splash.o.d ${OBJECTDIR}/src/tetrapuzz.o.d ${OBJECTDIR}/src/box_game.o.d ${OBJECTDIR}/src/tune_player.o.d ${OBJECTDIR}/src/post.o.d ${OBJECTDIR}/src/snake.o.d ${OBJECTDIR}/src/user_program.o.d ${OBJECTDIR}/src/badge.o.d ${OBJECTDIR}/src/xonix.o.d ${OBJECTDIR}/src/menu.o.d ${OBJECTDIR}/src/atari/atari_uart.o.d ${OBJECTDIR}/src/atari/atari_badge.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/src/log.o ${OBJECTDIR}/src/atari/roms/kernel_01.o ${OBJECTDIR}/src/atari/roms/kernel_11.o ${OBJECTDIR}/src/atari/6502.o ${OBJECTDIR}/src/atari/mem.o ${OBJECTDIR}/src/atari/tia.o ${OBJECTDIR}/src/atari/atari_badge.o ${OBJECTDIR}/src/atari/palette.o ${OBJECTDIR}/src/disp.o ${OBJECTDIR}/src/hw.o ${OBJECTDIR}/src/images.o ${OBJECTDIR}/src/vt100.o ${OBJECTDIR}/src/main.o ${OBJECTDIR}/src/splash.o ${OBJECTDIR}/src/tetrapuzz.o ${OBJECTDIR}/src/box_game.o ${OBJECTDIR}/src/tune_player.o ${OBJECTDIR}/src/post.o ${OBJECTDIR}/src/snake.o ${OBJECTDIR}/src/user_program.o ${OBJECTDIR}/src/badge.o ${OBJECTDIR}/src/xonix.o ${OBJECTDIR}/src/menu.o ${OBJECTDIR}/src/atari/atari_uart.o
+OBJECTFILES=${OBJECTDIR}/src/log.o ${OBJECTDIR}/src/atari/roms/kernel_01.o ${OBJECTDIR}/src/atari/roms/kernel_11.o ${OBJECTDIR}/src/atari/6502.o ${OBJECTDIR}/src/atari/mem.o ${OBJECTDIR}/src/atari/tia.o ${OBJECTDIR}/src/atari/palette.o ${OBJECTDIR}/src/disp.o ${OBJECTDIR}/src/hw.o ${OBJECTDIR}/src/images.o ${OBJECTDIR}/src/vt100.o ${OBJECTDIR}/src/main.o ${OBJECTDIR}/src/splash.o ${OBJECTDIR}/src/tetrapuzz.o ${OBJECTDIR}/src/box_game.o ${OBJECTDIR}/src/tune_player.o ${OBJECTDIR}/src/post.o ${OBJECTDIR}/src/snake.o ${OBJECTDIR}/src/user_program.o ${OBJECTDIR}/src/badge.o ${OBJECTDIR}/src/xonix.o ${OBJECTDIR}/src/menu.o ${OBJECTDIR}/src/atari/atari_uart.o ${OBJECTDIR}/src/atari/atari_badge.o
 
 # Source Files
-SOURCEFILES=src/log.c src/atari/roms/kernel_01.c src/atari/roms/kernel_11.c src/atari/6502.c src/atari/mem.c src/atari/tia.c src/atari/atari_badge.c src/atari/palette.c src/disp.c src/hw.c src/images.c src/vt100.c src/main.c src/splash.c src/tetrapuzz.c src/box_game.c src/tune_player.c src/post.c src/snake.c src/user_program.c src/badge.c src/xonix.c src/menu.c src/atari/atari_uart.c
+SOURCEFILES=src/log.c src/atari/roms/kernel_01.c src/atari/roms/kernel_11.c src/atari/6502.c src/atari/mem.c src/atari/tia.c src/atari/palette.c src/disp.c src/hw.c src/images.c src/vt100.c src/main.c src/splash.c src/tetrapuzz.c src/box_game.c src/tune_player.c src/post.c src/snake.c src/user_program.c src/badge.c src/xonix.c src/menu.c src/atari/atari_uart.c src/atari/atari_badge.c
 
 
 CFLAGS=
@@ -141,12 +141,6 @@ ${OBJECTDIR}/src/atari/tia.o: src/atari/tia.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/src/atari/tia.o.d 
 	@${RM} ${OBJECTDIR}/src/atari/tia.o 
 	@${FIXDEPS} "${OBJECTDIR}/src/atari/tia.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -fno-toplevel-reorder -O1 -funroll-loops -D_SUPPRESS_PLIB_WARNING -MMD -MF "${OBJECTDIR}/src/atari/tia.o.d" -o ${OBJECTDIR}/src/atari/tia.o src/atari/tia.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
-	
-${OBJECTDIR}/src/atari/atari_badge.o: src/atari/atari_badge.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/src/atari" 
-	@${RM} ${OBJECTDIR}/src/atari/atari_badge.o.d 
-	@${RM} ${OBJECTDIR}/src/atari/atari_badge.o 
-	@${FIXDEPS} "${OBJECTDIR}/src/atari/atari_badge.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -fno-toplevel-reorder -O1 -funroll-loops -D_SUPPRESS_PLIB_WARNING -MMD -MF "${OBJECTDIR}/src/atari/atari_badge.o.d" -o ${OBJECTDIR}/src/atari/atari_badge.o src/atari/atari_badge.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
 ${OBJECTDIR}/src/atari/palette.o: src/atari/palette.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/src/atari" 
@@ -250,6 +244,12 @@ ${OBJECTDIR}/src/atari/atari_uart.o: src/atari/atari_uart.c  nbproject/Makefile-
 	@${RM} ${OBJECTDIR}/src/atari/atari_uart.o 
 	@${FIXDEPS} "${OBJECTDIR}/src/atari/atari_uart.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -fno-toplevel-reorder -O1 -funroll-loops -D_SUPPRESS_PLIB_WARNING -MMD -MF "${OBJECTDIR}/src/atari/atari_uart.o.d" -o ${OBJECTDIR}/src/atari/atari_uart.o src/atari/atari_uart.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
+${OBJECTDIR}/src/atari/atari_badge.o: src/atari/atari_badge.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/src/atari" 
+	@${RM} ${OBJECTDIR}/src/atari/atari_badge.o.d 
+	@${RM} ${OBJECTDIR}/src/atari/atari_badge.o 
+	@${FIXDEPS} "${OBJECTDIR}/src/atari/atari_badge.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -fno-toplevel-reorder -O1 -funroll-loops -D_SUPPRESS_PLIB_WARNING -MMD -MF "${OBJECTDIR}/src/atari/atari_badge.o.d" -o ${OBJECTDIR}/src/atari/atari_badge.o src/atari/atari_badge.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	
 else
 ${OBJECTDIR}/src/log.o: src/log.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/src" 
@@ -286,12 +286,6 @@ ${OBJECTDIR}/src/atari/tia.o: src/atari/tia.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/src/atari/tia.o.d 
 	@${RM} ${OBJECTDIR}/src/atari/tia.o 
 	@${FIXDEPS} "${OBJECTDIR}/src/atari/tia.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -fno-toplevel-reorder -O1 -funroll-loops -D_SUPPRESS_PLIB_WARNING -MMD -MF "${OBJECTDIR}/src/atari/tia.o.d" -o ${OBJECTDIR}/src/atari/tia.o src/atari/tia.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
-	
-${OBJECTDIR}/src/atari/atari_badge.o: src/atari/atari_badge.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/src/atari" 
-	@${RM} ${OBJECTDIR}/src/atari/atari_badge.o.d 
-	@${RM} ${OBJECTDIR}/src/atari/atari_badge.o 
-	@${FIXDEPS} "${OBJECTDIR}/src/atari/atari_badge.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -fno-toplevel-reorder -O1 -funroll-loops -D_SUPPRESS_PLIB_WARNING -MMD -MF "${OBJECTDIR}/src/atari/atari_badge.o.d" -o ${OBJECTDIR}/src/atari/atari_badge.o src/atari/atari_badge.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
 ${OBJECTDIR}/src/atari/palette.o: src/atari/palette.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/src/atari" 
@@ -394,6 +388,12 @@ ${OBJECTDIR}/src/atari/atari_uart.o: src/atari/atari_uart.c  nbproject/Makefile-
 	@${RM} ${OBJECTDIR}/src/atari/atari_uart.o.d 
 	@${RM} ${OBJECTDIR}/src/atari/atari_uart.o 
 	@${FIXDEPS} "${OBJECTDIR}/src/atari/atari_uart.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -fno-toplevel-reorder -O1 -funroll-loops -D_SUPPRESS_PLIB_WARNING -MMD -MF "${OBJECTDIR}/src/atari/atari_uart.o.d" -o ${OBJECTDIR}/src/atari/atari_uart.o src/atari/atari_uart.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	
+${OBJECTDIR}/src/atari/atari_badge.o: src/atari/atari_badge.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/src/atari" 
+	@${RM} ${OBJECTDIR}/src/atari/atari_badge.o.d 
+	@${RM} ${OBJECTDIR}/src/atari/atari_badge.o 
+	@${FIXDEPS} "${OBJECTDIR}/src/atari/atari_badge.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -fno-toplevel-reorder -O1 -funroll-loops -D_SUPPRESS_PLIB_WARNING -MMD -MF "${OBJECTDIR}/src/atari/atari_badge.o.d" -o ${OBJECTDIR}/src/atari/atari_badge.o src/atari/atari_badge.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
 endif
 

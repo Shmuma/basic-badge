@@ -54,9 +54,9 @@
         <itemPath>src/atari/6502.c</itemPath>
         <itemPath>src/atari/mem.c</itemPath>
         <itemPath>src/atari/tia.c</itemPath>
-        <itemPath>src/atari/atari_badge.c</itemPath>
         <itemPath>src/atari/palette.c</itemPath>
         <itemPath>src/atari/atari_uart.c</itemPath>
+        <itemPath>src/atari/atari_badge.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f2" displayName="basic" projectFiles="true">
         <itemPath>src/basic/tokenizer.c</itemPath>
@@ -379,7 +379,6 @@
         <property key="UART3" value="true"/>
         <property key="UART4" value="true"/>
         <property key="debugoptions.useswbreakpoints" value="false"/>
-        <property key="firmware.download.all" value="false"/>
         <property key="hwtoolclock.frcindebug" value="false"/>
         <property key="memories.aux" value="false"/>
         <property key="memories.bootflash" value="true"/>

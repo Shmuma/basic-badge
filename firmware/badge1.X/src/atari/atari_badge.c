@@ -182,6 +182,15 @@ void show_debug_info() {
 
 
 void atari_load_rom(uint8_t sector) {
+//    volatile uint8_t sum;
+//    uint16_t i;
     fl_read_4k(((uint32_t)sector) << 12, rom_data);
+//    fl_read_nk(((uint32_t)sector) << 12, rom_data, 100);
+//    fl_read_nk((((uint32_t)sector) << 12) + 1, rom_data+100, 100);
+    
+//    sum = 0;
+//    for (i = 0; i < ROM_SIZE; i++)
+//        sum += rom_data[i];
+    
     rom = rom_data;
 }
