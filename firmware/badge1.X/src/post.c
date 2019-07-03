@@ -279,7 +279,7 @@ void post (void)
     else {
         video_set_color(EGA_YELLOW,EGA_RED);
         snprintf(temp_string, sizeof(temp_string), 
-                "Error at %d, value %02x, expected %02d\n",
+                "E: %d, value %02x, exp %02d\n",
                 i, rom_data[i], i % 256);
         stdio_write(temp_string);
     }
