@@ -16,22 +16,33 @@
 #define SCN_VIS_END     (SCN_VIS_START + FB_HEIGHT)
 #define SCN_VERT        (SCN_VIS_END + SCN_OVERSCAN)
 
+// Playfield clock bounds
+#define PF0_MAX_CLK     (4*4)
+#define PF1_MAX_CLK     (PF0_MAX_CLK + 8*4)
+#define PF2_MAX_CLK     (PF1_MAX_CLK + 8*4)
+
 
 struct tia_state {
   uint16_t scanline;
   uint8_t color_clock;
 
-  uint8_t colu[4]; 	// P0, P1, PF, BK
+  uint8_t colu[4];          // P0, P1, PF, BK
+  uint8_t pf0:4;
+  uint8_t pf1;
+  uint8_t pf2;
   
   uint8_t fb[FB_WIDTH];
 };
 
-#define VSYNC       0
-#define WSYNC 		2
-#define COLUP0		6
-#define COLUP1		7
-#define COLUPF		8
-#define COLUBK 		9
+#define VSYNC       0x00
+#define WSYNC 		0x02
+#define COLUP0		0x06
+#define COLUP1		0x07
+#define COLUPF		0x08
+#define COLUBK 		0x09
+#define PF0         0x0D
+#define PF1         0x0E
+#define PF2         0x0F
 
 
 void init_tia();

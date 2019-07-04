@@ -44,31 +44,53 @@ void poke_tia(uint16_t addr, uint8_t val) {
     else if (addr >= COLUP0 && addr <= COLUBK) {
         tia.colu[addr - COLUP0] = val & ~1;
     }
+    else if (addr == PF0)
+        tia.pf0 = val >> 4;
+    else if (addr == PF1)
+        tia.pf1 = val;
+    else if (addr == PF2)
+        tia.pf2 = val;
 }
 
 
 uint8_t peek_tia(uint16_t addr) {
-  return 0xFF;
+    return 0xFF;
 }
 
 
 void draw_pixels(uint8_t count) {
-  while (count--) {
-    if (tia.color_clock >= CLK_HORBLANK) {
-      if (tia.scanline >= SCN_VIS_START && tia.scanline < SCN_VIS_END) {
-        // TODO: need to combine image, but have read only about background :)
-        tia.fb[tia.color_clock - CLK_HORBLANK] = tia.colu[3];
-      }
+    uint8_t ofs, pf_ofs, col;
+  
+    while (count--) {
+        if (tia.color_clock >= CLK_HORBLANK) {
+            if (tia.scanline >= SCN_VIS_START && tia.scanline < SCN_VIS_END) {
+                ofs = tia.color_clock - CLK_HORBLANK;
+                pf_ofs = ofs >> 2;
+                col = tia.colu[3];
+                if (ofs < PF0_MAX_CLK) {
+                    if (tia.pf0 & (1 << (3-pf_ofs)))
+                        col = tia.colu[2];
+                }
+                else if (ofs < PF1_MAX_CLK) {
+                    if (tia.pf1 & (1 << (7-(pf_ofs-4))))
+                        col = tia.colu[2];
+                }
+                else if (ofs < PF2_MAX_CLK) {
+                    if (tia.pf2 & (1 << (7-(pf_ofs-4-8))))
+                        col = tia.colu[2];
+                }
+                tia.fb[ofs] = col;
+            }
+        }
+        if (++tia.color_clock >= CLK_HOR) {
+            tia.color_clock = 0;
+            if (tia.scanline >= SCN_VIS_START && tia.scanline < SCN_VIS_END)
+                tia_line_ready(tia.scanline - SCN_VIS_START);
+            if (++tia.scanline >= SCN_VERT) {
+                tia.scanline = 0;
+            }
+        }
     }
-    if (++tia.color_clock >= CLK_HOR) {
-      tia.color_clock = 0;
-      if (tia.scanline >= SCN_VIS_START && tia.scanline < SCN_VIS_END)
-        tia_line_ready(tia.scanline - SCN_VIS_START);
-      if (++tia.scanline >= SCN_VERT) {
-    	tia.scanline = 0;
-      }
-    }
-  }
 }
 
 

@@ -20,14 +20,14 @@ peek(uint16_t address)
 {
   if (address < RAM_ADDR) {
 #ifdef TRACE_MEM
-    printf("peek tia: %x\n", address);
+    printf("peek tia: %02X\n", address);
 #endif
     return peek_tia(address);
   }
   
   if (address <= RAM_ENDS) {
 #ifdef TRACE_MEM
-    printf("peek mem: %x -> %x\n", address, memory[address]);
+    printf("peek mem: %02X -> %02X\n", address, memory[address - RAM_ADDR]);
 #endif
     return memory[address - RAM_ADDR];
   }
@@ -37,7 +37,7 @@ peek(uint16_t address)
   address -= ROM_ADDR;
   if (address < rom_size) {
 #ifdef TRACE_MEM
-    printf("peek rom: %x -> %x\n", address + ROM_ADDR, rom[address]);
+    printf("peek rom: %02X -> %02X\n", address + ROM_ADDR, rom[address]);
 #endif
     return rom[address];
   }
@@ -52,7 +52,7 @@ poke(uint16_t address, uint8_t value)
 
   if (address < RAM_ADDR) {
 #ifdef TRACE_MEM
-    printf("poke tia: %x <- %x\n", address, value);
+    printf("poke tia: %02X <- %02X\n", address, value);
 #endif
     poke_tia(address, value);
     return; 
@@ -61,6 +61,8 @@ poke(uint16_t address, uint8_t value)
   if (address <= RAM_ENDS) {
 #ifdef TRACE_MEM
     printf("poke mem: %x <- %x\n", address, value);
+    if (address == 0x80 && value == 1)
+        printf("Break!\n");
 #endif    
     memory[address - RAM_ADDR] = value;
     return;

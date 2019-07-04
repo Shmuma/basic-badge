@@ -5,7 +5,7 @@
 
 //#define ROM_FILE "pong.bin"
 //#define ROM_FILE "../roms/kernel_01.bin"
-#define ROM_FILE "../roms/kernel_11.bin"
+#define ROM_FILE "../roms/kernel_13.bin"
 
 extern struct register_file reg;
 
