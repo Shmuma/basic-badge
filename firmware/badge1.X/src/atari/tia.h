@@ -20,13 +20,23 @@
 #define PF0_MAX_CLK     (4*4)
 #define PF1_MAX_CLK     (PF0_MAX_CLK + 8*4)
 #define PF2_MAX_CLK     (PF1_MAX_CLK + 8*4)
-
+#define PF_RIGHT        80
 
 struct tia_state {
   uint16_t scanline;
   uint8_t color_clock;
 
   uint8_t colu[4];          // P0, P1, PF, BK
+  union {
+    struct {
+        uint8_t pf_ref:1;         // reflect playfield
+        uint8_t pf_score:1;       // colorize playfields by player
+        uint8_t pf_prio:1;        // playfield is higher on prio than player
+        uint8_t unused:1;
+        uint8_t ballsize:2;       // size of the ball
+    } bits;
+    uint8_t val;
+  } ctrlpf;
   uint8_t pf0:4;
   uint8_t pf1;
   uint8_t pf2;
@@ -35,11 +45,12 @@ struct tia_state {
 };
 
 #define VSYNC       0x00
-#define WSYNC 		0x02
-#define COLUP0		0x06
-#define COLUP1		0x07
-#define COLUPF		0x08
-#define COLUBK 		0x09
+#define WSYNC       0x02
+#define COLUP0      0x06
+#define COLUP1      0x07
+#define COLUPF      0x08
+#define COLUBK      0x09
+#define CTRLPF      0x0A
 #define PF0         0x0D
 #define PF1         0x0E
 #define PF2         0x0F
