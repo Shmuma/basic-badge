@@ -117,15 +117,3 @@ void draw_pixels(uint8_t count) {
     }
 }
 
-
-#ifdef ATARI_POSIX
-void tia_line_ready(uint8_t line) {
-    uint8_t c;
-  
-    printf("SC%03d: ", line);
-    for (c = 0; c < FB_WIDTH; c++) {
-      printf("%02x ", tia.fb[c]);
-    }
-    printf("\n");
-}
-#endif

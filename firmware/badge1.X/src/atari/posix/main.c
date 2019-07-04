@@ -5,9 +5,11 @@
 
 //#define ROM_FILE "pong.bin"
 //#define ROM_FILE "../roms/kernel_01.bin"
-#define ROM_FILE "../roms/kernel_13.bin"
+//#define ROM_FILE "../roms/kernel_13.bin"
+#define ROM_FILE "../../../../../../Atari-roms/asm/kernel_pf.bin"
 
 extern struct register_file reg;
+extern struct tia_state tia;
 
 
 static void
@@ -28,6 +30,21 @@ registers()
   }
 
   printf("\r\n");
+}
+
+
+void tia_line_ready(uint8_t line) {
+    uint8_t c;
+    static uint32_t frame = 0;
+    
+    if (line == 0)
+        frame++;
+  
+    printf("SC %04d, %03d: ", frame, line);
+    for (c = 0; c < FB_WIDTH; c++) {
+      printf("%02x", tia.fb[c]);
+    }
+    printf("\n");
 }
 
 
