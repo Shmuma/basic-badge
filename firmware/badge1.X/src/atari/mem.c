@@ -40,7 +40,12 @@ peek(uint16_t address)
         return memory[address - RAM_ADDR];
     }
 
-    // TODO: need to handle RIOT address range
+    if (address >= PIA_START && address <= PIA_END) {
+#ifdef TRACE_MEM
+        printf("peek pia: %04X\n", address);
+#endif        
+        return peek_pia(address);
+    }
   
     if (address >= ROM_ADDR) {
         address -= ROM_ADDR;
@@ -50,7 +55,11 @@ peek(uint16_t address)
 #endif
         return rom[address];
     }
-
+    
+#ifdef TRACE_MEM
+    printf("peek at wrong address: %04X\n", address);
+#endif   
+    
     return 0xFF;
 }
 
@@ -77,6 +86,19 @@ poke(uint16_t address, uint8_t value)
         memory[address - RAM_ADDR] = value;
         return;
     }
+    
+    if (address >= PIA_START && address <= PIA_END) {
+#ifdef TRACE_MEM
+        printf("poke pia: %04X <- %02X\n", address, value);
+#endif        
+        poke_pia(address, value);
+        return;
+    }
+
+    
+#ifdef TRACE_MEM
+    printf("poke at wrong address: %04X <- %02X\n", address, value);
+#endif   
 }
 
 // read reset vector from memory

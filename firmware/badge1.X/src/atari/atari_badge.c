@@ -159,6 +159,7 @@ void atari_init() {
     tft_fill_area(0, 0, TFT_WIDTH-1, TFT_HEIGHT-1, 0);
     
     init_tia();
+    init_pia();
     reg.PC = reset_vector();
 }
 

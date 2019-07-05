@@ -77,6 +77,7 @@ int main(int argc, char** argv) {
     uint32_t step = 0;
 
     init_tia();
+    init_pia();
     if (argc == 2)
         file_name = argv[1];
     if (!read_rom(file_name)) {

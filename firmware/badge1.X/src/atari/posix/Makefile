@@ -10,7 +10,7 @@ CARGS=-g -O0 -I..
 main.o: main.c
 	gcc -o main.o ${CARGS} -c ${DEFS} main.c
 
-atari: main.o 6502.o mem.o tia.o
+atari: main.o 6502.o mem.o tia.o pia.o
 	gcc -o atari $^ 
 
 clean:
