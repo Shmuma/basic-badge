@@ -23,11 +23,14 @@ long rom_size = ROM_SIZE;
 uint8_t
 peek(uint16_t address)
 {
+    uint8_t res;
+    
     if (address < RAM_ADDR) {
+        res = peek_tia(address);
 #ifdef TRACE_MEM
-        printf("peek tia: %02X\n", address);
+        printf("peek tia: %02X -> %02X\n", address, res);
 #endif
-        return peek_tia(address);
+        return res;
     }
 
     if (address >= RAM2_ADDR && address <= RAM2_ENDS)
@@ -41,10 +44,11 @@ peek(uint16_t address)
     }
 
     if (address >= PIA_START && address <= PIA_END) {
+        res = peek_pia(address);
 #ifdef TRACE_MEM
-        printf("peek pia: %04X\n", address);
+        printf("peek pia: %04X -> %02X\n", address, res);
 #endif        
-        return peek_pia(address);
+        return res;
     }
   
     if (address >= ROM_ADDR) {

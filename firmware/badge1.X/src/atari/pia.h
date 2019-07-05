@@ -1,6 +1,21 @@
 #ifndef PIA_H
 #define	PIA_H
 
+struct pia_state {
+    union {
+        uint8_t val;
+        struct {
+            uint8_t reset:1;            // game reset, 0 if pressed
+            uint8_t select:1;           // game select, 0 if pressed
+            uint8_t unused_1:1;
+            uint8_t color_bw:1;         // 1 - color, 0 - bw
+            uint8_t unused_2:2;
+            uint8_t p0_diff:1;          // 0 - amateur, 1 - pro
+            uint8_t p1_diff:1;          // 0 - amateur, 1 - pro
+        } bits;
+    } pb;
+};
+
 // PIA addresses
 #define SWCHA   0x0280          // Port A IO
 #define SWACNT  0x0281          // Port A directions
