@@ -96,6 +96,7 @@ int main(int argc, char** argv) {
         rc = mpu();
         if (rc < 0)
             tia_mpu_cycles(-rc);
+        mpu_clock_pia();
         registers();
         printf("%d: rc = %d\n", step++, rc);
         if (rc > 0)

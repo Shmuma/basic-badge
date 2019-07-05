@@ -14,6 +14,11 @@ struct pia_state {
             uint8_t p1_diff:1;          // 0 - amateur, 1 - pro
         } bits;
     } pb;
+    
+    uint8_t timer_val;                  // count of intervals left in timer
+    uint16_t interval_clocks;           // size of interval set
+    uint8_t interval_left;              // counter of interval in MPU cycles
+    
 };
 
 // PIA addresses
@@ -33,6 +38,7 @@ struct pia_state {
 void init_pia();
 void poke_pia(uint16_t, uint8_t);
 uint8_t peek_pia(uint16_t);
+void mpu_clock_pia();
 
 
 #endif	/* PIA_H */

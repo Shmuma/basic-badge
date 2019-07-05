@@ -147,8 +147,10 @@ void atari_start() {
         rc = mpu();
         if (rc > 0)
             atari_init();
-        else
+        else {
             tia_mpu_cycles(-rc);
+            mpu_clock_pia();
+        }
     }
     brk_key = 0;
     enable_display_scanning(1);
