@@ -4,6 +4,12 @@
 struct tia_state tia = {0};
 
 
+INLINE void do_vsync(uint8_t start);
+INLINE void do_vblank(uint8_t start);
+INLINE void do_wsync();                 // draw the next of the line
+void draw_pixels(uint8_t count);        // draw given amount of pixels
+
+
 void init_tia() {
     memset(&tia, 0, sizeof(tia));
 }
@@ -18,12 +24,18 @@ INLINE void do_vsync(uint8_t start) {
     tia.scanline = 0;
 }
 
+INLINE void do_vblank(uint8_t start) {
+#ifdef TRACE_TIA
+    printf("TIA: VBLANK: %d\n", start);
+#endif
+    tia.scanline = start ? 0 : SCN_VBLANK;
+}
+
 
 INLINE void do_wsync() {
 #ifdef TRACE_TIA
     printf("TIA: WSYNC: draw %d pixels\n", CLK_HOR - tia.color_clock);
 #endif
-
     // draw to the rest of scanline
     draw_pixels(CLK_HOR - tia.color_clock);
 }
@@ -34,13 +46,14 @@ void tia_mpu_cycles(uint8_t cycles) {
 }
 
 void poke_tia(uint16_t addr, uint8_t val) {
-    if (addr == VSYNC) {
+    if (addr == VSYNC)
         do_vsync(val != 0);
+    else if (addr == VBLANK) {
+        do_vblank(val & 1<<1);
+        // TODO: handle INP latches/ground
     }
-    else if (addr == WSYNC) {
-        // Q: should we check for color_clock overflow?
+    else if (addr == WSYNC)
         do_wsync();
-    }
     else if (addr >= COLUP0 && addr <= COLUBK) {
         tia.colu[addr - COLUP0] = val & ~1;
     }

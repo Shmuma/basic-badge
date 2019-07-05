@@ -428,8 +428,8 @@ mpu(void)
 		push(reg.PC);
 		push(reg.SR | BREAK);
 		/* PC <= ($FFFE) */
-		reg.SR |= INTERRUPT;
         reg.PC = interrupt_vector();
+		reg.SR |= INTERRUPT;
 		break;
 
 	case 11: /* BVC */

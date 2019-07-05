@@ -90,7 +90,7 @@ int main(int argc, char** argv) {
     printf("Reset vector: %04X\n", reg.PC);
 
     while (1) {
-        if (reg.PC == 0xF262)
+        if (reg.PC == 0xF254)
             printf("Break!\n");
         registers();
         rc = mpu();

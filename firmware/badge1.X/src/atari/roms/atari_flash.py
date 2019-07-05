@@ -55,11 +55,15 @@ if __name__ == "__main__":
                 if b != PROTO_ACK:
                     log.error("Got wrong ACK after len: %02d", ord(b))
                     break
+
                 data = path.read_bytes()
-                ser.write(bytes([0]*(4096-size)))
-                ser.write(data)
+                total = 0
+                while total < 4096:
+                    ser.write(data)
+                    total += len(data)
+                    crc_sum = sum(data)
+                    crc_sum %= 256
                 ser.flush()
-                crc_sum = sum(data) % 256
                 log.info("Sent file %s, size %d, sum %02x", path, len(data), crc_sum)
             ser.write(bytes([0, 0]))
             ser.flush()

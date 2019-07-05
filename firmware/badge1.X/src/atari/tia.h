@@ -34,7 +34,7 @@ struct tia_state {
         uint8_t pf_ref:1;         // reflect playfield
         uint8_t pf_score:1;       // colorize playfields by player
         uint8_t pf_prio:1;        // playfield is higher on prio than player
-        uint8_t unused:1;
+        uint8_t :1;
         uint8_t ballsize:2;       // size of the ball
     } bits;
     uint8_t val;
@@ -47,6 +47,7 @@ struct tia_state {
 };
 
 #define VSYNC       0x00
+#define VBLANK      0x01
 #define WSYNC       0x02
 #define COLUP0      0x06
 #define COLUP1      0x07
@@ -66,9 +67,6 @@ void tia_mpu_cycles(uint8_t cycles);
 void poke_tia(uint16_t, uint8_t);
 uint8_t peek_tia(uint16_t);
 
-INLINE void do_vsync(uint8_t start);
-INLINE void do_wsync();                 // draw the next of the line
-void draw_pixels(uint8_t count);        // draw given amount of pixels
 void tia_line_ready(uint8_t line);
 
 #endif
