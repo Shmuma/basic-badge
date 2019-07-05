@@ -25,6 +25,8 @@
 struct tia_state {
   uint16_t scanline;
   uint8_t color_clock;
+  uint8_t p0_mask;      // mask of p0 to be drawn
+  uint8_t p1_mask;
 
   uint8_t colu[4];          // P0, P1, PF, BK
   union {
@@ -38,8 +40,8 @@ struct tia_state {
     uint8_t val;
   } ctrlpf;
   uint8_t pf0:4;
-  uint8_t pf1;
-  uint8_t pf2;
+  uint8_t pf1, pf2;
+  uint8_t p0, p1;                   // graphics for P0 and P1
   
   uint8_t fb[FB_WIDTH];
 };
@@ -54,7 +56,10 @@ struct tia_state {
 #define PF0         0x0D
 #define PF1         0x0E
 #define PF2         0x0F
-
+#define RESP0       0x10
+#define RESP1       0x11
+#define GRP0        0x1B
+#define GRP1        0x1C
 
 void init_tia();
 void tia_mpu_cycles(uint8_t cycles);

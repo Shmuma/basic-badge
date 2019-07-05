@@ -13,5 +13,6 @@ extern uint8_t rom_data[];
 #endif
 
 extern const uint8_t* rom;
+extern long rom_size;
 
 #endif

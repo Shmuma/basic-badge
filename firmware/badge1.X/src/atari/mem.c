@@ -11,8 +11,13 @@ const uint8_t* rom = rom_data;
 
 long rom_size = ROM_SIZE;
 
-#define RAM_ADDR (0x0080)
-#define RAM_ENDS (0x00FF)
+#define RAM_ADDR    0x0080
+#define RAM_ENDS    0x00FF
+// mirror of RAM
+#define RAM2_OFS    0x0100
+#define RAM2_ADDR   (RAM2_OFS + RAM_ADDR)
+#define RAM2_ENDS   (RAM2_OFS + RAM_ENDS)
+
 #define ROM_ADDR (0xF000)
 
 uint8_t
@@ -24,6 +29,9 @@ peek(uint16_t address)
 #endif
     return peek_tia(address);
   }
+
+  if (address >= RAM2_ADDR && address <= RAM2_ENDS)
+      address -= RAM2_OFS;
   
   if (address <= RAM_ENDS) {
 #ifdef TRACE_MEM
@@ -48,63 +56,31 @@ peek(uint16_t address)
 void
 poke(uint16_t address, uint8_t value)
 {
-  static uint8_t x = 0, y = 0;
+    static uint8_t x = 0, y = 0;
 
-  if (address < RAM_ADDR) {
+    if (address < RAM_ADDR) {
 #ifdef TRACE_MEM
-    printf("poke tia: %02X <- %02X\n", address, value);
+        printf("poke tia: %02X <- %02X\n", address, value);
 #endif
-    poke_tia(address, value);
-    return; 
-  }
+        poke_tia(address, value);
+        return; 
+    }
   
-  if (address <= RAM_ENDS) {
+    if (address >= RAM2_ADDR && address <= RAM2_ENDS)
+        address -= RAM2_OFS;
+
+    if (address <= RAM_ENDS) {
 #ifdef TRACE_MEM
-    printf("poke mem: %x <- %x\n", address, value);
-    if (address == 0x80 && value == 1)
-        printf("Break!\n");
+        printf("poke mem: %x <- %x\n", address, value);
+        if (address == 0x80 && value == 1)
+            printf("Break!\n");
 #endif    
-    memory[address - RAM_ADDR] = value;
-    return;
-  }
-	/*
-	if (address == 0xF001) {
-                putcharacter(value);
-                return;
-        }
-        if (address == 0xF005) {
-                char str[SLEN];
-                snprintf(str, SLEN, "\033[%d;%dH", x = value, y);
-                write(STDOUT_FILENO, str, strlen(str));
-                return;
-        }
-        if (address == 0xF006) {
-                char str[SLEN];
-                snprintf(str, SLEN, "\033[%d;%dH", x, y = value);
-                write(STDOUT_FILENO, str, strlen(str));
-                return;
-        }
-	*/
+        memory[address - RAM_ADDR] = value;
+        return;
+    }
 }
 
 // read reset vector from memory
 uint16_t reset_vector() {
-    return peek(0xFFFA) | (peek(0xFFFB) << 8);
+    return peek(0xFFFC) | (peek(0xFFFD) << 8);
 }
-
-#ifdef ATARI_POSIX
-int read_rom(const char* file_name) {
-  FILE* f = fopen(file_name, "rb");
-  
-  if (!f)
-    return 0;
-
-  fseek(f, 0, SEEK_END);
-  rom_size = ftell(f);
-  fseek(f, 0, SEEK_SET);
-  rom = malloc(rom_size);
-  fread((uint8_t*)rom, rom_size, 1, f);
-  fclose(f);
-  return 1;
-}
-#endif

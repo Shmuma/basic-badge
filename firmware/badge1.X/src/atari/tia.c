@@ -5,7 +5,7 @@ struct tia_state tia = {0};
 
 
 void init_tia() {
-    // not much here for now
+    memset(&tia, 0, sizeof(tia));
 }
 
 
@@ -52,6 +52,14 @@ void poke_tia(uint16_t addr, uint8_t val) {
         tia.pf2 = val;
     else if (addr == CTRLPF)
         tia.ctrlpf.val = val;
+    else if (addr == RESP0)
+        tia.p0_mask = 1 << 7;
+    else if (addr == RESP1)
+        tia.p1_mask = 1 << 7;
+    else if (addr == GRP0)
+        tia.p0 = val;
+    else if (addr == GRP1)
+        tia.p1 = val;
 }
 
 
@@ -80,29 +88,54 @@ INLINE uint8_t _check_pf(uint8_t pixel_ofs) {
 
 
 void draw_pixels(uint8_t count) {
-    uint8_t ofs, col, pf_col;
+    uint8_t ofs, col, pf_col, draw_player, player_col;
   
     while (count--) {
         if (tia.color_clock >= CLK_HORBLANK) {
             if (tia.scanline >= SCN_VIS_START && tia.scanline < SCN_VIS_END) {
                 ofs = tia.color_clock - CLK_HORBLANK;
                 col = tia.colu[3];      // COLUBK
+                draw_player = 0;
+                if (tia.p0_mask) {
+                    draw_player = tia.p0_mask & tia.p0;
+                    tia.p0_mask >>= 1;
+                    if (draw_player)
+                        player_col = tia.colu[0];
+                }
+                if (tia.p1_mask) {
+                    draw_player = tia.p1_mask & tia.p1;
+                    tia.p1_mask >>= 1;
+                    if (draw_player)
+                        player_col = tia.colu[1];
+                }
+                
                 if (ofs < PF_RIGHT) {
-                    if (_check_pf(ofs))
+                    if (_check_pf(ofs)) {
                         col = tia.ctrlpf.bits.pf_score ? tia.colu[0] : tia.colu[2];
+                        if (tia.ctrlpf.bits.pf_prio)
+                            draw_player = 0;
+                    }
                 }
                 else { // right side of the field
                     if (tia.ctrlpf.bits.pf_ref) {
                         // reflect the playfield
-                        if (_check_pf(PF_RIGHT - (ofs - PF_RIGHT)))
+                        if (_check_pf(PF_RIGHT - (ofs - PF_RIGHT))) {
                             col = tia.ctrlpf.bits.pf_score ? tia.colu[1] : tia.colu[2];
+                            if (tia.ctrlpf.bits.pf_prio)
+                                draw_player = 0;                            
+                        }
                     }
                     else {
                         // direct playfield
-                        if (_check_pf(ofs - PF_RIGHT))
+                        if (_check_pf(ofs - PF_RIGHT)) {
                             col = tia.ctrlpf.bits.pf_score ? tia.colu[1] : tia.colu[2];
+                            if (tia.ctrlpf.bits.pf_prio)
+                                draw_player = 0;
+                        }
                     }
                 }
+                if (draw_player)
+                    col = player_col;
                 tia.fb[ofs] = col;
             }
         }

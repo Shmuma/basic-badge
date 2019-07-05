@@ -3,10 +3,17 @@
 
 #include "atari.h"
 
-//#define ROM_FILE "pong.bin"
+// simple coloring
 //#define ROM_FILE "../roms/kernel_01.bin"
+// coloring with TIA clocks
 //#define ROM_FILE "../roms/kernel_13.bin"
-#define ROM_FILE "../../../../../../Atari-roms/asm/kernel_pf.bin"
+// PlayField experiments
+//#define ROM_FILE "../../../../../../Atari-roms/asm/kernel_pf.bin"
+
+//#define ROM_FILE "../roms/pong.bin"
+// players
+//#define ROM_FILE "../../../../../../Atari-roms/asm/kernel_21.bin"
+#define ROM_FILE "../../../../../../Atari-roms/atari_roms/space_invaders.bin"
 
 extern struct register_file reg;
 extern struct tia_state tia;
@@ -48,13 +55,32 @@ void tia_line_ready(uint8_t line) {
 }
 
 
-int main() {
+int read_rom(const char* file_name) {
+    FILE* f = fopen(file_name, "rb");
+
+    if (!f)
+        return 0;
+
+    fseek(f, 0, SEEK_END);
+    rom_size = ftell(f);
+    fseek(f, 0, SEEK_SET);
+    rom = malloc(rom_size);
+    fread((uint8_t*)rom, rom_size, 1, f);
+    fclose(f);
+    return 1;
+}
+
+
+int main(int argc, char** argv) {
+    char* file_name = ROM_FILE;
     int16_t rc;
     uint32_t step = 0;
 
     init_tia();
-    if (!read_rom(ROM_FILE)) {
-        printf("Error reading rom %s\n", ROM_FILE);
+    if (argc == 2)
+        file_name = argv[1];
+    if (!read_rom(file_name)) {
+        printf("Error reading rom %s\n", file_name);
         return -1;
     }
     printf("Rom loaded\n");
