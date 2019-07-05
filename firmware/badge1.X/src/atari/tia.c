@@ -154,11 +154,14 @@ void draw_pixels(uint8_t count) {
         }
         if (++tia.color_clock >= CLK_HOR) {
             tia.color_clock = 0;
-            if (tia.scanline >= SCN_VIS_START && tia.scanline < SCN_VIS_END)
-                tia_line_ready(tia.scanline - SCN_VIS_START);
-            if (++tia.scanline >= SCN_VERT) {
-                tia.scanline = 0;
+            if (tia.scanline < SCN_VIS_END) {
+                if (tia.scanline >= SCN_VIS_START)
+                    tia_line_ready(tia.scanline - SCN_VIS_START);
+                tia.scanline++;
             }
+//            if (++tia.scanline >= SCN_VERT) {
+//                tia.scanline = 0;
+//            }
         }
     }
 }
