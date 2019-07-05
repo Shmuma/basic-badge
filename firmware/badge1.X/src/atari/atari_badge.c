@@ -65,13 +65,19 @@ struct menu_t root_menu = {
 
 
 void tia_line_ready(uint8_t line) {
-    uint8_t x;
+    uint8_t x, is_black;
     uint32_t c;
 
     if (line == 0 && settings_debug_info) {
         show_debug_info();
     }
-
+    // if line is full black, do not show it (to avoid flicker)
+    is_black = 1;
+    for (x = 0; x < FB_WIDTH && is_black; x++)
+        is_black = tia.fb[x] == 0;
+    if (is_black)
+        return;
+    
     tft_set_write_area(0, line, FB_WIDTH*2, 1);
     TFT_24_7789_Write_Command(0x2C);
 
