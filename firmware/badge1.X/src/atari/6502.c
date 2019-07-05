@@ -429,7 +429,7 @@ mpu(void)
 		push(reg.SR | BREAK);
 		/* PC <= ($FFFE) */
 		reg.SR |= INTERRUPT;
-		rc = BREAK;
+        reg.PC = interrupt_vector();
 		break;
 
 	case 11: /* BVC */
@@ -622,7 +622,7 @@ mpu(void)
 		reg.PC = pull();
 		reg.PC |= pull() << 8;
 		reg.SR &= ~INTERRUPT;
-		rc = BREAK;
+//		rc = BREAK;
 		break;
 
 	case 42: /* RTS */
@@ -709,6 +709,8 @@ mpu(void)
 		zero_negative(reg.AC);
 	default:break;
 	}
+    
+    
     
     if (!rc) {
         rc = _cycles[opcode];

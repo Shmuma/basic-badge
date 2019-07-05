@@ -23,34 +23,35 @@ long rom_size = ROM_SIZE;
 uint8_t
 peek(uint16_t address)
 {
-  if (address < RAM_ADDR) {
+    if (address < RAM_ADDR) {
 #ifdef TRACE_MEM
-    printf("peek tia: %02X\n", address);
+        printf("peek tia: %02X\n", address);
 #endif
-    return peek_tia(address);
-  }
+        return peek_tia(address);
+    }
 
-  if (address >= RAM2_ADDR && address <= RAM2_ENDS)
-      address -= RAM2_OFS;
+    if (address >= RAM2_ADDR && address <= RAM2_ENDS)
+        address -= RAM2_OFS;
   
-  if (address <= RAM_ENDS) {
+    if (address <= RAM_ENDS) {
 #ifdef TRACE_MEM
-    printf("peek mem: %02X -> %02X\n", address, memory[address - RAM_ADDR]);
+        printf("peek mem: %02X -> %02X\n", address, memory[address - RAM_ADDR]);
 #endif
-    return memory[address - RAM_ADDR];
-  }
+        return memory[address - RAM_ADDR];
+    }
 
-  // TODO: need to handle RIOT address range
+    // TODO: need to handle RIOT address range
   
-  address -= ROM_ADDR;
-  if (address < rom_size) {
+    if (address >= ROM_ADDR) {
+        address -= ROM_ADDR;
+        address %= rom_size;
 #ifdef TRACE_MEM
-    printf("peek rom: %02X -> %02X\n", address + ROM_ADDR, rom[address]);
+        printf("peek rom: %02X -> %02X\n", address + ROM_ADDR, rom[address]);
 #endif
-    return rom[address];
-  }
+        return rom[address];
+    }
 
-  return 0xFF;
+    return 0xFF;
 }
 
 void
@@ -72,8 +73,6 @@ poke(uint16_t address, uint8_t value)
     if (address <= RAM_ENDS) {
 #ifdef TRACE_MEM
         printf("poke mem: %x <- %x\n", address, value);
-        if (address == 0x80 && value == 1)
-            printf("Break!\n");
 #endif    
         memory[address - RAM_ADDR] = value;
         return;
@@ -83,4 +82,9 @@ poke(uint16_t address, uint8_t value)
 // read reset vector from memory
 uint16_t reset_vector() {
     return peek(0xFFFC) | (peek(0xFFFD) << 8);
+}
+
+// read interrupt vector from memory
+uint16_t interrupt_vector() {
+    return peek(0xFFFE) | (peek(0xFFFF) << 8);
 }

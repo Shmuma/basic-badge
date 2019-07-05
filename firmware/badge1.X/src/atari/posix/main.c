@@ -84,10 +84,13 @@ int main(int argc, char** argv) {
         return -1;
     }
     printf("Rom loaded\n");
+    // do not understand how this reset vector works, so, just start with fixed address
     reg.PC = reset_vector();
     printf("Reset vector: %04X\n", reg.PC);
 
     while (1) {
+        if (reg.PC == 0xF262)
+            printf("Break!\n");
         registers();
         rc = mpu();
         if (rc < 0)
