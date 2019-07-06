@@ -156,20 +156,18 @@ void draw_pixels(uint8_t count) {
                 }
                 if (draw_player)
                     col = player_col;
-                tia.fb[ofs] = col;
+                // check that this line differs from the previous frame
+                if (!tia.draw_line)
+                    if (tia.fb[tia.scanline][ofs] != col)
+                        tia.draw_line = 1;
+                tia.fb[tia.scanline][ofs] = col;
             }
         }
         if (++tia.color_clock >= CLK_HOR) {
             tia.color_clock = 0;
             if (tia.draw_enabled && !tia.vsync_enabled) {
                 tia_line_ready(tia.scanline++);
-            }
-//            else if (tia.scanline < 0) {
-//                printf("Scanline: %d\n", tia.scanline);
-//                if (!++tia.scanline)
-//                    tia.draw_enabled = 1;
-//            }
-                
+            }                
         }
     }
 }
