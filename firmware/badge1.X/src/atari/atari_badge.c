@@ -68,6 +68,9 @@ void tia_line_ready(uint8_t line) {
     uint8_t x;
     uint32_t c;
 
+    if (line >= FB_HEIGHT)
+        return;
+    
     if (line == 0 && settings_debug_info) {
         show_debug_info();
     }
@@ -169,18 +172,22 @@ void atari_init() {
 // called at every frame
 void show_debug_info() {
     static char buf[20];
+    static uint8_t frame_idx = 0;
     static uint32_t last_ms = 0;
     uint32_t dt;
     uint8_t i;
     
-    if (last_ms > 0) {
-        dt = millis() - last_ms;
-        snprintf(buf, sizeof(buf), "fps=%.1f (%d ms)", 1000.0/dt, dt);
+    frame_idx++;
+    frame_idx %= 20;
+    if (!frame_idx) {
+        dt = (millis() - last_ms)/20;
+        snprintf(buf, sizeof(buf), "fps=%.1f (%d ms)     ", 1000.0/dt, dt);
         for (i = 0; i < sizeof(buf) && buf[i]; i++) 
-            tft_print_char(buf[i], i*8, TFT_HEIGHT-11, 0xFFFFFF, 0);
+            tft_print_char(buf[i], i*8, FB_HEIGHT+1, 0xFFFFFF, 0);
+        last_ms = millis();
     }
     
-    last_ms = millis();
+    
 }
 
 
