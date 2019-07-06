@@ -77,9 +77,10 @@ void tia_line_ready(uint8_t line) {
 
     for (x = 0; x < FB_WIDTH; x++) {
         c = COLOR_NTSC(tia.fb[x]);
-        TFT_24_7789_Write_Data3((c >> 16) & 0xFF, (c >> 8) & 0xFF, c & 0xFF);
-        TFT_24_7789_Write_Data3((c >> 16) & 0xFF, (c >> 8) & 0xFF, c & 0xFF);
 #if 0
+        TFT_24_7789_Write_Data3((c >> 16) & 0xFF, (c >> 8) & 0xFF, c & 0xFF);
+        TFT_24_7789_Write_Data3((c >> 16) & 0xFF, (c >> 8) & 0xFF, c & 0xFF);
+#endif        
         // inlined version of the above, gives +4 fps
         LCD_WR_CLR;
         LCD_PORT = c >> 16;
@@ -99,7 +100,6 @@ void tia_line_ready(uint8_t line) {
         LCD_WR_CLR;
         LCD_PORT = c & 0xFF;
         LCD_WR_SET;
-#endif        
     }
 }
 
@@ -177,7 +177,7 @@ void show_debug_info() {
         dt = millis() - last_ms;
         snprintf(buf, sizeof(buf), "fps=%.1f (%d ms)", 1000.0/dt, dt);
         for (i = 0; i < sizeof(buf) && buf[i]; i++) 
-            tft_print_char(buf[i], i*8, 200, 0xFFFFFF, 0);
+            tft_print_char(buf[i], i*8, TFT_HEIGHT-11, 0xFFFFFF, 0);
     }
     
     last_ms = millis();
@@ -185,15 +185,6 @@ void show_debug_info() {
 
 
 void atari_load_rom(uint8_t sector) {
-//    volatile uint8_t sum;
-//    uint16_t i;
     fl_read_4k(((uint32_t)sector) << 12, rom_data);
-//    fl_read_nk(((uint32_t)sector) << 12, rom_data, 100);
-//    fl_read_nk((((uint32_t)sector) << 12) + 1, rom_data+100, 100);
-    
-//    sum = 0;
-//    for (i = 0; i < ROM_SIZE; i++)
-//        sum += rom_data[i];
-    
     rom = rom_data;
 }

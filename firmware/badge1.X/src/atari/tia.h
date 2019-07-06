@@ -3,18 +3,18 @@
 
 // Working with NTSC standard
 #define FB_WIDTH 	160
-#define FB_HEIGHT	192
+//#define FB_HEIGHT	(192+17)
 
 #define CLK_HORBLANK 	68
 #define CLK_HOR         (CLK_HORBLANK + FB_WIDTH)
 
 // VSYNC is not counted in scanlines
-#define SCN_VSYNC       3   
+//#define SCN_VSYNC       3   
 #define SCN_VBLANK      37
-#define SCN_OVERSCAN	30
-#define SCN_VIS_START   SCN_VBLANK
-#define SCN_VIS_END     (SCN_VIS_START + FB_HEIGHT)
-#define SCN_VERT        (SCN_VIS_END + SCN_OVERSCAN)
+//#define SCN_OVERSCAN	30
+//#define SCN_VIS_START   SCN_VBLANK
+//#define SCN_VIS_END     (SCN_VIS_START + FB_HEIGHT)
+//#define SCN_VERT        (SCN_VIS_END + SCN_OVERSCAN)
 
 // Playfield clock bounds
 #define PF0_MAX_CLK     (4*4)
@@ -23,7 +23,8 @@
 #define PF_RIGHT        80
 
 struct tia_state {
-  uint16_t scanline;
+  uint8_t draw_enabled, vsync_enabled;
+  int16_t scanline;
   uint8_t color_clock;
   uint8_t p0_mask;      // mask of p0 to be drawn
   uint8_t p1_mask;

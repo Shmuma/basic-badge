@@ -19,22 +19,29 @@ void init_tia() {
 // current scanline
 INLINE void do_vsync(uint8_t start) {
 #ifdef TRACE_TIA
-    printf("TIA: VSYNC: %d\n", start);
+    printf("SV TIA: VSYNC: %d\n", start);
 #endif
+    tia.vsync_enabled = start;
     tia.scanline = 0;
+//    if (start)
+//        tia.draw_enabled = 0;
+//    else
+//        do_vblank(1);
 }
 
 INLINE void do_vblank(uint8_t start) {
 #ifdef TRACE_TIA
-    printf("TIA: VBLANK: %d\n", start);
+    printf("SV TIA: VBLANK: %d\n", start);
 #endif
-    tia.scanline = start ? 0 : SCN_VBLANK;
+    tia.draw_enabled = !start;
+    tia.scanline = 0;
+//    tia.scanline = -SCN_VBLANK;
 }
 
 
 INLINE void do_wsync() {
 #ifdef TRACE_TIA
-    printf("TIA: WSYNC: draw %d pixels\n", CLK_HOR - tia.color_clock);
+    printf("SV TIA: WSYNC: draw %d pixels\n", CLK_HOR - tia.color_clock);
 #endif
     // draw to the rest of scanline
     draw_pixels(CLK_HOR - tia.color_clock);
@@ -105,7 +112,7 @@ void draw_pixels(uint8_t count) {
   
     while (count--) {
         if (tia.color_clock >= CLK_HORBLANK) {
-            if (tia.scanline >= SCN_VIS_START && tia.scanline < SCN_VIS_END) {
+            if (tia.draw_enabled && !tia.vsync_enabled) {
                 ofs = tia.color_clock - CLK_HORBLANK;
                 col = tia.colu[3];      // COLUBK
                 draw_player = 0;
@@ -154,14 +161,15 @@ void draw_pixels(uint8_t count) {
         }
         if (++tia.color_clock >= CLK_HOR) {
             tia.color_clock = 0;
-            if (tia.scanline < SCN_VIS_END) {
-                if (tia.scanline >= SCN_VIS_START)
-                    tia_line_ready(tia.scanline - SCN_VIS_START);
-                tia.scanline++;
+            if (tia.draw_enabled && !tia.vsync_enabled) {
+                tia_line_ready(tia.scanline++);
             }
-//            if (++tia.scanline >= SCN_VERT) {
-//                tia.scanline = 0;
+//            else if (tia.scanline < 0) {
+//                printf("Scanline: %d\n", tia.scanline);
+//                if (!++tia.scanline)
+//                    tia.draw_enabled = 1;
 //            }
+                
         }
     }
 }
