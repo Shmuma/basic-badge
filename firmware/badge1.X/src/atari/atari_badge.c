@@ -75,15 +75,11 @@ void tia_line_ready(uint8_t line) {
         show_debug_info();
     }
 
-    // line is the same as on previous frame, skip draw
-    if (!tia.draw_line)
-        return;
-    
     tft_set_write_area(0, line, FB_WIDTH*2, 1);
     TFT_24_7789_Write_Command(0x2C);
 
     for (x = 0; x < FB_WIDTH; x++) {
-        c = COLOR_NTSC(tia.fb[line][x]);
+        c = COLOR_NTSC(tia.fb[x]);
 #if 0
         TFT_24_7789_Write_Data3((c >> 16) & 0xFF, (c >> 8) & 0xFF, c & 0xFF);
         TFT_24_7789_Write_Data3((c >> 16) & 0xFF, (c >> 8) & 0xFF, c & 0xFF);
@@ -108,7 +104,6 @@ void tia_line_ready(uint8_t line) {
         LCD_PORT = c & 0xFF;
         LCD_WR_SET;
     }
-    tia.draw_line = 0;
 }
 
 void atari_menu() {

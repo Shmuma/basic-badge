@@ -45,8 +45,7 @@ struct tia_state {
   uint8_t pf1, pf2;
   uint8_t p0, p1;                   // graphics for P0 and P1
   
-  uint8_t draw_line; //fb[FB_WIDTH];
-  uint8_t fb[FB_HEIGHT][FB_WIDTH];
+  uint8_t fb[FB_WIDTH];
 };
 
 #define VSYNC       0x00
