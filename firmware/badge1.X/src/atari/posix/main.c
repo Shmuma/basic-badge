@@ -17,7 +17,7 @@
 
 extern struct register_file reg;
 extern struct tia_state tia;
-
+#define SHOW_COLORS 1
 
 static void
 registers()
@@ -48,10 +48,17 @@ void tia_line_ready(uint8_t line) {
         frame++;
   
     printf("SC %04d, %03d: ", frame, line);
+#if SHOW_COLORS
+    for (c = 0; c < FB_WIDTH; c++) {
+        printf("\x1B[38;5;%dm#", tia.fb[c]);
+    }
+    printf("\x1B[0m\n");
+#else    
     for (c = 0; c < FB_WIDTH; c++) {
       printf("%02x", tia.fb[c]);
     }
     printf("\n");
+#endif
 }
 
 
