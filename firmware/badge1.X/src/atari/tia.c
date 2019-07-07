@@ -38,29 +38,23 @@ INLINE void do_wsync() {
 #ifdef TRACE_TIA
     printf("SV TIA: WSYNC: draw %d pixels\n", CLK_HOR - tia.color_clock);
 #endif
-    // draw to the rest of scanline
-    draw_pixels(CLK_HOR - tia.color_clock);
-    // to prevent WSYNC operation to be counted 
-    // Ideally we need to queue operations triggered by poke and execute them after
-    tia.wsync_triggered = 1;
+    if (tia.color_clock > 0) {
+        // draw to the rest of scanline
+        draw_pixels(CLK_HOR - tia.color_clock);
+    }
 }
 
 // need to be called after execution of MPU opcode with amount of CPU cycles
 void tia_mpu_cycles(uint8_t cycles) {
-    if (!tia.wsync_triggered)
-        draw_pixels(cycles*3);
-    else
-        tia.wsync_triggered = 0;
-}
+    uint8_t addr, val;
+    draw_pixels(cycles*3);
+    
+    addr = tia.queue_addr;
+    val = tia.queue_val;
+    if (!addr)
+        return;
 
-void poke_tia(uint16_t addr, uint8_t val) {
-    if (addr == VSYNC)
-        do_vsync(val != 0);
-    else if (addr == VBLANK) {
-        do_vblank(val & 1<<1);
-        // TODO: handle INP latches/ground
-    }
-    else if (addr == WSYNC)
+    if (addr == WSYNC)
         do_wsync();
     else if (addr >= COLUP0 && addr <= COLUBK) {
         tia.colu[addr - COLUP0] = val & ~1;
@@ -81,6 +75,20 @@ void poke_tia(uint16_t addr, uint8_t val) {
         tia.p0 = val;
     else if (addr == GRP1)
         tia.p1 = val;
+    tia.queue_addr = 0;
+}
+
+void poke_tia(uint16_t addr, uint8_t val) {
+    if (addr == VSYNC)
+        do_vsync(val != 0);
+    else if (addr == VBLANK) {
+        do_vblank(val & 1<<1);
+        // TODO: handle INP latches/ground
+    }
+    else {
+        tia.queue_addr = addr;
+        tia.queue_val = val;
+    }
 }
 
 
