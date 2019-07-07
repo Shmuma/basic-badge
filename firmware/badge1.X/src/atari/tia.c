@@ -40,11 +40,17 @@ INLINE void do_wsync() {
 #endif
     // draw to the rest of scanline
     draw_pixels(CLK_HOR - tia.color_clock);
+    // to prevent WSYNC operation to be counted 
+    // Ideally we need to queue operations triggered by poke and execute them after
+    tia.wsync_triggered = 1;
 }
 
 // need to be called after execution of MPU opcode with amount of CPU cycles
 void tia_mpu_cycles(uint8_t cycles) {
-    draw_pixels(cycles*3);
+    if (!tia.wsync_triggered)
+        draw_pixels(cycles*3);
+    else
+        tia.wsync_triggered = 0;
 }
 
 void poke_tia(uint16_t addr, uint8_t val) {
@@ -154,6 +160,10 @@ void draw_pixels(uint8_t count) {
                 tia.fb[ofs] = col;
             }
         }
+        
+#ifdef TRACE_TIA
+        printf("TIA: col=%d, scan=%d\n", tia.color_clock, tia.scanline);
+#endif        
         if (++tia.color_clock >= CLK_HOR) {
             tia.color_clock = 0;
             if (tia.draw_enabled && !tia.vsync_enabled) {
