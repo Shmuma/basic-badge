@@ -23,10 +23,6 @@ INLINE void do_vsync(uint8_t start) {
 #endif
     tia.vsync_enabled = start;
     tia.scanline = 0;
-//    if (start)
-//        tia.draw_enabled = 0;
-//    else
-//        do_vblank(1);
 }
 
 INLINE void do_vblank(uint8_t start) {
@@ -35,7 +31,6 @@ INLINE void do_vblank(uint8_t start) {
 #endif
     tia.draw_enabled = !start;
     tia.scanline = 0;
-//    tia.scanline = -SCN_VBLANK;
 }
 
 
@@ -164,12 +159,6 @@ void draw_pixels(uint8_t count) {
             if (tia.draw_enabled && !tia.vsync_enabled) {
                 tia_line_ready(tia.scanline++);
             }
-//            else if (tia.scanline < 0) {
-//                printf("Scanline: %d\n", tia.scanline);
-//                if (!++tia.scanline)
-//                    tia.draw_enabled = 1;
-//            }
-                
         }
     }
 }
