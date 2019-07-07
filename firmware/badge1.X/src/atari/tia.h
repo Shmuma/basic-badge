@@ -24,7 +24,8 @@
 #define PF_RIGHT        80
 
 struct tia_state {
-  uint8_t draw_enabled, vsync_enabled, wsync_triggered;
+  uint8_t draw_enabled, vsync_enabled;
+  uint8_t queue_addr, queue_val;
   int16_t scanline;
   uint8_t color_clock;
   uint8_t p0_mask;      // mask of p0 to be drawn
