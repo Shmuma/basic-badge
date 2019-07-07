@@ -162,7 +162,8 @@ void draw_pixels(uint8_t count) {
         }
         
 #ifdef TRACE_TIA
-        printf("TIA: col=%d, scan=%d\n", tia.color_clock, tia.scanline);
+        printf("TIA: col=%d, scan=%d, colubk=%02X, clr_stored=%02X\n", 
+                tia.color_clock, tia.scanline, tia.colu[3], col);
 #endif        
         if (++tia.color_clock >= CLK_HOR) {
             tia.color_clock = 0;
