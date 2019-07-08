@@ -37,7 +37,7 @@
 #pragma config BWP = OFF                // Boot Flash Write Protect bit (Protection Disabled)
 #pragma config CP = OFF                 // Code Protect (Protection Disabled)
 
-uint8_t key_state=0,key_last,key,led_state=0;
+uint8_t key_state=0,key_last = 0,key,led_state=0;
 uint16_t rnd_var1,rnd_var2,rnd_var3;
 
 uint32_t last_addr = 0xFFFFF000;
@@ -518,6 +518,12 @@ uint8_t keyb_tasks (void)
 	return retval;
 	}
 
+
+void reset_last_key() {
+    IEC0bits.T2IE = 0;
+    key_last = 0;
+    IEC0bits.T2IE = 1;
+}
 
 
 void wait_ms (uint32_t count)

@@ -4,7 +4,7 @@ struct pia_state pia;
 
 
 void init_pia() {
-    pia.pb.val = 0b00001011;        // both amateur, color, nothing pressed
+    pia_pb_clear();
     pia.timer_val = 0;
     pia.interval_clocks = 0;
     pia.interval_left = 0;
@@ -32,10 +32,15 @@ void poke_pia(uint16_t address, uint8_t val) {
         pia.interval_clocks = (uint32_t)(1 << 10);
         pia.interval_left = 0;
     }
+    else if (address == SWACNT) {
+        pia.pa_dir = val;
+    }
 }
 
 uint8_t peek_pia(uint16_t address) {
-    if (address == SWCHB)
+    if (address == SWCHA)
+        return pia.pa.val & pia.pa_dir;
+    else if (address == SWCHB)
         return pia.pb.val;
     else if (address == INTIM)
         return pia.timer_val;
@@ -58,5 +63,22 @@ void mpu_clock_pia() {
     }
 }
 
+void pia_pa_clear() {
+    pia.pa.val = 0;
+}
 
-// TODO: methods to change switches of port B
+void pia_pa_set(uint8_t dir, uint8_t is_p0) {
+    pia.pa.val |= (1 << (dir + (is_p0 ? 4 : 0)));
+}
+
+void pia_pb_clear() {
+    pia.pb.val = 0b00001011;        // both amateur, color, nothing pressed   
+}
+
+void pia_reset() {
+    pia.pb.bits.reset = 0;
+}
+
+void pia_select() {
+    pia.pb.bits.select = 0;
+}

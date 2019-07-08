@@ -141,6 +141,7 @@ uint8_t CHAR;
 void terminal_init(void);
 int8_t term_k_stat (void);
 int8_t term_k_char (int8_t * out);
+void reset_last_key();
 
 void init_io(uint8_t mode);
 uint8_t stdio_write (const int8_t * data);

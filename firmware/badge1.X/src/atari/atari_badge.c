@@ -3,17 +3,21 @@
 #include "atari_uart.h"
 #include "../disp.h"
 #include "../menu.h"
+
 #include <stdio.h>
 #include <xc.h>
 
 extern struct register_file reg;
 extern struct tia_state tia;
+extern struct pia_state pia;
 
 uint8_t settings_debug_info = ONSCREEN_DEBUG;
 
 void atari_start();
 void atari_init();
 void atari_load_rom(uint8_t sector);
+void atari_every_frame();
+void atari_keyboard();
 const char* get_menu_text_debug();
 void show_debug_info();
 
@@ -71,8 +75,10 @@ void tia_line_ready(uint8_t line) {
     if (line >= FB_HEIGHT)
         return;
     
-    if (line == 0 && settings_debug_info) {
-        show_debug_info();
+    if (line == 0) {
+        atari_every_frame();
+        if (settings_debug_info)
+            show_debug_info();
     }
 
     tft_set_write_area(0, line, FB_WIDTH*2, 1);
@@ -171,7 +177,7 @@ void atari_init() {
 
 // called at every frame
 void show_debug_info() {
-    static char buf[20];
+    static char buf[40];
     static uint8_t frame_idx = 0;
     static uint32_t last_ms = 0;
     uint32_t dt;
@@ -182,7 +188,8 @@ void show_debug_info() {
     if (!frame_idx) {
         if (last_ms) {
             dt = (millis() - last_ms)/20;
-            snprintf(buf, sizeof(buf), "fps=%.1f (%d ms)     ", 1000.0/dt, dt);
+            snprintf(buf, sizeof(buf), "fps=%.1f (%d ms) PA=%02X     ", 
+                    1000.0/dt, dt, pia.pa.val);
             for (i = 0; i < sizeof(buf) && buf[i]; i++) 
                 tft_print_char(buf[i], i*8, FB_HEIGHT+1, 0xFFFFFF, 0);
         }
@@ -196,4 +203,44 @@ void show_debug_info() {
 void atari_load_rom(uint8_t sector) {
     fl_read_4k(((uint32_t)sector) << 12, rom_data);
     rom = rom_data;
+}
+
+
+void atari_every_frame() {
+    // check keyboard
+    pia_pa_clear();
+    pia_pb_clear();
+    atari_keyboard();
+}
+
+
+void atari_keyboard() {
+    static int8_t keys[3];
+    uint8_t keys_count;
+    
+    keys_count = stdio_get(keys);
+    while (keys_count-- > 0) {
+        switch (keys[keys_count]) {
+            case K_UP:
+                pia_pa_set(DIR_UP, 1);
+                break;
+            case K_DN:
+                pia_pa_set(DIR_DN, 1);
+                break;
+            case K_LT:
+                pia_pa_set(DIR_LT, 1);
+                break;
+            case K_RT:
+                pia_pa_set(DIR_RT, 1);
+                break;
+            case '1':
+                pia_reset();
+                break;
+            case '2':
+                pia_select();
+                break;
+        }
+    }
+    // allow keys to repeat
+    reset_last_key();
 }

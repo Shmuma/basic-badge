@@ -15,6 +15,21 @@ struct pia_state {
         } bits;
     } pb;
     
+    uint8_t pa_dir;                     // port A direction bits
+    union {
+        uint8_t val;
+        struct {
+            uint8_t p1_up:1;
+            uint8_t p1_dn:1;
+            uint8_t p1_lt:1;
+            uint8_t p1_rt:1;
+            uint8_t p0_up:1;
+            uint8_t p0_dn:1;
+            uint8_t p0_lt:1;
+            uint8_t p0_rt:1;
+        } bits;
+    } pa;
+    
     uint8_t timer_val;                  // count of intervals left in timer
     uint16_t interval_clocks;           // size of interval set
     uint8_t interval_left;              // counter of interval in MPU cycles
@@ -39,7 +54,16 @@ void init_pia();
 void poke_pia(uint16_t, uint8_t);
 uint8_t peek_pia(uint16_t);
 void mpu_clock_pia();
+void pia_pa_clear();
+void pia_pa_set(uint8_t dir, uint8_t is_p0);
+void pia_pb_clear();
+void pia_reset();
+void pia_select();
 
+#define DIR_UP      0
+#define DIR_DN      1
+#define DIR_LT      2
+#define DIR_RT      3
 
 #endif	/* PIA_H */
 
