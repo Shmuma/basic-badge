@@ -131,7 +131,7 @@ INLINE uint8_t _mask_clocks_from_psize(uint8_t psize) {
         return 2;
     if (psize == NUSIZ_QUAD)
         return 4;
-    return 4;
+    return 1;
 }
 
 
