@@ -29,8 +29,11 @@ struct tia_state {
   int16_t scanline;
   uint8_t color_clock;
   uint8_t p0_pos, p1_pos;       // position of P0 and P1
-  uint8_t p0_mask;      // mask of p0 to be drawn
-  uint8_t p1_mask;
+  uint8_t p0_mask;              // mask of p0 to be drawn
+  uint8_t p0_mask_cnt, p0_mask_clocks;       // how frequently we shift the mask, driven by NUSIZP0
+  uint8_t p1_mask;              // mask of p1 to be drawn
+  uint8_t p1_mask_cnt, p1_mask_clocks;       // how frequently we shift the mask, driven by NUSIZP1
+  
 
   uint8_t colu[4];          // P0, P1, PF, BK
   union {
@@ -48,12 +51,32 @@ struct tia_state {
   uint8_t p0, p1;                   // graphics for P0 and P1
   uint8_t ref_p0, ref_p1;           // reflect players
   
+  union {
+      struct {
+          uint8_t psize_count:3;          // player size and counts
+          uint8_t :1;
+          uint8_t msize:2;                // missile size
+      } bits;
+      uint8_t val;
+  } nusiz0;
+
+  union {
+      struct {
+          uint8_t psize_count:3;          // player size and counts
+          uint8_t :1;
+          uint8_t msize:2;                // missile size
+      } bits;
+      uint8_t val;
+  } nusiz1;
+  
   uint8_t fb[FB_WIDTH];
 };
 
 #define VSYNC       0x00
 #define VBLANK      0x01
 #define WSYNC       0x02
+#define NUSIZ0      0x04
+#define NUSIZ1      0x05
 #define COLUP0      0x06
 #define COLUP1      0x07
 #define COLUPF      0x08
@@ -68,6 +91,9 @@ struct tia_state {
 #define RESP1       0x11
 #define GRP0        0x1B
 #define GRP1        0x1C
+
+#define NUSIZ_DOUBLE    0b101
+#define NUSIZ_QUAD      0b111
 
 void init_tia();
 void tia_mpu_cycles(uint8_t cycles);
