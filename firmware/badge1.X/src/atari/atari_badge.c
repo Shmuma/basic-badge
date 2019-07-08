@@ -180,10 +180,12 @@ void show_debug_info() {
     frame_idx++;
     frame_idx %= 20;
     if (!frame_idx) {
-        dt = (millis() - last_ms)/20;
-        snprintf(buf, sizeof(buf), "fps=%.1f (%d ms)     ", 1000.0/dt, dt);
-        for (i = 0; i < sizeof(buf) && buf[i]; i++) 
-            tft_print_char(buf[i], i*8, FB_HEIGHT+1, 0xFFFFFF, 0);
+        if (last_ms) {
+            dt = (millis() - last_ms)/20;
+            snprintf(buf, sizeof(buf), "fps=%.1f (%d ms)     ", 1000.0/dt, dt);
+            for (i = 0; i < sizeof(buf) && buf[i]; i++) 
+                tft_print_char(buf[i], i*8, FB_HEIGHT+1, 0xFFFFFF, 0);
+        }
         last_ms = millis();
     }
     
