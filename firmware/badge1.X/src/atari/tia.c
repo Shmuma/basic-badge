@@ -23,6 +23,7 @@ INLINE void do_vsync(uint8_t start) {
 #endif
     tia.vsync_enabled = start;
     tia.scanline = 0;
+    tia.p0_mask = tia.p1_mask = 0;
 }
 
 INLINE void do_vblank(uint8_t start) {
@@ -67,10 +68,16 @@ void tia_mpu_cycles(uint8_t cycles) {
         tia.pf2 = val;
     else if (addr == CTRLPF)
         tia.ctrlpf.val = val;
+    else if (addr == REFP0)
+        tia.ref_p0 = val;
+    else if (addr == REFP1)
+        tia.ref_p1 = val;
     else if (addr == RESP0)
-        tia.p0_mask = 1 << 7;
+        tia.p0_pos = tia.color_clock;
+        //tia.p0_mask = 1 << 7;
     else if (addr == RESP1)
-        tia.p1_mask = 1 << 7;
+        tia.p1_pos = tia.color_clock;
+        //tia.p1_mask = 1 << 7;
     else if (addr == GRP0)
         tia.p0 = val;
     else if (addr == GRP1)
@@ -117,7 +124,7 @@ INLINE uint8_t _check_pf(uint8_t pixel_ofs) {
 
 
 void draw_pixels(uint8_t count) {
-    uint8_t ofs, col, pf_col, draw_player, player_col;
+    uint8_t ofs, col = 0, pf_col, draw_player, player_col;
   
     while (count--) {
         if (tia.color_clock >= CLK_HORBLANK) {
@@ -127,13 +134,19 @@ void draw_pixels(uint8_t count) {
                 draw_player = 0;
                 if (tia.p0_mask) {
                     draw_player = tia.p0_mask & tia.p0;
-                    tia.p0_mask >>= 1;
+                    if (tia.ref_p0)
+                        tia.p0_mask <<= 1;
+                    else
+                        tia.p0_mask >>= 1;
                     if (draw_player)
                         player_col = tia.colu[0];
                 }
                 if (tia.p1_mask) {
                     draw_player = tia.p1_mask & tia.p1;
-                    tia.p1_mask >>= 1;
+                    if (tia.ref_p1)
+                        tia.p1_mask <<= 1;
+                    else
+                        tia.p1_mask >>= 1;
                     if (draw_player)
                         player_col = tia.colu[1];
                 }
@@ -170,8 +183,9 @@ void draw_pixels(uint8_t count) {
         }
         
 #ifdef TRACE_TIA
-        printf("TIA: col=%d, scan=%d, colubk=%02X, clr_stored=%02X\n", 
-                tia.color_clock, tia.scanline, tia.colu[3], col);
+        printf("TIA: col=%d, scan=%d, colubk=%02X, clr_stored=%02X, p0=%d, p1=%d, p1m=%02X\n", 
+                tia.color_clock, tia.scanline, tia.colu[3], col, tia.p0_pos,
+                tia.p1_pos, tia.p1_mask);
 #endif        
         if (++tia.color_clock >= CLK_HOR) {
             tia.color_clock = 0;
@@ -179,6 +193,10 @@ void draw_pixels(uint8_t count) {
                 tia_line_ready(tia.scanline++);
             }
         }
+        if (tia.p0_pos == tia.color_clock)
+            tia.p0_mask = 1 << (tia.ref_p0 ? 0 : 7);
+        if (tia.p1_pos == tia.color_clock)
+            tia.p1_mask = 1 << (tia.ref_p1 ? 0 : 7);
     }
 }
 

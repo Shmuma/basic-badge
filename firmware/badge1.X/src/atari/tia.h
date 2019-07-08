@@ -28,6 +28,7 @@ struct tia_state {
   uint8_t queue_addr, queue_val;
   int16_t scanline;
   uint8_t color_clock;
+  uint8_t p0_pos, p1_pos;       // position of P0 and P1
   uint8_t p0_mask;      // mask of p0 to be drawn
   uint8_t p1_mask;
 
@@ -45,6 +46,7 @@ struct tia_state {
   uint8_t pf0:4;
   uint8_t pf1, pf2;
   uint8_t p0, p1;                   // graphics for P0 and P1
+  uint8_t ref_p0, ref_p1;           // reflect players
   
   uint8_t fb[FB_WIDTH];
 };
@@ -57,6 +59,8 @@ struct tia_state {
 #define COLUPF      0x08
 #define COLUBK      0x09
 #define CTRLPF      0x0A
+#define REFP0       0x0B
+#define REFP1       0x0C
 #define PF0         0x0D
 #define PF1         0x0E
 #define PF2         0x0F
