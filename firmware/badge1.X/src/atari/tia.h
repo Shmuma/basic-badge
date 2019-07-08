@@ -17,10 +17,6 @@
 //#define SCN_VIS_END     (SCN_VIS_START + FB_HEIGHT)
 //#define SCN_VERT        (SCN_VIS_END + SCN_OVERSCAN)
 
-// Playfield clock bounds
-#define PF0_MAX_CLK     (4*4)
-#define PF1_MAX_CLK     (PF0_MAX_CLK + 8*4)
-#define PF2_MAX_CLK     (PF1_MAX_CLK + 8*4)
 #define PF_RIGHT        80
 
 struct tia_state {
@@ -34,7 +30,6 @@ struct tia_state {
   uint8_t p1_mask;              // mask of p1 to be drawn
   uint8_t p1_mask_cnt, p1_mask_clocks;       // how frequently we shift the mask, driven by NUSIZP1
   
-
   uint8_t colu[4];          // P0, P1, PF, BK
   union {
     struct {
@@ -46,8 +41,9 @@ struct tia_state {
     } bits;
     uint8_t val;
   } ctrlpf;
-  uint8_t pf0:4;
-  uint8_t pf1, pf2;
+  uint32_t pf;                      // pf register combined as pf0, pf1, pf2 in LSB (left-to right order)
+//  uint8_t pf0:4;
+//  uint8_t pf1, pf2;
   uint8_t p0, p1;                   // graphics for P0 and P1
   uint8_t ref_p0, ref_p1;           // reflect players
   
