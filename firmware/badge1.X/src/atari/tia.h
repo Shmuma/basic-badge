@@ -41,9 +41,9 @@ struct tia_state {
     } bits;
     uint8_t val;
   } ctrlpf;
-  uint32_t pf;                      // pf register combined as pf0, pf1, pf2 in LSB (left-to right order)
-//  uint8_t pf0:4;
-//  uint8_t pf1, pf2;
+
+  uint32_t pf;                      // pf register combined as pf0, pf1, pf2 
+                                    // in LSB (left-to right order)
   uint8_t p0, p1;                   // graphics for P0 and P1
   uint8_t ref_p0, ref_p1;           // reflect players
   

@@ -35,6 +35,7 @@ extern const uint8_t kernel_11_rom[];
 #include "mem.h"
 #include "tia.h"
 #include "pia.h"
+#include "tools.h"
 #include "palette.h"
 
 #endif

@@ -77,11 +77,18 @@ int read_rom(const char* file_name) {
     return 1;
 }
 
+void test() {
+    uint8_t x = 0b00010110;
+    
+    printf("res: %02X\n", invert_bits_byte(x));
+}
+
 
 int main(int argc, char** argv) {
     char* file_name = ROM_FILE;
     int16_t rc;
     uint32_t step = 0;
+    test();
 
     init_tia();
     init_pia();

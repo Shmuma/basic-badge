@@ -10,11 +10,6 @@ INLINE void do_wsync();                 // draw the next of the line
 void draw_pixels(uint8_t count);        // draw given amount of pixels
 
 
-static inline uint8_t invert_byte_bits(uint8_t b) {
-    uint16_t v = b;
-    return (uint8_t)(((v * 0x0802LU & 0x22110LU) | (v * 0x8020LU & 0x88440LU)) * 0x10101LU >> 16);
-}
-
 void init_tia() {
     memset(&tia, 0, sizeof(tia));
 }
@@ -72,7 +67,7 @@ void tia_mpu_cycles(uint8_t cycles) {
     else if (addr == PF0)
         tia.pf = (tia.pf & ~0xFF) | (val >> 4);
     else if (addr == PF1)
-        tia.pf = (tia.pf & ~0xFF0) | (invert_byte_bits(val) << 4);
+        tia.pf = (tia.pf & ~0xFF0) | (invert_bits_byte(val) << 4);
     else if (addr == PF2)
         tia.pf = (tia.pf & ~0xFF000) | (val << 12);
     else if (addr == CTRLPF)
@@ -114,22 +109,7 @@ uint8_t peek_tia(uint16_t addr) {
 
 // check the playfield bit at this pixel offset (0..80)
 static inline uint8_t _check_pf(uint8_t pixel_ofs) {
-    return tia.pf & (1 << (pixel_ofs>>2));
-//    uint8_t pf_ofs = pixel_ofs >> 2;
-//
-//    if (pixel_ofs < PF0_MAX_CLK) {
-//        // reversed (4-7 bits)
-//        return tia.pf0 & (1 << pf_ofs);
-//    }
-//    else if (pixel_ofs < PF1_MAX_CLK) {
-//         // direct (7-0)
-//        return tia.pf1 & (1 << (7-(pf_ofs-4)));   
-//    }
-//    else if (pixel_ofs < PF2_MAX_CLK) {
-//        // reversed (0-7)
-//        return tia.pf2 & (1 << (pf_ofs-4-8));
-//    }
-//    return 0;
+    return (tia.pf & (1 << (pixel_ofs>>2))) != 0;
 }
 
 INLINE uint8_t _mask_clocks_from_psize(uint8_t psize) {
