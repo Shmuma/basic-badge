@@ -4,6 +4,7 @@ struct pia_state pia;
 
 
 void init_pia() {
+    pia_pa_clear();
     pia_pb_clear();
     pia.timer_val = 0;
     pia.interval_clocks = 0;
@@ -39,7 +40,7 @@ void poke_pia(uint16_t address, uint8_t val) {
 
 uint8_t peek_pia(uint16_t address) {
     if (address == SWCHA)
-        return pia.pa.val & pia.pa_dir;
+        return pia.pa.val & ~pia.pa_dir;
     else if (address == SWCHB)
         return pia.pb.val;
     else if (address == INTIM)
@@ -64,11 +65,12 @@ void mpu_clock_pia() {
 }
 
 void pia_pa_clear() {
-    pia.pa.val = 0;
+    pia.pa.val = 0xFF;
+//    pia_pa_set(DIR_LT, 1);
 }
 
 void pia_pa_set(uint8_t dir, uint8_t is_p0) {
-    pia.pa.val |= (1 << (dir + (is_p0 ? 4 : 0)));
+    pia.pa.val &= ~(1 << (dir + (is_p0 ? 4 : 0)));
 }
 
 void pia_pb_clear() {

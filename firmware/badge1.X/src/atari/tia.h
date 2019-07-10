@@ -24,7 +24,7 @@ struct tia_state {
   uint8_t queue_addr, queue_val;
   int16_t scanline;
   uint8_t color_clock;
-  uint8_t p0_pos, p1_pos;       // position of P0 and P1
+  uint8_t p0_pos, p1_pos;       // position of P0 and P1 (as offset from visible)
   uint8_t p0_mask;              // mask of p0 to be drawn
   uint8_t p0_mask_cnt, p0_mask_clocks;       // how frequently we shift the mask, driven by NUSIZP0
   uint8_t p1_mask;              // mask of p1 to be drawn
@@ -46,7 +46,7 @@ struct tia_state {
                                     // in LSB (left-to right order)
   uint8_t p0, p1;                   // graphics for P0 and P1
   uint8_t ref_p0, ref_p1;           // reflect players
-  int8_t hmp0, hmp1;                // horizontal offset of players (decoded into signed val)
+  int8_t hmp0, hmp1;                // horizontal move registers (decoded into signed val)
   
   union {
       struct {
@@ -90,6 +90,8 @@ struct tia_state {
 #define GRP1        0x1C
 #define HMP0        0x20
 #define HMP1        0x21
+#define HMOVE       0x2A
+#define HMCLR       0x2B
 
 #define NUSIZ_DOUBLE    0b101
 #define NUSIZ_QUAD      0b111

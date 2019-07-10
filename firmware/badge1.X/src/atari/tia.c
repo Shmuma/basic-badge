@@ -78,10 +78,8 @@ void tia_mpu_cycles(uint8_t cycles) {
         tia.ref_p1 = val;
     else if (addr == RESP0)
         tia.p0_pos = tia.color_clock;
-        //tia.p0_mask = 1 << 7;
     else if (addr == RESP1)
         tia.p1_pos = tia.color_clock;
-        //tia.p1_mask = 1 << 7;
     else if (addr == GRP0)
         tia.p0 = val;
     else if (addr == GRP1)
@@ -90,6 +88,23 @@ void tia_mpu_cycles(uint8_t cycles) {
         tia.hmp0 = FOURBITS_2COMPL_TO_INT(val >> 4);
     else if (addr == HMP1)
         tia.hmp1 = FOURBITS_2COMPL_TO_INT(val >> 4);
+    else if (addr == HMOVE) {
+        tia.p0_pos -= tia.hmp0;
+        if (tia.p0_pos < CLK_HORBLANK)
+            tia.p0_pos += CLK_HOR - CLK_HORBLANK;
+        else if (tia.p0_pos >= CLK_HOR)
+            tia.p0_pos += CLK_HORBLANK - CLK_HOR;
+        
+        tia.p1_pos -= tia.hmp1;
+        if (tia.p1_pos < CLK_HORBLANK)
+            tia.p1_pos += CLK_HOR - CLK_HORBLANK;
+        else if (tia.p1_pos >= CLK_HOR)
+            tia.p1_pos += CLK_HORBLANK - CLK_HOR;
+    }
+    else if (addr == HMCLR) {
+        tia.hmp0 = tia.hmp1 = 0;
+    }
+                
     tia.queue_addr = 0;
 }
 
@@ -129,11 +144,11 @@ void draw_pixels(uint8_t count) {
     uint8_t ofs, col = 0, pf_col, draw_player, player_col;
   
     while (count--) {
-        if (tia.p0_pos == tia.color_clock + tia.hmp0) {
+        if (tia.p0_pos == tia.color_clock) {
             tia.p0_mask = 1 << (tia.ref_p0 ? 0 : 7);
             tia.p0_mask_cnt = tia.p0_mask_clocks = _mask_clocks_from_psize(tia.nusiz0.bits.psize_count);
         }
-        if (tia.p1_pos == tia.color_clock + tia.hmp1) {
+        if (tia.p1_pos == tia.color_clock) {
             tia.p1_mask = 1 << (tia.ref_p1 ? 0 : 7);
             tia.p1_mask_cnt = tia.p1_mask_clocks = _mask_clocks_from_psize(tia.nusiz1.bits.psize_count);
         }        
