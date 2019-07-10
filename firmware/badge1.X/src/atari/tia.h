@@ -30,6 +30,16 @@ struct tia_state {
   uint8_t p1_mask;              // mask of p1 to be drawn
   uint8_t p1_mask_cnt, p1_mask_clocks;       // how frequently we shift the mask, driven by NUSIZP1
   
+  union {
+      uint8_t val;
+      struct {
+          uint8_t p0:1;
+          uint8_t p1:1;
+      }bits;
+  } fire;                       // fire button states, 0 - depressed, 1 - pressed
+  
+  uint8_t fire_buttons;         // zero and first bits
+  
   uint8_t colu[4];          // P0, P1, PF, BK
   union {
     struct {
@@ -69,6 +79,7 @@ struct tia_state {
   uint8_t fb[FB_WIDTH];
 };
 
+// Write ports
 #define VSYNC       0x00
 #define VBLANK      0x01
 #define WSYNC       0x02
@@ -96,11 +107,18 @@ struct tia_state {
 #define NUSIZ_DOUBLE    0b101
 #define NUSIZ_QUAD      0b111
 
+// Read ports
+#define TIA_RD_INPT4    0x0C
+#define TIA_RD_INPT5    0x0D
+
+
 void init_tia();
 void tia_mpu_cycles(uint8_t cycles);
 void poke_tia(uint16_t, uint8_t);
 uint8_t peek_tia(uint16_t);
 
 void tia_line_ready(uint8_t line);
+
+void tia_fire(uint8_t p0, uint8_t set);
 
 #endif

@@ -210,6 +210,8 @@ void atari_every_frame() {
     // check keyboard
     pia_pa_clear();
     pia_pb_clear();
+    tia_fire(1, 0);
+    tia_fire(0, 0);
     atari_keyboard();
 }
 
@@ -233,11 +235,14 @@ void atari_keyboard() {
             case K_RT:
                 pia_pa_set(DIR_RT, 1);
                 break;
-            case '1':
+            case '/':
                 pia_reset();
                 break;
-            case '2':
+            case 'a':
                 pia_select();
+                break;
+            case '=':
+                tia_fire(1, 1);
                 break;
         }
     }

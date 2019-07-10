@@ -123,6 +123,10 @@ void poke_tia(uint16_t addr, uint8_t val) {
 
 
 uint8_t peek_tia(uint16_t addr) {
+    if (addr == TIA_RD_INPT4)
+        return (1-tia.fire.bits.p0) << 7;
+    else if (addr == TIA_RD_INPT5)
+        return (1-tia.fire.bits.p1) << 7;
     return 0xFF;
 }
 
@@ -228,3 +232,10 @@ void draw_pixels(uint8_t count) {
     }
 }
 
+
+void tia_fire(uint8_t p0, uint8_t set) {
+    if (p0)
+        tia.fire.bits.p0 = set != 0;
+    else
+        tia.fire.bits.p1 = set != 0;
+}
