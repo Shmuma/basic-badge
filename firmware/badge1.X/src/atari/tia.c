@@ -86,6 +86,10 @@ void tia_mpu_cycles(uint8_t cycles) {
         tia.p0 = val;
     else if (addr == GRP1)
         tia.p1 = val;
+    else if (addr == HMP0)
+        tia.hmp0 = FOURBITS_2COMPL_TO_INT(val >> 4);
+    else if (addr == HMP1)
+        tia.hmp1 = FOURBITS_2COMPL_TO_INT(val >> 4);
     tia.queue_addr = 0;
 }
 
@@ -125,11 +129,11 @@ void draw_pixels(uint8_t count) {
     uint8_t ofs, col = 0, pf_col, draw_player, player_col;
   
     while (count--) {
-        if (tia.p0_pos == tia.color_clock) {
+        if (tia.p0_pos == tia.color_clock + tia.hmp0) {
             tia.p0_mask = 1 << (tia.ref_p0 ? 0 : 7);
             tia.p0_mask_cnt = tia.p0_mask_clocks = _mask_clocks_from_psize(tia.nusiz0.bits.psize_count);
         }
-        if (tia.p1_pos == tia.color_clock) {
+        if (tia.p1_pos == tia.color_clock + tia.hmp1) {
             tia.p1_mask = 1 << (tia.ref_p1 ? 0 : 7);
             tia.p1_mask_cnt = tia.p1_mask_clocks = _mask_clocks_from_psize(tia.nusiz1.bits.psize_count);
         }        

@@ -78,9 +78,10 @@ int read_rom(const char* file_name) {
 }
 
 void test() {
-    uint8_t x = 0b00010110;
-    
-    printf("res: %02X\n", invert_bits_byte(x));
+//    uint8_t x = 0b00010110;
+//    
+//    printf("res: %02X\n", invert_bits_byte(x));
+    printf("res: %d\n", FOURBITS_2COMPL_TO_INT(0b1010));
 }
 
 

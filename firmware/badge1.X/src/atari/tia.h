@@ -46,6 +46,7 @@ struct tia_state {
                                     // in LSB (left-to right order)
   uint8_t p0, p1;                   // graphics for P0 and P1
   uint8_t ref_p0, ref_p1;           // reflect players
+  int8_t hmp0, hmp1;                // horizontal offset of players (decoded into signed val)
   
   union {
       struct {
@@ -87,6 +88,8 @@ struct tia_state {
 #define RESP1       0x11
 #define GRP0        0x1B
 #define GRP1        0x1C
+#define HMP0        0x20
+#define HMP1        0x21
 
 #define NUSIZ_DOUBLE    0b101
 #define NUSIZ_QUAD      0b111
