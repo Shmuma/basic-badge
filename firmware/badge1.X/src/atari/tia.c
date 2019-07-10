@@ -147,7 +147,7 @@ INLINE uint8_t _mask_clocks_from_psize(uint8_t psize) {
 void draw_pixels(uint8_t count) {
     uint8_t ofs, col = 0, pf_col, draw_player, player_col;
   
-    while (count--) {
+    while (count--) { 
         if (tia.p0_pos == tia.color_clock) {
             tia.p0_mask = 1 << (tia.ref_p0 ? 0 : 7);
             tia.p0_mask_cnt = tia.p0_mask_clocks = _mask_clocks_from_psize(tia.nusiz0.bits.psize_count);

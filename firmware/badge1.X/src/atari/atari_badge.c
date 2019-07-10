@@ -12,6 +12,7 @@ extern struct tia_state tia;
 extern struct pia_state pia;
 
 uint8_t settings_debug_info = ONSCREEN_DEBUG;
+uint32_t last_debug_ms = 0;
 
 void atari_start();
 void atari_init();
@@ -109,7 +110,7 @@ void tia_line_ready(uint8_t line) {
         LCD_WR_CLR;
         LCD_PORT = c & 0xFF;
         LCD_WR_SET;
-    }
+    }   
 }
 
 void atari_menu() {
@@ -167,6 +168,7 @@ void atari_start() {
 
 
 void atari_init() {
+    last_debug_ms = 0;
     tft_fill_area(0, 0, TFT_WIDTH-1, TFT_HEIGHT-1, 0);
     
     init_tia();
@@ -179,21 +181,21 @@ void atari_init() {
 void show_debug_info() {
     static char buf[40];
     static uint8_t frame_idx = 0;
-    static uint32_t last_ms = 0;
+    
     uint32_t dt;
     uint8_t i;
     
     frame_idx++;
-    frame_idx %= 20;
+    frame_idx %= 10;
     if (!frame_idx) {
-        if (last_ms) {
-            dt = (millis() - last_ms)/20;
+        if (last_debug_ms) {
+            dt = (millis() - last_debug_ms)/10;
             snprintf(buf, sizeof(buf), "fps=%.1f (%d ms) PA=%02X     ", 
                     1000.0/dt, dt, pia.pa.val);
             for (i = 0; i < sizeof(buf) && buf[i]; i++) 
                 tft_print_char(buf[i], i*8, FB_HEIGHT+1, 0xFFFFFF, 0);
         }
-        last_ms = millis();
+        last_debug_ms = millis();
     }
     
     
