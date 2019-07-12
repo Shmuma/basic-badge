@@ -104,12 +104,18 @@ void tia_mpu_cycles(uint8_t cycles) {
         tia.hmp0 = FOURBITS_2COMPL_TO_INT(val >> 4);
     else if (addr == HMP1)
         tia.hmp1 = FOURBITS_2COMPL_TO_INT(val >> 4);
-    else if (addr == HMP1)
+    else if (addr == HMM0)
         tia.hmm0 = FOURBITS_2COMPL_TO_INT(val >> 4);
-    else if (addr == HMP1)
+    else if (addr == HMM1)
         tia.hmm1 = FOURBITS_2COMPL_TO_INT(val >> 4);
-    else if (addr == HMP1)
+    else if (addr == HMBL)
         tia.hmbl = FOURBITS_2COMPL_TO_INT(val >> 4);
+    else if (addr == VDELP0)
+        tia.vdelp0 = val & 1;
+    else if (addr == VDELP1)
+        tia.vdelp1 = val & 1;
+    else if (addr == VDELBL)
+        tia.vdelbl = val & 1;
     else if (addr == HMOVE) {
         tia.p0_pos = _normalize_clock_pos(tia.p0_pos - tia.hmp0);
         tia.p1_pos = _normalize_clock_pos(tia.p1_pos - tia.hmp1);
@@ -187,15 +193,26 @@ void draw_pixels(uint8_t count) {
   
     while (count--) { 
         if (_is_player_clock(tia.nusiz0.bits.psize_count, tia.color_clock, tia.p0_pos)) {
-            tia.p0_mask = 1 << (tia.ref_p0 ? 0 : 7);
-            tia.p0_mask_cnt = tia.p0_mask_clocks = _mask_clocks_from_psize(tia.nusiz0.bits.psize_count);
+            if (tia.vdelp0)
+                tia.vdelp0 = 0;
+            else {
+                tia.p0_mask = 1 << (tia.ref_p0 ? 0 : 7);
+                tia.p0_mask_cnt = tia.p0_mask_clocks = _mask_clocks_from_psize(tia.nusiz0.bits.psize_count);
+            }
         }
         if (_is_player_clock(tia.nusiz1.bits.psize_count, tia.color_clock, tia.p1_pos)) {
-            tia.p1_mask = 1 << (tia.ref_p1 ? 0 : 7);
-            tia.p1_mask_cnt = tia.p1_mask_clocks = _mask_clocks_from_psize(tia.nusiz1.bits.psize_count);
+            if (tia.vdelp1)
+                tia.vdelp1 = 0;
+            else {
+                tia.p1_mask = 1 << (tia.ref_p1 ? 0 : 7);
+                tia.p1_mask_cnt = tia.p1_mask_clocks = _mask_clocks_from_psize(tia.nusiz1.bits.psize_count);
+            }
         }
         if (tia.enabl && tia.bl_pos == tia.color_clock) {
-            tia.bl_clocks = 1 << tia.ctrlpf.bits.ballsize;
+            if (tia.vdelbl)
+                tia.vdelbl = 0;
+            else
+                tia.bl_clocks = 1 << tia.ctrlpf.bits.ballsize;
         }
         
         if (tia.color_clock >= CLK_HORBLANK) {

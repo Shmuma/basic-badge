@@ -19,6 +19,9 @@ extern struct register_file reg;
 extern struct tia_state tia;
 #define SHOW_COLORS 1
 
+void atari_every_frame();
+
+
 static void
 registers()
 {
@@ -44,8 +47,13 @@ void tia_line_ready(uint8_t line) {
     uint8_t c;
     static uint32_t frame = 0;
     
-    if (line == 0)
+    if (line == 0) {
+        atari_every_frame();
+        // for pong: start the game
+        if (frame > 10 && frame < 20)
+            pia_reset();
         frame++;
+    }
   
     printf("SC %04d, %03d: ", frame, line);
 #if SHOW_COLORS
@@ -59,6 +67,15 @@ void tia_line_ready(uint8_t line) {
     }
     printf("\n");
 #endif
+}
+
+
+void atari_every_frame() {
+    // check keyboard
+    pia_pa_clear();
+    pia_pb_clear();
+    tia_fire(1, 0);
+    tia_fire(0, 0);
 }
 
 

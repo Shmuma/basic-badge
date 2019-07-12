@@ -78,6 +78,7 @@ struct tia_state {
   } nusiz1;
   
   uint8_t enam0, enam1, enabl;
+  uint8_t vdelp0, vdelp1, vdelbl;
   
   uint8_t fb[FB_WIDTH];
 };
@@ -103,6 +104,7 @@ struct tia_state {
 #define RESM0       0x12
 #define RESM1       0x13
 #define RESBL       0x14
+// AUDxxx - TODO
 #define GRP0        0x1B
 #define GRP1        0x1C
 #define ENAM0       0x1D
@@ -113,6 +115,9 @@ struct tia_state {
 #define HMM0        0x22
 #define HMM1        0x23
 #define HMBL        0x24
+#define VDELP0      0x25
+#define VDELP1      0x25
+#define VDELBL      0x25
 #define HMOVE       0x2A
 #define HMCLR       0x2B
 
