@@ -45,6 +45,14 @@ INLINE void do_wsync() {
     }
 }
 
+INLINE uint8_t _normalize_clock_pos(uint8_t pos) {
+    if (pos < CLK_HORBLANK)
+        return pos + CLK_HOR - CLK_HORBLANK;
+    if (pos >= CLK_HOR)
+        return pos + CLK_HORBLANK - CLK_HOR;
+    return pos;
+}
+
 // need to be called after execution of MPU opcode with amount of CPU cycles
 void tia_mpu_cycles(uint8_t cycles) {
     uint8_t addr, val;
@@ -90,16 +98,9 @@ void tia_mpu_cycles(uint8_t cycles) {
         tia.hmp1 = FOURBITS_2COMPL_TO_INT(val >> 4);
     else if (addr == HMOVE) {
         tia.p0_pos -= tia.hmp0;
-        if (tia.p0_pos < CLK_HORBLANK)
-            tia.p0_pos += CLK_HOR - CLK_HORBLANK;
-        else if (tia.p0_pos >= CLK_HOR)
-            tia.p0_pos += CLK_HORBLANK - CLK_HOR;
-        
+        tia.p0_pos = _normalize_clock_pos(tia.p0_pos);        
         tia.p1_pos -= tia.hmp1;
-        if (tia.p1_pos < CLK_HORBLANK)
-            tia.p1_pos += CLK_HOR - CLK_HORBLANK;
-        else if (tia.p1_pos >= CLK_HOR)
-            tia.p1_pos += CLK_HORBLANK - CLK_HOR;
+        tia.p1_pos = _normalize_clock_pos(tia.p1_pos);
     }
     else if (addr == HMCLR) {
         tia.hmp0 = tia.hmp1 = 0;
@@ -144,15 +145,41 @@ INLINE uint8_t _mask_clocks_from_psize(uint8_t psize) {
 }
 
 
+INLINE uint8_t _is_player_clock(uint8_t nusiz, uint8_t color_clock, uint8_t pos) {
+    uint8_t ofs = 0;
+    
+    if (color_clock == pos)
+        return 1;
+    if (nusiz == NUSIZ_TWO_8 || nusiz == NUSIZ_THREE_8)
+        ofs = 8+8;
+    else if (nusiz == NUSIZ_TWO_24 || nusiz == NUSIZ_THREE_24)
+        ofs = 24+8;
+    else if (nusiz == NUSIZ_TWO_56)
+        ofs = 56+8;
+    
+    if (!ofs)
+        return 0;
+
+    pos = _normalize_clock_pos(pos + ofs);
+    if (color_clock == pos)
+        return 1;
+    if (nusiz == NUSIZ_THREE_8 || nusiz == NUSIZ_THREE_24) {
+        pos = _normalize_clock_pos(pos + ofs);
+        if (color_clock == pos)
+            return 1;        
+    }
+    return 0;
+}
+
 void draw_pixels(uint8_t count) {
     uint8_t ofs, col = 0, pf_col, draw_player, player_col;
   
     while (count--) { 
-        if (tia.p0_pos == tia.color_clock) {
+        if (_is_player_clock(tia.nusiz0.bits.psize_count, tia.color_clock, tia.p0_pos)) {
             tia.p0_mask = 1 << (tia.ref_p0 ? 0 : 7);
             tia.p0_mask_cnt = tia.p0_mask_clocks = _mask_clocks_from_psize(tia.nusiz0.bits.psize_count);
         }
-        if (tia.p1_pos == tia.color_clock) {
+        if (_is_player_clock(tia.nusiz1.bits.psize_count, tia.color_clock, tia.p1_pos)) {
             tia.p1_mask = 1 << (tia.ref_p1 ? 0 : 7);
             tia.p1_mask_cnt = tia.p1_mask_clocks = _mask_clocks_from_psize(tia.nusiz1.bits.psize_count);
         }        

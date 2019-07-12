@@ -104,6 +104,14 @@ struct tia_state {
 #define HMOVE       0x2A
 #define HMCLR       0x2B
 
+// two copies, 8 clocks space
+#define NUSIZ_TWO_8     0b001
+#define NUSIZ_TWO_24    0b010
+#define NUSIZ_THREE_8   0b011
+#define NUSIZ_TWO_56    0b100
+#define NUSIZ_THREE_24  0b110
+
+#define NUSIZ_SINGLE    0b000
 #define NUSIZ_DOUBLE    0b101
 #define NUSIZ_QUAD      0b111
 
