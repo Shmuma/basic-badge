@@ -24,11 +24,12 @@ struct tia_state {
   uint8_t queue_addr, queue_val;
   int16_t scanline;
   uint8_t color_clock;
-  uint8_t p0_pos, p1_pos;       // position of P0 and P1 (as offset from visible)
+  uint8_t p0_pos, p1_pos, bl_pos;    // position of objects (as offset from visible)
   uint8_t p0_mask;              // mask of p0 to be drawn
   uint8_t p0_mask_cnt, p0_mask_clocks;       // how frequently we shift the mask, driven by NUSIZP0
   uint8_t p1_mask;              // mask of p1 to be drawn
   uint8_t p1_mask_cnt, p1_mask_clocks;       // how frequently we shift the mask, driven by NUSIZP1
+  uint8_t bl_clocks;                        // how many clocks of the ball to draw
   
   union {
       uint8_t val;
@@ -56,7 +57,7 @@ struct tia_state {
                                     // in LSB (left-to right order)
   uint8_t p0, p1;                   // graphics for P0 and P1
   uint8_t ref_p0, ref_p1;           // reflect players
-  int8_t hmp0, hmp1;                // horizontal move registers (decoded into signed val)
+  int8_t hmp0, hmp1, hmm0, hmm1, hmbl;  // horizontal move registers (decoded into signed val)
   
   union {
       struct {
@@ -75,6 +76,8 @@ struct tia_state {
       } bits;
       uint8_t val;
   } nusiz1;
+  
+  uint8_t enam0, enam1, enabl;
   
   uint8_t fb[FB_WIDTH];
 };
@@ -97,10 +100,19 @@ struct tia_state {
 #define PF2         0x0F
 #define RESP0       0x10
 #define RESP1       0x11
+#define RESM0       0x12
+#define RESM1       0x13
+#define RESBL       0x14
 #define GRP0        0x1B
 #define GRP1        0x1C
+#define ENAM0       0x1D
+#define ENAM1       0x1E
+#define ENABL       0x1F
 #define HMP0        0x20
 #define HMP1        0x21
+#define HMM0        0x22
+#define HMM1        0x23
+#define HMBL        0x24
 #define HMOVE       0x2A
 #define HMCLR       0x2B
 

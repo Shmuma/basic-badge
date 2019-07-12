@@ -45,7 +45,7 @@ INLINE void do_wsync() {
     }
 }
 
-INLINE uint8_t _normalize_clock_pos(uint8_t pos) {
+static inline uint8_t _normalize_clock_pos(uint8_t pos) {
     if (pos < CLK_HORBLANK)
         return pos + CLK_HOR - CLK_HORBLANK;
     if (pos >= CLK_HOR)
@@ -88,22 +88,35 @@ void tia_mpu_cycles(uint8_t cycles) {
         tia.p0_pos = tia.color_clock;
     else if (addr == RESP1)
         tia.p1_pos = tia.color_clock;
+    else if (addr == RESBL)
+        tia.bl_pos = tia.color_clock;
     else if (addr == GRP0)
         tia.p0 = val;
     else if (addr == GRP1)
         tia.p1 = val;
+    else if (addr == ENAM0)
+        tia.enam0 = val & 2;
+    else if (addr == ENAM1)
+        tia.enam1 = val & 2;
+    else if (addr == ENABL)
+        tia.enabl = val & 2;
     else if (addr == HMP0)
         tia.hmp0 = FOURBITS_2COMPL_TO_INT(val >> 4);
     else if (addr == HMP1)
         tia.hmp1 = FOURBITS_2COMPL_TO_INT(val >> 4);
+    else if (addr == HMP1)
+        tia.hmm0 = FOURBITS_2COMPL_TO_INT(val >> 4);
+    else if (addr == HMP1)
+        tia.hmm1 = FOURBITS_2COMPL_TO_INT(val >> 4);
+    else if (addr == HMP1)
+        tia.hmbl = FOURBITS_2COMPL_TO_INT(val >> 4);
     else if (addr == HMOVE) {
-        tia.p0_pos -= tia.hmp0;
-        tia.p0_pos = _normalize_clock_pos(tia.p0_pos);        
-        tia.p1_pos -= tia.hmp1;
-        tia.p1_pos = _normalize_clock_pos(tia.p1_pos);
+        tia.p0_pos = _normalize_clock_pos(tia.p0_pos - tia.hmp0);
+        tia.p1_pos = _normalize_clock_pos(tia.p1_pos - tia.hmp1);
+        tia.bl_pos = _normalize_clock_pos(tia.bl_pos - tia.hmbl);
     }
     else if (addr == HMCLR) {
-        tia.hmp0 = tia.hmp1 = 0;
+        tia.hmp0 = tia.hmp1 = tia.hmbl = 0;
     }
                 
     tia.queue_addr = 0;
@@ -145,7 +158,7 @@ INLINE uint8_t _mask_clocks_from_psize(uint8_t psize) {
 }
 
 
-INLINE uint8_t _is_player_clock(uint8_t nusiz, uint8_t color_clock, uint8_t pos) {
+static inline uint8_t _is_player_clock(uint8_t nusiz, uint8_t color_clock, uint8_t pos) {
     uint8_t ofs = 0;
     
     if (color_clock == pos)
@@ -156,16 +169,14 @@ INLINE uint8_t _is_player_clock(uint8_t nusiz, uint8_t color_clock, uint8_t pos)
         ofs = 24+8;
     else if (nusiz == NUSIZ_TWO_56)
         ofs = 56+8;
-    
-    if (!ofs)
+    else
         return 0;
 
     pos = _normalize_clock_pos(pos + ofs);
     if (color_clock == pos)
         return 1;
     if (nusiz == NUSIZ_THREE_8 || nusiz == NUSIZ_THREE_24) {
-        pos = _normalize_clock_pos(pos + ofs);
-        if (color_clock == pos)
+        if (color_clock == _normalize_clock_pos(pos + ofs))
             return 1;        
     }
     return 0;
@@ -182,7 +193,10 @@ void draw_pixels(uint8_t count) {
         if (_is_player_clock(tia.nusiz1.bits.psize_count, tia.color_clock, tia.p1_pos)) {
             tia.p1_mask = 1 << (tia.ref_p1 ? 0 : 7);
             tia.p1_mask_cnt = tia.p1_mask_clocks = _mask_clocks_from_psize(tia.nusiz1.bits.psize_count);
-        }        
+        }
+        if (tia.enabl && tia.bl_pos == tia.color_clock) {
+            tia.bl_clocks = 1 << tia.ctrlpf.bits.ballsize;
+        }
         
         if (tia.color_clock >= CLK_HORBLANK) {
             if (tia.draw_enabled && !tia.vsync_enabled) {
@@ -241,6 +255,10 @@ void draw_pixels(uint8_t count) {
                 }
                 if (draw_player)
                     col = player_col;
+                if (tia.bl_clocks > 0) {
+                    col = tia.colu[2];      // COLUPF
+                    tia.bl_clocks--;
+                }
                 tia.fb[ofs] = col;
             }
         }

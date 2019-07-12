@@ -20,6 +20,7 @@
  * 
  * Extension over original Ape65 version:
  * 1. Opcode timings
+ * 2. extended with non-standard opcodes (TODO)
  */
 
 /*
