@@ -14,24 +14,20 @@ void init_pia() {
 
 void poke_pia(uint16_t address, uint8_t val) {
     if (address == TIM1T) {
-        pia.timer_val = val;
-        pia.interval_clocks = 1;
-        pia.interval_left = 0;
+        pia.reset_val = val;
+        pia.reset_clocks = 1;
     }
     else if (address == TIM8T) {
-        pia.timer_val = val;
-        pia.interval_clocks = 1 << 3;
-        pia.interval_left = 0;
+        pia.reset_val = val;
+        pia.reset_clocks = 1 << 3;
     }
     else if (address == TIM64T) {
-        pia.timer_val = val;
-        pia.interval_clocks = 1 << 6;
-        pia.interval_left = 0;
+        pia.reset_val = val;
+        pia.reset_clocks = 1 << 6;
     }
     else if (address == T1024T) {
-        pia.timer_val = val;
-        pia.interval_clocks = (uint32_t)(1 << 10);
-        pia.interval_left = 0;
+        pia.reset_val = val;
+        pia.reset_clocks = (uint32_t)(1 << 10);
     }
     else if (address == SWACNT) {
         pia.pa_dir = val;
@@ -49,24 +45,45 @@ uint8_t peek_pia(uint16_t address) {
 }
 
 
-void mpu_clock_pia() {
-    if (!pia.interval_clocks)
-        return;
-    if (pia.interval_clocks == 1)
-        pia.timer_val--;
-    else {
-        if (pia.interval_left == 0) {
-            pia.timer_val--;
-            pia.interval_left = pia.interval_clocks;
+void mpu_clock_pia(uint8_t clocks) {
+    if (pia.interval_clocks) {
+#ifdef TRACE_PIA
+        printf("PIA: clocks %d, int %d, val %02X, left %d -> ",
+               clocks, pia.interval_clocks, pia.timer_val, pia.interval_left);
+#endif
+        if (pia.interval_clocks == 1)
+            pia.timer_val -= clocks;
+        else {
+            if (pia.interval_left < clocks) {
+                if (!pia.timer_val)
+                    pia.interval_clocks = 1;
+                else {                
+                    pia.timer_val--;
+                    pia.interval_left += pia.interval_clocks - clocks;
+                }
+            }
+            else
+                pia.interval_left -= clocks;
         }
-        else
-            pia.interval_left--;
+#ifdef TRACE_PIA
+        printf("val %02X, left %d\n", pia.timer_val, pia.interval_left);
+#endif
+    }
+    if (pia.reset_clocks > 0) {
+        pia.timer_val = pia.reset_val;
+        pia.interval_clocks = pia.reset_clocks;
+        pia.interval_left = 0;
+        pia.reset_val = 0;
+        pia.reset_clocks = 0;
+#ifdef TRACE_PIA
+        printf("PIA: reset clocks %d, int %d, val %02X, left %d\n",
+               clocks, pia.interval_clocks, pia.timer_val, pia.interval_left);
+#endif
     }
 }
 
 void pia_pa_clear() {
     pia.pa.val = 0xFF;
-//    pia_pa_set(DIR_LT, 1);
 }
 
 void pia_pa_set(uint8_t dir, uint8_t is_p0) {

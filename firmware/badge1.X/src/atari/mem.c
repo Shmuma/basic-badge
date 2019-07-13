@@ -13,10 +13,9 @@ long rom_size = ROM_SIZE;
 
 #define RAM_ADDR    0x0080
 #define RAM_ENDS    0x00FF
-// mirror of RAM
-#define RAM2_OFS    0x0100
-#define RAM2_ADDR   (RAM2_OFS + RAM_ADDR)
-#define RAM2_ENDS   (RAM2_OFS + RAM_ENDS)
+
+#define PAGE_TWO    0x0200
+
 
 #define ROM_ADDR (0xF000)
 
@@ -24,6 +23,10 @@ uint8_t
 peek(uint16_t address)
 {
     uint8_t res;
+    
+    // map first two pages into one
+    if (address < PAGE_TWO)
+        address &= 0xFF;
     
     if (address < RAM_ADDR) {
         res = peek_tia(address);
@@ -33,9 +36,6 @@ peek(uint16_t address)
         return res;
     }
 
-    if (address >= RAM2_ADDR && address <= RAM2_ENDS)
-        address -= RAM2_OFS;
-  
     if (address <= RAM_ENDS) {
 #ifdef TRACE_MEM
         printf("peek mem: %02X -> %02X\n", address, memory[address - RAM_ADDR]);
@@ -72,6 +72,10 @@ poke(uint16_t address, uint8_t value)
 {
     static uint8_t x = 0, y = 0;
 
+    // map first two pages into one
+    if (address < PAGE_TWO)
+        address &= 0xFF;
+
     if (address < RAM_ADDR) {
 #ifdef TRACE_MEM
         printf("poke tia: %02X <- %02X\n", address, value);
@@ -80,12 +84,9 @@ poke(uint16_t address, uint8_t value)
         return; 
     }
   
-    if (address >= RAM2_ADDR && address <= RAM2_ENDS)
-        address -= RAM2_OFS;
-
     if (address <= RAM_ENDS) {
 #ifdef TRACE_MEM
-        printf("poke mem: %x <- %x\n", address, value);
+        printf("poke mem: %02X <- %02X\n", address, value);
 #endif    
         memory[address - RAM_ADDR] = value;
         return;

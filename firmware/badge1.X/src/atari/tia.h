@@ -77,7 +77,7 @@ struct tia_state {
       uint8_t val;
   } nusiz1;
   
-  uint8_t enam0, enam1, enabl;
+  uint8_t enam0, enam1, enabl;          // 0 - disabled, 1 - enabled, 2 - enabled, but need to wait a line
   uint8_t vdelp0, vdelp1, vdelbl;
   
   uint8_t fb[FB_WIDTH];

@@ -53,6 +53,9 @@ void tia_line_ready(uint8_t line) {
         if (frame > 10 && frame < 20)
             pia_reset();
         frame++;
+        if (frame > 130) {
+            printf("Time to debug!\n");
+        }
     }
   
     printf("SC %04d, %03d: ", frame, line);
@@ -126,9 +129,10 @@ int main(int argc, char** argv) {
             printf("Break!\n");
         registers();
         rc = mpu();
-        if (rc < 0)
+        if (rc < 0) {
             tia_mpu_cycles(-rc);
-        mpu_clock_pia();
+            mpu_clock_pia(-rc);
+        }
         registers();
         printf("%d: rc = %d\n", step++, rc);
         if (rc > 0)

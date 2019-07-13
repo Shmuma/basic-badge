@@ -159,7 +159,7 @@ void atari_start() {
             atari_init();
         else {
             tia_mpu_cycles(-rc);
-            mpu_clock_pia();
+            mpu_clock_pia(-rc);
         }
     }
     brk_key = 0;

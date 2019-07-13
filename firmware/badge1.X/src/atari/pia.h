@@ -2,6 +2,10 @@
 #define	PIA_H
 
 struct pia_state {
+    // those values are non-zeros in case of scheduled PIA write
+    uint8_t reset_val;
+    uint16_t reset_clocks;
+    
     union {
         uint8_t val;
         struct {
@@ -30,10 +34,9 @@ struct pia_state {
         } bits;
     } pa;
     
-    uint8_t timer_val;                  // count of intervals left in timer
-    uint16_t interval_clocks;           // size of interval set
-    uint8_t interval_left;              // counter of interval in MPU cycles
-    
+    uint8_t     timer_val;              // count of intervals left in timer
+    uint16_t    interval_clocks;        // size of interval set
+    uint8_t     interval_left;          // counter of interval in MPU cycles
 };
 
 // PIA addresses
@@ -43,9 +46,9 @@ struct pia_state {
 #define SWBCNT  0x0283          // Port B directions -- hardwired to output
 #define INTIM   0x0284          // Timer output
 #define TIM1T   0x0294          // set 1 clock interval
-#define TIM8T   0x0295          // set 1 clock interval
-#define TIM64T  0x0296          // set 1 clock interval
-#define T1024T  0x0297          // set 1 clock interval
+#define TIM8T   0x0295          // set 8 clock interval
+#define TIM64T  0x0296          // set 64 clock interval
+#define T1024T  0x0297          // set 1024 clock interval
 
 #define PIA_START   SWCHA
 #define PIA_END     T1024T
@@ -53,7 +56,7 @@ struct pia_state {
 void init_pia();
 void poke_pia(uint16_t, uint8_t);
 uint8_t peek_pia(uint16_t);
-void mpu_clock_pia();
+void mpu_clock_pia(uint8_t);
 void pia_pa_clear();
 void pia_pa_set(uint8_t dir, uint8_t is_p0);
 void pia_pb_clear();

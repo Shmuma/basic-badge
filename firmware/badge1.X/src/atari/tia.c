@@ -88,18 +88,35 @@ void tia_mpu_cycles(uint8_t cycles) {
         tia.p0_pos = tia.color_clock;
     else if (addr == RESP1)
         tia.p1_pos = tia.color_clock;
-    else if (addr == RESBL)
+    else if (addr == RESBL) {
         tia.bl_pos = tia.color_clock;
+#ifdef TRACE_TIA
+        printf("Ball pos <- %d\n", tia.bl_pos);
+#endif
+    }
     else if (addr == GRP0)
         tia.p0 = val;
     else if (addr == GRP1)
         tia.p1 = val;
-    else if (addr == ENAM0)
-        tia.enam0 = val & 2;
-    else if (addr == ENAM1)
-        tia.enam1 = val & 2;
-    else if (addr == ENABL)
-        tia.enabl = val & 2;
+    else if (addr == ENAM0) {
+        tia.enam0 = (val >> 1) & 1;
+//        if (tia.enam0 && tia.vdelp0)
+//            tia.enam0++;
+    }
+    else if (addr == ENAM1) {
+        tia.enam1 = (val >> 1) & 1;
+//        if (tia.enam1 && tia.vdelp1)
+//            tia.enam1++;
+    }
+    else if (addr == ENABL) {
+        tia.enabl = (val >> 1) & 1;
+        if (tia.enabl && tia.vdelbl)
+            tia.enabl = 2;
+#ifdef TRACE_TIA        
+        printf("Ball enabled, v=%d, hmbl=%d, vdelbl=%d, scanline=%d\n", 
+                tia.enabl, tia.hmbl, tia.vdelbl, tia.scanline);
+#endif
+    }
     else if (addr == HMP0)
         tia.hmp0 = FOURBITS_2COMPL_TO_INT(val >> 4);
     else if (addr == HMP1)
@@ -108,8 +125,12 @@ void tia_mpu_cycles(uint8_t cycles) {
         tia.hmm0 = FOURBITS_2COMPL_TO_INT(val >> 4);
     else if (addr == HMM1)
         tia.hmm1 = FOURBITS_2COMPL_TO_INT(val >> 4);
-    else if (addr == HMBL)
+    else if (addr == HMBL) {
         tia.hmbl = FOURBITS_2COMPL_TO_INT(val >> 4);
+#ifdef TRACE_TIA        
+        printf("Ball hmbl <- %d\n", tia.hmbl);
+#endif
+    }
     else if (addr == VDELP0)
         tia.vdelp0 = val & 1;
     else if (addr == VDELP1)
@@ -119,7 +140,13 @@ void tia_mpu_cycles(uint8_t cycles) {
     else if (addr == HMOVE) {
         tia.p0_pos = _normalize_clock_pos(tia.p0_pos - tia.hmp0);
         tia.p1_pos = _normalize_clock_pos(tia.p1_pos - tia.hmp1);
+#ifdef TRACE_TIA        
+        printf("Ball hmove pos: %d -> ", tia.bl_pos);
+#endif
         tia.bl_pos = _normalize_clock_pos(tia.bl_pos - tia.hmbl);
+#ifdef TRACE_TIA
+        printf("%d\n", tia.bl_pos);
+#endif
     }
     else if (addr == HMCLR) {
         tia.hmp0 = tia.hmp1 = tia.hmbl = 0;
@@ -193,24 +220,25 @@ void draw_pixels(uint8_t count) {
   
     while (count--) { 
         if (_is_player_clock(tia.nusiz0.bits.psize_count, tia.color_clock, tia.p0_pos)) {
-            if (tia.vdelp0)
-                tia.vdelp0 = 0;
-            else {
-                tia.p0_mask = 1 << (tia.ref_p0 ? 0 : 7);
-                tia.p0_mask_cnt = tia.p0_mask_clocks = _mask_clocks_from_psize(tia.nusiz0.bits.psize_count);
-            }
+//            if (tia.vdelp0)
+//                tia.vdelp0 = 0;
+//            else {
+            tia.p0_mask = 1 << (tia.ref_p0 ? 0 : 7);
+            tia.p0_mask_cnt = tia.p0_mask_clocks = _mask_clocks_from_psize(tia.nusiz0.bits.psize_count);
         }
         if (_is_player_clock(tia.nusiz1.bits.psize_count, tia.color_clock, tia.p1_pos)) {
-            if (tia.vdelp1)
-                tia.vdelp1 = 0;
-            else {
-                tia.p1_mask = 1 << (tia.ref_p1 ? 0 : 7);
-                tia.p1_mask_cnt = tia.p1_mask_clocks = _mask_clocks_from_psize(tia.nusiz1.bits.psize_count);
-            }
+//            if (tia.vdelp1)
+//                tia.vdelp1 = 0;
+//            else {
+            tia.p1_mask = 1 << (tia.ref_p1 ? 0 : 7);
+            tia.p1_mask_cnt = tia.p1_mask_clocks = _mask_clocks_from_psize(tia.nusiz1.bits.psize_count);
         }
         if (tia.enabl && tia.bl_pos == tia.color_clock) {
-            if (tia.vdelbl)
-                tia.vdelbl = 0;
+#ifdef TRACE_TIA            
+            printf("Ball clock matched, pos=%d, enabl=%d\n", tia.bl_pos, tia.enabl);
+#endif
+            if (tia.enabl > 1)
+                tia.enabl = 1;
             else
                 tia.bl_clocks = 1 << tia.ctrlpf.bits.ballsize;
         }
@@ -273,8 +301,14 @@ void draw_pixels(uint8_t count) {
                 if (draw_player)
                     col = player_col;
                 if (tia.bl_clocks > 0) {
+#ifdef TRACE_TIA                    
+                    printf("Ball clocks %d -> ", tia.bl_clocks);
+#endif
                     col = tia.colu[2];      // COLUPF
                     tia.bl_clocks--;
+#ifdef TRACE_TIA
+                    printf("%d, col=%d\n", tia.bl_clocks, col);
+#endif
                 }
                 tia.fb[ofs] = col;
             }

@@ -13,6 +13,7 @@
 
 #define TRACE_MEM
 #define TRACE_TIA
+#define TRACE_PIA
 #define INLINE
 
 #define ROM_NAME rom
