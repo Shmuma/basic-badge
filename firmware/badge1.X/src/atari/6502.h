@@ -29,6 +29,7 @@ struct register_file {
 	uint8_t SP;	/* Stack pointer */
 };
 
+#define FF (0xFF)
 #define ILLEGAL (FF)	/* Illegal opcode */
 #define NINSTR (56)	/* 56 instruction types. ADC etc */
 

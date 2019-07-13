@@ -30,7 +30,6 @@ extern const uint8_t kernel_11_rom[];
 #define true (1)
 
 #define SLEN (256)
-#define FF (0xFF)
 
 #include "6502.h"
 #include "mem.h"

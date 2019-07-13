@@ -262,7 +262,8 @@ static inline uint8_t _is_player_clock(uint8_t nusiz, uint8_t color_clock, uint8
 }
 
 void draw_pixels(uint8_t count) {
-    uint8_t ofs, col = 0, pf_col, draw_player, player_col;
+    uint8_t ofs, col = 0, pf_col;
+    uint8_t draw_p0, draw_p1, draw_pf;
   
     while (count--) { 
         if (_is_player_clock(tia.nusiz0.bits.psize_count, tia.color_clock, tia.p0_pos)) {
@@ -293,9 +294,9 @@ void draw_pixels(uint8_t count) {
             if (tia.draw_enabled && !tia.vsync_enabled) {
                 ofs = tia.color_clock - CLK_HORBLANK;
                 col = tia.colu[3];      // COLUBK
-                draw_player = 0;
+                draw_p0 = draw_p1 = draw_pf = 0;
                 if (tia.p0_mask) {
-                    draw_player = tia.p0_mask & tia.p0;
+                    draw_p0 = tia.p0_mask & tia.p0;
                     if (--tia.p0_mask_cnt == 0) {
                         if (tia.ref_p0)
                             tia.p0_mask <<= 1;
@@ -303,11 +304,9 @@ void draw_pixels(uint8_t count) {
                             tia.p0_mask >>= 1;
                         tia.p0_mask_cnt = tia.p0_mask_clocks;
                     }
-                    if (draw_player)
-                        player_col = tia.colu[0];
                 }
-                else if (tia.p1_mask) {
-                    draw_player = tia.p1_mask & tia.p1;
+                if (tia.p1_mask) {
+                    draw_p1 = tia.p1_mask & tia.p1;
                     if (--tia.p1_mask_cnt == 0) {
                         if (tia.ref_p1)
                             tia.p1_mask <<= 1;
@@ -315,45 +314,68 @@ void draw_pixels(uint8_t count) {
                             tia.p1_mask >>= 1;
                         tia.p1_mask_cnt = tia.p1_mask_clocks;
                     }
-                    if (draw_player)
-                        player_col = tia.colu[1];
                 }
                 
                 if (ofs < PF_RIGHT) {
                     if (_check_pf(ofs)) {
+                        draw_pf = 1;
                         col = tia.ctrlpf.bits.pf_score ? tia.colu[0] : tia.colu[2];
+                        if (draw_p0)
+                            tia.cx.bits.p0pf = 1;
+                        if (draw_p1)
+                            tia.cx.bits.p1pf = 1;
                         if (tia.ctrlpf.bits.pf_prio)
-                            draw_player = 0;
+                            draw_p0 = draw_p1 = 0;
                     }
                 }
                 else { // right side of the field
                     if (tia.ctrlpf.bits.pf_ref) {
                         // reflect the playfield
                         if (_check_pf(PF_RIGHT - (ofs - PF_RIGHT))) {
+                            draw_pf = 1;
                             col = tia.ctrlpf.bits.pf_score ? tia.colu[1] : tia.colu[2];
+                            if (draw_p0)
+                                tia.cx.bits.p0pf = 1;
+                            if (draw_p1)
+                                tia.cx.bits.p1pf = 1;
                             if (tia.ctrlpf.bits.pf_prio)
-                                draw_player = 0;                            
+                                draw_p0 = draw_p1 = 0;
                         }
                     }
                     else {
                         // direct playfield
                         if (_check_pf(ofs - PF_RIGHT)) {
+                            draw_pf = 1;
                             col = tia.ctrlpf.bits.pf_score ? tia.colu[1] : tia.colu[2];
+                            if (draw_p0)
+                                tia.cx.bits.p0pf = 1;
+                            if (draw_p1)
+                                tia.cx.bits.p1pf = 1;
                             if (tia.ctrlpf.bits.pf_prio)
-                                draw_player = 0;
+                                draw_p0 = draw_p1 = 0;
                         }
                     }
                 }
-                if (draw_player)
-                    col = player_col;
+                if (draw_p0)
+                    col = tia.colu[0];
+                else if (draw_p1)
+                    col = tia.colu[1];
+                if (draw_p0 && draw_p1)
+                    tia.cx.bits.p0p1 = 1;
                 if (tia.bl_clocks > 0) {
 #ifdef TRACE_TIA                    
                     printf("Ball clocks %d -> ", tia.bl_clocks);
 #endif
                     // if PF has a priority over player or no player at all, draw ball
-                    if (tia.ctrlpf.bits.pf_prio || draw_player == 0)
+                    if (tia.ctrlpf.bits.pf_prio || (draw_p0 == 0 && draw_p1 == 0))
                         col = tia.colu[2];      // COLUPF
                     tia.bl_clocks--;
+                    if (draw_p0)
+                        tia.cx.bits.p0bl = 1;
+                    if (draw_p1)
+                        tia.cx.bits.p1bl = 1;
+                    if (draw_pf)
+                        tia.cx.bits.blpf = 1;
 #ifdef TRACE_TIA
                     printf("%d, col=%d\n", tia.bl_clocks, col);
 #endif
