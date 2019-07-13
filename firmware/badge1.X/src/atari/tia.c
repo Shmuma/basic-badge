@@ -304,7 +304,9 @@ void draw_pixels(uint8_t count) {
 #ifdef TRACE_TIA                    
                     printf("Ball clocks %d -> ", tia.bl_clocks);
 #endif
-                    col = tia.colu[2];      // COLUPF
+                    // if PF has a priority over player or no player at all, draw ball
+                    if (tia.ctrlpf.bits.pf_prio || draw_player == 0)
+                        col = tia.colu[2];      // COLUPF
                     tia.bl_clocks--;
 #ifdef TRACE_TIA
                     printf("%d, col=%d\n", tia.bl_clocks, col);
