@@ -80,6 +80,27 @@ struct tia_state {
   uint8_t enam0, enam1, enabl;          // 0 - disabled, 1 - enabled, 2 - enabled, but need to wait a line
   uint8_t vdelp0, vdelp1, vdelbl;
   
+  union {
+      struct {
+          uint8_t m0p1:1;
+          uint8_t m0p0:1;
+          uint8_t m1p0:1;
+          uint8_t m1p1:1;          
+          uint8_t p0pf:1;
+          uint8_t p0bl:1;
+          uint8_t p1pf:1;
+          uint8_t p1bl:1;
+          uint8_t m0pf:1;
+          uint8_t m0bl:1;          
+          uint8_t m1pf:1;
+          uint8_t m1bl:1;          
+          uint8_t blpf:1;
+          uint8_t p0p1:1;
+          uint8_t m0m1:1;
+      } bits;
+      uint16_t val;
+  } cx;
+  
   uint8_t fb[FB_WIDTH];
 };
 
@@ -120,6 +141,7 @@ struct tia_state {
 #define VDELBL      0x25
 #define HMOVE       0x2A
 #define HMCLR       0x2B
+#define CXCLR       0x2C
 
 // two copies, 8 clocks space
 #define NUSIZ_TWO_8     0b001
@@ -133,8 +155,20 @@ struct tia_state {
 #define NUSIZ_QUAD      0b111
 
 // Read ports
-#define TIA_RD_INPT4    0x0C
-#define TIA_RD_INPT5    0x0D
+#define TIA_RD_CXM0P        0x00
+#define TIA_RD_CXM1P        0x01
+#define TIA_RD_CXP0FB       0x02
+#define TIA_RD_CXP1FB       0x03
+#define TIA_RD_CXM0FB       0x04
+#define TIA_RD_CXM1FB       0x05
+#define TIA_RD_CXBLPF       0x06
+#define TIA_RD_CXPPMM       0x07
+#define TIA_RD_INPT0        0x08
+#define TIA_RD_INPT1        0x09
+#define TIA_RD_INPT2        0x0A
+#define TIA_RD_INPT3        0x0B
+#define TIA_RD_INPT4        0x0C
+#define TIA_RD_INPT5        0x0D
 
 
 void init_tia();

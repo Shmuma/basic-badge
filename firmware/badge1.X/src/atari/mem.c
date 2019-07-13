@@ -29,6 +29,7 @@ peek(uint16_t address)
         address &= 0xFF;
     
     if (address < RAM_ADDR) {
+        address &= 0xF;
         res = peek_tia(address);
 #ifdef TRACE_MEM
         printf("peek tia: %02X -> %02X\n", address, res);

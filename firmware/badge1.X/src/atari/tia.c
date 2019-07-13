@@ -148,9 +148,10 @@ void tia_mpu_cycles(uint8_t cycles) {
         printf("%d\n", tia.bl_pos);
 #endif
     }
-    else if (addr == HMCLR) {
+    else if (addr == HMCLR)
         tia.hmp0 = tia.hmp1 = tia.hmbl = 0;
-    }
+    else if (addr == CXCLR)
+        tia.cx.val = 0;
                 
     tia.queue_addr = 0;
 }
@@ -170,11 +171,30 @@ void poke_tia(uint16_t addr, uint8_t val) {
 
 
 uint8_t peek_tia(uint16_t addr) {
-    if (addr == TIA_RD_INPT4)
-        return (1-tia.fire.bits.p0) << 7;
-    else if (addr == TIA_RD_INPT5)
-        return (1-tia.fire.bits.p1) << 7;
-    return 0xFF;
+    switch (addr)  {
+        case TIA_RD_CXM0P:
+            return tia.cx.bits.m0p1 << 7 | tia.cx.bits.m0p0 << 6;
+        case TIA_RD_CXM1P:
+            return tia.cx.bits.m1p0 << 7 | tia.cx.bits.m1p1 << 6;
+        case TIA_RD_CXP0FB:
+            return tia.cx.bits.p0pf << 7 | tia.cx.bits.p0bl << 6;
+        case TIA_RD_CXP1FB:
+            return tia.cx.bits.p1pf << 7 | tia.cx.bits.p1bl << 6;
+        case TIA_RD_CXM0FB:
+            return tia.cx.bits.m0pf << 7 | tia.cx.bits.m0bl << 6;
+        case TIA_RD_CXM1FB:
+            return tia.cx.bits.m1pf << 7 | tia.cx.bits.m1bl << 6;
+        case TIA_RD_CXBLPF:
+            return tia.cx.bits.blpf << 7;
+        case TIA_RD_CXPPMM:
+            return tia.cx.bits.p0p1 << 7 | tia.cx.bits.m0m1 << 6;
+        case TIA_RD_INPT4:
+            return (1-tia.fire.bits.p0) << 7;
+        case TIA_RD_INPT5:
+            return (1-tia.fire.bits.p1) << 7;
+        default:
+            return 0xFF;
+    }
 }
 
 // check the playfield bit at this pixel offset (0..80)
