@@ -13,34 +13,38 @@ void init_pia() {
 
 
 void poke_pia(uint16_t address, uint8_t val) {
-    if (address == TIM1T) {
-        pia.reset_val = val;
-        pia.reset_clocks = 1;
-    }
-    else if (address == TIM8T) {
-        pia.reset_val = val;
-        pia.reset_clocks = 1 << 3;
-    }
-    else if (address == TIM64T) {
-        pia.reset_val = val;
-        pia.reset_clocks = 1 << 6;
-    }
-    else if (address == T1024T) {
-        pia.reset_val = val;
-        pia.reset_clocks = (uint32_t)(1 << 10);
-    }
-    else if (address == SWACNT) {
-        pia.pa_dir = val;
+    switch (address) {
+        case TIM1T:
+            pia.reset_val = val;
+            pia.reset_clocks = 1;
+            break;
+        case TIM8T:
+            pia.reset_val = val;
+            pia.reset_clocks = 1 << 3;
+            break;
+        case TIM64T:
+            pia.reset_val = val;
+            pia.reset_clocks = 1 << 6;
+            break;
+        case T1024T:
+            pia.reset_val = val;
+            pia.reset_clocks = (uint32_t)(1 << 10);
+            break;
+        case SWACNT:
+            pia.pa_dir = val;
+            break;
     }
 }
 
 uint8_t peek_pia(uint16_t address) {
-    if (address == SWCHA)
-        return pia.pa.val & ~pia.pa_dir;
-    else if (address == SWCHB)
-        return pia.pb.val;
-    else if (address == INTIM)
-        return pia.timer_val;
+    switch (address) {
+        case SWCHA:
+            return pia.pa.val & ~pia.pa_dir;
+        case SWCHB:
+            return pia.pb.val;
+        case INTIM:
+            return pia.timer_val;
+    }
     return 0xFF;
 }
 
