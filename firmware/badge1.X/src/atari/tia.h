@@ -137,8 +137,8 @@ struct tia_state {
 #define HMM1        0x23
 #define HMBL        0x24
 #define VDELP0      0x25
-#define VDELP1      0x25
-#define VDELBL      0x25
+#define VDELP1      0x26
+#define VDELBL      0x27
 #define HMOVE       0x2A
 #define HMCLR       0x2B
 #define CXCLR       0x2C

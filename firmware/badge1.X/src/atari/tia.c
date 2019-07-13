@@ -63,96 +63,122 @@ void tia_mpu_cycles(uint8_t cycles) {
     if (!addr)
         return;
 
-    if (addr == WSYNC)
-        do_wsync();
-    else if (addr >= COLUP0 && addr <= COLUBK) {
-        tia.colu[addr - COLUP0] = val & ~1;
-    }
-    else if (addr == NUSIZ0)
-        tia.nusiz0.val = val;
-    else if (addr == NUSIZ1)
-        tia.nusiz1.val = val;
-    else if (addr == PF0)
-        tia.pf = (tia.pf & ~0xFF) | (val >> 4);
-    else if (addr == PF1)
-        tia.pf = (tia.pf & ~0xFF0) | (invert_bits_byte(val) << 4);
-    else if (addr == PF2)
-        tia.pf = (tia.pf & ~0xFF000) | (val << 12);
-    else if (addr == CTRLPF)
-        tia.ctrlpf.val = val;
-    else if (addr == REFP0)
-        tia.ref_p0 = val;
-    else if (addr == REFP1)
-        tia.ref_p1 = val;
-    else if (addr == RESP0)
-        tia.p0_pos = tia.color_clock;
-    else if (addr == RESP1)
-        tia.p1_pos = tia.color_clock;
-    else if (addr == RESBL) {
-        tia.bl_pos = tia.color_clock;
+    switch (addr) {
+        case WSYNC:
+            do_wsync();
+            break;
+        case COLUP0:
+        case COLUP1:
+        case COLUPF:
+        case COLUBK:
+            tia.colu[addr - COLUP0] = val & ~1;
+            break;
+        case CTRLPF:
+            tia.ctrlpf.val = val;
+            break;
+        case NUSIZ0:
+            tia.nusiz0.val = val;
+            break;
+        case NUSIZ1:
+            tia.nusiz1.val = val;
+            break;
+        case PF0:
+            tia.pf = (tia.pf & ~0xFF) | (val >> 4);
+            break;
+        case PF1:
+            tia.pf = (tia.pf & ~0xFF0) | (invert_bits_byte(val) << 4);
+            break;
+        case PF2:
+            tia.pf = (tia.pf & ~0xFF000) | (val << 12);
+            break;
+        case REFP0:
+            tia.ref_p0 = val;
+            break;
+        case REFP1:
+            tia.ref_p1 = val;
+            break;
+        case RESP0:
+            tia.p0_pos = tia.color_clock;
+            break;
+        case RESP1:
+            tia.p1_pos = tia.color_clock;
+            break;
+        case RESBL:
+            tia.bl_pos = tia.color_clock;
 #ifdef TRACE_TIA
-        printf("Ball pos <- %d\n", tia.bl_pos);
-#endif
-    }
-    else if (addr == GRP0)
-        tia.p0 = val;
-    else if (addr == GRP1)
-        tia.p1 = val;
-    else if (addr == ENAM0) {
-        tia.enam0 = (val >> 1) & 1;
+            printf("Ball pos <- %d\n", tia.bl_pos);
+#endif            
+            break;
+        case GRP0:
+            tia.p0 = val;
+            break;
+        case GRP1:
+            tia.p1 = val;
+            break;
+        case ENAM0:
+            tia.enam0 = (val >> 1) & 1;
 //        if (tia.enam0 && tia.vdelp0)
 //            tia.enam0++;
-    }
-    else if (addr == ENAM1) {
-        tia.enam1 = (val >> 1) & 1;
+            break;
+        case ENAM1:
+            tia.enam1 = (val >> 1) & 1;
 //        if (tia.enam1 && tia.vdelp1)
 //            tia.enam1++;
-    }
-    else if (addr == ENABL) {
-        tia.enabl = (val >> 1) & 1;
-        if (tia.enabl && tia.vdelbl)
-            tia.enabl = 2;
+            break;
+        case ENABL:
+            tia.enabl = (val >> 1) & 1;
+            if (tia.enabl && tia.vdelbl)
+                tia.enabl = 2;
 #ifdef TRACE_TIA        
-        printf("Ball enabled, v=%d, hmbl=%d, vdelbl=%d, scanline=%d\n", 
-                tia.enabl, tia.hmbl, tia.vdelbl, tia.scanline);
+            printf("Ball enabled, v=%d, hmbl=%d, vdelbl=%d, scanline=%d\n", 
+                    tia.enabl, tia.hmbl, tia.vdelbl, tia.scanline);
 #endif
-    }
-    else if (addr == HMP0)
-        tia.hmp0 = FOURBITS_2COMPL_TO_INT(val >> 4);
-    else if (addr == HMP1)
-        tia.hmp1 = FOURBITS_2COMPL_TO_INT(val >> 4);
-    else if (addr == HMM0)
-        tia.hmm0 = FOURBITS_2COMPL_TO_INT(val >> 4);
-    else if (addr == HMM1)
-        tia.hmm1 = FOURBITS_2COMPL_TO_INT(val >> 4);
-    else if (addr == HMBL) {
-        tia.hmbl = FOURBITS_2COMPL_TO_INT(val >> 4);
+            break;
+        case HMP0:
+            tia.hmp0 = FOURBITS_2COMPL_TO_INT(val >> 4);
+            break;
+        case HMP1:
+            tia.hmp1 = FOURBITS_2COMPL_TO_INT(val >> 4);
+            break;
+        case HMM0:
+            tia.hmm0 = FOURBITS_2COMPL_TO_INT(val >> 4);
+            break;
+        case HMM1:
+            tia.hmm1 = FOURBITS_2COMPL_TO_INT(val >> 4);
+            break;
+        case HMBL:
+            tia.hmbl = FOURBITS_2COMPL_TO_INT(val >> 4);
 #ifdef TRACE_TIA        
-        printf("Ball hmbl <- %d\n", tia.hmbl);
+            printf("Ball hmbl <- %d\n", tia.hmbl);
 #endif
-    }
-    else if (addr == VDELP0)
-        tia.vdelp0 = val & 1;
-    else if (addr == VDELP1)
-        tia.vdelp1 = val & 1;
-    else if (addr == VDELBL)
-        tia.vdelbl = val & 1;
-    else if (addr == HMOVE) {
-        tia.p0_pos = _normalize_clock_pos(tia.p0_pos - tia.hmp0);
-        tia.p1_pos = _normalize_clock_pos(tia.p1_pos - tia.hmp1);
+            break;
+        case VDELP0:
+            tia.vdelp0 = val & 1;
+            break;
+        case VDELP1:
+            tia.vdelp1 = val & 1;
+            break;
+        case VDELBL:
+            tia.vdelbl = val & 1;
+            break;
+        case HMOVE:
+            tia.p0_pos = _normalize_clock_pos(tia.p0_pos - tia.hmp0);
+            tia.p1_pos = _normalize_clock_pos(tia.p1_pos - tia.hmp1);
 #ifdef TRACE_TIA        
-        printf("Ball hmove pos: %d -> ", tia.bl_pos);
+            printf("Ball hmove pos: %d -> ", tia.bl_pos);
 #endif
-        tia.bl_pos = _normalize_clock_pos(tia.bl_pos - tia.hmbl);
+            tia.bl_pos = _normalize_clock_pos(tia.bl_pos - tia.hmbl);
 #ifdef TRACE_TIA
-        printf("%d\n", tia.bl_pos);
+            printf("%d\n", tia.bl_pos);
 #endif
+            break;
+        case HMCLR:
+            tia.hmp0 = tia.hmp1 = tia.hmbl = 0;
+            break;
+        case CXCLR:
+            tia.cx.val = 0;
+            break;
     }
-    else if (addr == HMCLR)
-        tia.hmp0 = tia.hmp1 = tia.hmbl = 0;
-    else if (addr == CXCLR)
-        tia.cx.val = 0;
-                
     tia.queue_addr = 0;
 }
 
