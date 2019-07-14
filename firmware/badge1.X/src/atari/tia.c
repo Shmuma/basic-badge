@@ -331,7 +331,7 @@ void draw_pixels(uint8_t count) {
                 else { // right side of the field
                     if (tia.ctrlpf.bits.pf_ref) {
                         // reflect the playfield
-                        if (_check_pf(PF_RIGHT - (ofs - PF_RIGHT))) {
+                        if (_check_pf(PF_RIGHT - (ofs - PF_RIGHT) - 1)) {
                             draw_pf = 1;
                             col = tia.ctrlpf.bits.pf_score ? tia.colu[1] : tia.colu[2];
                             if (draw_p0)
