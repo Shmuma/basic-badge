@@ -24,12 +24,12 @@ struct tia_state {
   uint8_t queue_addr, queue_val;
   int16_t scanline;
   uint8_t color_clock;
-  uint8_t p0_pos, p1_pos, bl_pos;    // position of objects (as offset from visible)
+  uint8_t p0_pos, p1_pos, m0_pos, m1_pos, bl_pos;    // position of objects (as offset from visible)
   uint8_t p0_mask;              // mask of p0 to be drawn
   uint8_t p0_mask_cnt, p0_mask_clocks;       // how frequently we shift the mask, driven by NUSIZP0
   uint8_t p1_mask;              // mask of p1 to be drawn
   uint8_t p1_mask_cnt, p1_mask_clocks;       // how frequently we shift the mask, driven by NUSIZP1
-  uint8_t bl_clocks;                        // how many clocks of the ball to draw
+  uint8_t bl_clocks, m0_clocks, m1_clocks;   // how many clocks of the ball and missiles to draw
   
   union {
       uint8_t val;

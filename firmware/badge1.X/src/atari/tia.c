@@ -103,11 +103,14 @@ void tia_mpu_cycles(uint8_t cycles) {
         case RESP1:
             tia.p1_pos = tia.color_clock;
             break;
+        case RESM0:
+            tia.m0_pos = tia.color_clock;
+            break;
+        case RESM1:
+            tia.m1_pos = tia.color_clock;
+            break;
         case RESBL:
             tia.bl_pos = tia.color_clock;
-#ifdef TRACE_TIA
-            printf("Ball pos <- %d\n", tia.bl_pos);
-#endif            
             break;
         case GRP0:
             tia.p0 = val;
@@ -117,22 +120,14 @@ void tia_mpu_cycles(uint8_t cycles) {
             break;
         case ENAM0:
             tia.enam0 = (val >> 1) & 1;
-//        if (tia.enam0 && tia.vdelp0)
-//            tia.enam0++;
             break;
         case ENAM1:
             tia.enam1 = (val >> 1) & 1;
-//        if (tia.enam1 && tia.vdelp1)
-//            tia.enam1++;
             break;
         case ENABL:
             tia.enabl = (val >> 1) & 1;
             if (tia.enabl && tia.vdelbl)
                 tia.enabl = 2;
-#ifdef TRACE_TIA        
-            printf("Ball enabled, v=%d, hmbl=%d, vdelbl=%d, scanline=%d\n", 
-                    tia.enabl, tia.hmbl, tia.vdelbl, tia.scanline);
-#endif
             break;
         case HMP0:
             tia.hmp0 = FOURBITS_2COMPL_TO_INT(val >> 4);
@@ -148,9 +143,6 @@ void tia_mpu_cycles(uint8_t cycles) {
             break;
         case HMBL:
             tia.hmbl = FOURBITS_2COMPL_TO_INT(val >> 4);
-#ifdef TRACE_TIA        
-            printf("Ball hmbl <- %d\n", tia.hmbl);
-#endif
             break;
         case VDELP0:
             tia.vdelp0 = val & 1;
@@ -164,16 +156,12 @@ void tia_mpu_cycles(uint8_t cycles) {
         case HMOVE:
             tia.p0_pos = _normalize_clock_pos(tia.p0_pos - tia.hmp0);
             tia.p1_pos = _normalize_clock_pos(tia.p1_pos - tia.hmp1);
-#ifdef TRACE_TIA        
-            printf("Ball hmove pos: %d -> ", tia.bl_pos);
-#endif
+            tia.m0_pos = _normalize_clock_pos(tia.m0_pos - tia.hmm0);
+            tia.m1_pos = _normalize_clock_pos(tia.m1_pos - tia.hmm1);
             tia.bl_pos = _normalize_clock_pos(tia.bl_pos - tia.hmbl);
-#ifdef TRACE_TIA
-            printf("%d\n", tia.bl_pos);
-#endif
             break;
         case HMCLR:
-            tia.hmp0 = tia.hmp1 = tia.hmbl = 0;
+            tia.hmp0 = tia.hmp1 = tia.hmbl = tia.hmm0 = tia.hmm1 = 0;
             break;
         case CXCLR:
             tia.cx.val = 0;
@@ -281,13 +269,16 @@ void draw_pixels(uint8_t count) {
             tia.p1_mask_cnt = tia.p1_mask_clocks = _mask_clocks_from_psize(tia.nusiz1.bits.psize_count);
         }
         if (tia.enabl && tia.bl_pos == tia.color_clock) {
-#ifdef TRACE_TIA            
-            printf("Ball clock matched, pos=%d, enabl=%d\n", tia.bl_pos, tia.enabl);
-#endif
             if (tia.enabl > 1)
                 tia.enabl = 1;
             else
                 tia.bl_clocks = 1 << tia.ctrlpf.bits.ballsize;
+        }
+        if (tia.enam0 && tia.m0_pos == tia.color_clock) {
+            tia.m0_clocks = 1 << tia.nusiz0.bits.msize;
+        }
+        if (tia.enam1 && tia.m1_pos == tia.color_clock) {
+            tia.m1_clocks = 1 << tia.nusiz1.bits.msize;
         }
         
         if (tia.color_clock >= CLK_HORBLANK) {
@@ -363,9 +354,6 @@ void draw_pixels(uint8_t count) {
                 if (draw_p0 && draw_p1)
                     tia.cx.bits.p0p1 = 1;
                 if (tia.bl_clocks > 0) {
-#ifdef TRACE_TIA                    
-                    printf("Ball clocks %d -> ", tia.bl_clocks);
-#endif
                     // if PF has a priority over player or no player at all, draw ball
                     if (tia.ctrlpf.bits.pf_prio || (draw_p0 == 0 && draw_p1 == 0))
                         col = tia.colu[2];      // COLUPF
@@ -376,9 +364,33 @@ void draw_pixels(uint8_t count) {
                         tia.cx.bits.p1bl = 1;
                     if (draw_pf)
                         tia.cx.bits.blpf = 1;
-#ifdef TRACE_TIA
-                    printf("%d, col=%d\n", tia.bl_clocks, col);
-#endif
+                    if (tia.m0_clocks > 0)
+                        tia.cx.bits.m0bl = 1;
+                    if (tia.m1_clocks > 0)
+                        tia.cx.bits.m1bl = 1;
+                }
+                if (tia.m1_clocks > 0) {
+                    tia.m1_clocks--;
+                    col = tia.colu[1];
+                    if (draw_p0)
+                        tia.cx.bits.m1p0 = 1;
+                    if (draw_p1)
+                        tia.cx.bits.m1p1 = 1;
+                    if (draw_pf)
+                        tia.cx.bits.m1pf = 1;
+                    if (tia.m1_clocks > 0)
+                        tia.cx.bits.m0m1 = 1;
+                }
+                // checking M0 last as it has higher priority than M1, so, we'll draw over
+                if (tia.m0_clocks > 0) {
+                    tia.m0_clocks--;
+                    col = tia.colu[0];
+                    if (draw_p0)
+                        tia.cx.bits.m0p0 = 1;
+                    if (draw_p1)
+                        tia.cx.bits.m0p1 = 1;
+                    if (draw_pf)
+                        tia.cx.bits.m0pf = 1;
                 }
                 tia.fb[ofs] = col;
             }
