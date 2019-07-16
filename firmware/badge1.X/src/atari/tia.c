@@ -5,6 +5,9 @@ struct tia_state tia = {0};
 
 void draw_pixels(uint8_t count);        // draw given amount of pixels
 
+#ifdef TRACE_TIA
+extern uint32_t frame;
+#endif
 
 void init_tia() {
     memset(&tia, 0, sizeof(tia));
@@ -144,13 +147,14 @@ void tia_mpu_cycles(uint8_t cycles) {
             tia.vdelbl = val & 1;
             break;
         case RESMP0:
+            if (tia.resmp1 && !(val & 0b10))
+                tia.enam1 = 1;
             tia.resmp0 = (val >> 1) & 1;
-            tia.enam0 = tia.resmp0 ^ 1;         // invert missile enable
-            // TODO: looks like we don't need resmp0 and resmp1 vars completely
             break;
         case RESMP1:
+            if (tia.resmp1 && !(val & 0b10))
+                tia.enam1 = 1;
             tia.resmp1 = (val >> 1) & 1;
-            tia.enam1 = tia.resmp1 ^ 1;         // invert missile enable
             break;
         case HMOVE:
             tia.p0_pos = _normalize_clock_pos(tia.p0_pos - tia.hmp0);
@@ -388,9 +392,11 @@ void draw_pixels(uint8_t count) {
         }
         
 #ifdef TRACE_TIA
-        printf("TIA: col=%d, scan=%d, colubk=%02X, clr_stored=%02X, p0=%02X, p0_pos=%d, p0m=%02X, p0_cnt=%d\n", 
-                tia.color_clock, tia.scanline, tia.colu[3], col, tia.p0, tia.p0_pos,
+        printf("TIA: frm=%d, col=%d, scan=%d, colubk=%02X, clr_stored=%02X, p0=%02X, p0_pos=%d, p0m=%02X, p0_cnt=%d\n", 
+                frame, tia.color_clock, tia.scanline, tia.colu[3], col, tia.p0, tia.p0_pos,
                 tia.p0_mask, tia.p0_mask_cnt);
+        if (frame == 8 && tia.color_clock == 104 && tia.scanline == 1)
+            printf("Time to debug!\n");
 #endif        
         if (++tia.color_clock >= CLK_HOR) {
             tia.color_clock = 0;

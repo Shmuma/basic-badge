@@ -17,6 +17,7 @@
 
 extern struct register_file reg;
 extern struct tia_state tia;
+uint32_t frame = 0;
 #define SHOW_COLORS 1
 
 void atari_every_frame();
@@ -45,7 +46,7 @@ registers()
 
 void tia_line_ready(uint8_t line) {
     uint8_t c;
-    static uint32_t frame = 0;
+    
     
     if (line == 0) {
         atari_every_frame();
