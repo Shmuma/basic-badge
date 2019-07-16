@@ -182,7 +182,6 @@ void poke_tia(uint16_t, uint8_t);
 uint8_t peek_tia(uint16_t);
 
 void tia_line_ready(uint8_t line);
-
 void tia_fire(uint8_t p0, uint8_t set);
 
 #endif

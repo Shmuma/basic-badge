@@ -42,7 +42,7 @@ void tia_mpu_cycles(uint8_t cycles) {
 #ifdef TRACE_TIA
             printf("SV TIA: VBLANK: %02X\n", val);
 #endif
-            tia.draw_enabled = !(val & (1 << 2));
+            tia.draw_enabled = !(val & (1 << 1));
             tia.scanline = 0;
             tia.inpt45_latched = val & (1 << 6);
             if (!tia.inpt45_latched) {

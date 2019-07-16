@@ -49,13 +49,10 @@ void tia_line_ready(uint8_t line) {
     
     if (line == 0) {
         atari_every_frame();
-        // for pong: start the game
+        // start the game
         if (frame > 10 && frame < 20)
             pia_reset();
         frame++;
-        if (frame > 130) {
-            printf("Time to debug!\n");
-        }
     }
   
     printf("SC %04d, %03d: ", frame, line);
