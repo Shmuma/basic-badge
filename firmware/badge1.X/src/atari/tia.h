@@ -79,6 +79,7 @@ struct tia_state {
   
   uint8_t enam0, enam1, enabl;          // 0 - disabled, 1 - enabled, 2 - enabled, but need to wait a line
   uint8_t vdelp0, vdelp1, vdelbl;
+  uint8_t resmp0, resmp1;
   
   union {
       struct {
@@ -139,6 +140,8 @@ struct tia_state {
 #define VDELP0      0x25
 #define VDELP1      0x26
 #define VDELBL      0x27
+#define RESMP0      0x28
+#define RESMP1      0x29
 #define HMOVE       0x2A
 #define HMCLR       0x2B
 #define CXCLR       0x2C

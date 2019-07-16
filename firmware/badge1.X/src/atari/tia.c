@@ -153,6 +153,15 @@ void tia_mpu_cycles(uint8_t cycles) {
         case VDELBL:
             tia.vdelbl = val & 1;
             break;
+        case RESMP0:
+            tia.resmp0 = (val >> 1) & 1;
+            tia.enam0 = tia.resmp0 ^ 1;         // invert missile enable
+            // TODO: looks like we don't need resmp0 and resmp1 vars completely
+            break;
+        case RESMP1:
+            tia.resmp1 = (val >> 1) & 1;
+            tia.enam1 = tia.resmp1 ^ 1;         // invert missile enable
+            break;
         case HMOVE:
             tia.p0_pos = _normalize_clock_pos(tia.p0_pos - tia.hmp0);
             tia.p1_pos = _normalize_clock_pos(tia.p1_pos - tia.hmp1);
