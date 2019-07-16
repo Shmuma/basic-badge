@@ -107,9 +107,11 @@ void tia_mpu_cycles(uint8_t cycles) {
             break;
         case GRP0:
             tia.p0 = val;
+            tia.p1_d = tia.p1;
             break;
         case GRP1:
             tia.p1 = val;
+            tia.p0_d = tia.p0;
             break;
         case ENAM0:
             tia.enam0 = (val >> 1) & 1;
@@ -282,7 +284,7 @@ void draw_pixels(uint8_t count) {
                 col = tia.colu[3];      // COLUBK
                 draw_p0 = draw_p1 = draw_pf = 0;
                 if (tia.p0_mask) {
-                    draw_p0 = tia.p0_mask & tia.p0;
+                    draw_p0 = tia.p0_mask & (tia.vdelp0 ? tia.p0_d : tia.p0);
                     if (--tia.p0_mask_cnt == 0) {
                         if (tia.ref_p0)
                             tia.p0_mask <<= 1;
@@ -292,7 +294,7 @@ void draw_pixels(uint8_t count) {
                     }
                 }
                 if (tia.p1_mask) {
-                    draw_p1 = tia.p1_mask & tia.p1;
+                    draw_p1 = tia.p1_mask & (tia.vdelp1 ? tia.p1_d : tia.p1);
                     if (--tia.p1_mask_cnt == 0) {
                         if (tia.ref_p1)
                             tia.p1_mask <<= 1;
@@ -402,6 +404,8 @@ void draw_pixels(uint8_t count) {
             tia.color_clock = 0;
             if (tia.draw_enabled && !tia.vsync_enabled) {
                 tia_line_ready(tia.scanline++);
+//                tia.p0_d = tia.p0;
+//                tia.p1_d = tia.p1;
             }
         }
     }

@@ -55,7 +55,7 @@ struct tia_state {
 
   uint32_t pf;                      // pf register combined as pf0, pf1, pf2 
                                     // in LSB (left-to right order)
-  uint8_t p0, p1;                   // graphics for P0 and P1
+  uint8_t p0, p0_d, p1, p1_d;       // graphics for P0 and P1 (including vdels)
   uint8_t ref_p0, ref_p1;           // reflect players
   int8_t hmp0, hmp1, hmm0, hmm1, hmbl;  // horizontal move registers (decoded into signed val)
   
