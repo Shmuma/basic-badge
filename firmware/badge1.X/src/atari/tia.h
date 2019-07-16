@@ -102,6 +102,8 @@ struct tia_state {
       uint16_t val;
   } cx;
   
+  uint8_t inpt45_latched;
+  
   uint8_t fb[FB_WIDTH];
 };
 

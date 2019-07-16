@@ -3,10 +3,6 @@
 
 struct tia_state tia = {0};
 
-
-INLINE void do_vsync(uint8_t start);
-INLINE void do_vblank(uint8_t start);
-INLINE void do_wsync();                 // draw the next of the line
 void draw_pixels(uint8_t count);        // draw given amount of pixels
 
 
@@ -14,36 +10,6 @@ void init_tia() {
     memset(&tia, 0, sizeof(tia));
 }
 
-
-// start or stop vsync. In our case, we ignore start/stop bit and always zero 
-// current scanline
-INLINE void do_vsync(uint8_t start) {
-#ifdef TRACE_TIA
-    printf("SV TIA: VSYNC: %d\n", start);
-#endif
-    tia.vsync_enabled = start;
-    tia.scanline = 0;
-    tia.p0_mask = tia.p1_mask = 0;
-}
-
-INLINE void do_vblank(uint8_t start) {
-#ifdef TRACE_TIA
-    printf("SV TIA: VBLANK: %d\n", start);
-#endif
-    tia.draw_enabled = !start;
-    tia.scanline = 0;
-}
-
-
-INLINE void do_wsync() {
-#ifdef TRACE_TIA
-    printf("SV TIA: WSYNC: draw %d pixels\n", CLK_HOR - tia.color_clock);
-#endif
-    if (tia.color_clock > 0) {
-        // draw to the rest of scanline
-        draw_pixels(CLK_HOR - tia.color_clock);
-    }
-}
 
 static inline uint8_t _normalize_clock_pos(uint8_t pos) {
     if (pos < CLK_HORBLANK)
@@ -64,8 +30,32 @@ void tia_mpu_cycles(uint8_t cycles) {
         return;
 
     switch (addr) {
+        case VSYNC:
+#ifdef TRACE_TIA
+            printf("SV TIA: VSYNC: %d\n", val != 0);
+#endif
+            tia.vsync_enabled = val != 0;
+            tia.scanline = 0;
+            tia.p0_mask = tia.p1_mask = 0;
+            break;
+        case VBLANK:
+#ifdef TRACE_TIA
+            printf("SV TIA: VBLANK: %02X\n", val);
+#endif
+            tia.draw_enabled = !(val & (1 << 2));
+            tia.scanline = 0;
+            tia.inpt45_latched = val & (1 << 6);
+            if (!tia.inpt45_latched) {
+                tia.fire.bits.p0 = 0;
+                tia.fire.bits.p1 = 0;
+            }
+            break;
         case WSYNC:
-            do_wsync();
+#ifdef TRACE_TIA
+            printf("SV TIA: WSYNC: draw %d pixels\n", CLK_HOR - tia.color_clock);
+#endif
+            if (tia.color_clock > 0)
+                draw_pixels(CLK_HOR - tia.color_clock);
             break;
         case COLUP0:
         case COLUP1:
@@ -180,16 +170,8 @@ void tia_mpu_cycles(uint8_t cycles) {
 }
 
 void poke_tia(uint16_t addr, uint8_t val) {
-    if (addr == VSYNC)
-        do_vsync(val != 0);
-    else if (addr == VBLANK) {
-        do_vblank(val & 1<<1);
-        // TODO: handle INP latches/ground
-    }
-    else {
-        tia.queue_addr = addr;
-        tia.queue_val = val;
-    }
+    tia.queue_addr = addr;
+    tia.queue_val = val;
 }
 
 
@@ -421,6 +403,9 @@ void draw_pixels(uint8_t count) {
 
 
 void tia_fire(uint8_t p0, uint8_t set) {
+    // if input is latched, reset is being ignored
+    if (tia.inpt45_latched && !set)
+        return;
     if (p0)
         tia.fire.bits.p0 = set != 0;
     else
