@@ -25,7 +25,7 @@ void show_debug_info();
 #define MENU_BROWSE_FLASH           1
 #define MENU_FLASH_SECTOR0         10
 #define MENU_RECEIVE_ROMS           2
-#define MENU_RUN_BUILTIN            3
+//#define MENU_RUN_BUILTIN            3
 #define MENU_SETTINGS_MENU          4
 #define MENU_SETTINGS_TOGGLE_DEBUG 40
 
@@ -40,10 +40,10 @@ const char* get_menu_text_debug() {
 
 struct menu_t root_menu = {
     .title = "Atari emulator",
-    .items_count = 4,
-    .items = (struct menu_t[4]){
+    .items_count = 3,
+    .items = (struct menu_t[]){
         {.id = MENU_BROWSE_FLASH,   .title = "Run from flash", .items_count = 10,
-            .items = (struct menu_t[10]){
+            .items = (struct menu_t[]){
                 {.id = MENU_FLASH_SECTOR0+0, .title = "Run sector 0"},
                 {.id = MENU_FLASH_SECTOR0+1, .title = "Run sector 1"},
                 {.id = MENU_FLASH_SECTOR0+2, .title = "Run sector 2"},
@@ -57,9 +57,9 @@ struct menu_t root_menu = {
             }
         },
         {.id = MENU_RECEIVE_ROMS,   .title = "Receive ROMs via UART3"},
-        {.id = MENU_RUN_BUILTIN,    .title = "Run built-in ROM"},
+//        {.id = MENU_RUN_BUILTIN,    .title = "Run built-in ROM"},
         {.id = MENU_SETTINGS_MENU,  .title = "Settings >>>", .items_count = 3, 
-            .items = (struct menu_t[3]){
+            .items = (struct menu_t[]){
                 {.id = MENU_SETTINGS_TOGGLE_DEBUG, .title_func = &get_menu_text_debug},
                 {.id = 32, .title = "Item 2"},
                 {.id = 33, .title = "Item 3"},
@@ -122,11 +122,12 @@ void atari_menu() {
         if (!res_id)
             break;
 
-        if (res_id == MENU_RUN_BUILTIN) {
-            rom = ROM_NAME;
-            atari_start();
-        }
-        else if (res_id >= MENU_FLASH_SECTOR0 && res_id <= MENU_FLASH_SECTOR0+9) {
+//        if (res_id == MENU_RUN_BUILTIN) {
+////            rom = ROM_NAME;
+////            atari_start();
+//        }
+//        else 
+        if (res_id >= MENU_FLASH_SECTOR0 && res_id <= MENU_FLASH_SECTOR0+9) {
             atari_load_rom(res_id - MENU_FLASH_SECTOR0);
             atari_start();
         }

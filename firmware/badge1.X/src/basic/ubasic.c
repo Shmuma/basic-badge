@@ -48,7 +48,7 @@
 #include <setjmp.h>
 
 extern jmp_buf jbuf;
-extern uint8_t handle_display;
+extern volatile uint8_t handle_display;
 extern uint8_t ram[65536L];
 
 uint8_t get_memory (uint16_t addr);

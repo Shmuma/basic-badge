@@ -126,7 +126,7 @@ jmp_buf jbuf;
 
 #if ENABLE_Z80
 extern const uint8_t ram_image[65536];
-//extern const uint8_t b2_rom[2048];
+extern const uint8_t b2_rom[2048];
 extern const uint8_t ram_init [30];
 extern uint8_t ram_disk[RAMDISK_SIZE];
 #endif
@@ -705,6 +705,7 @@ void init_basic (void)
 //B_BAS006
 void loop_basic (void)
 	{
+    int8_t char_out;
 	if (prompt==1)
 	    {
 	    stdio_write(">");	
@@ -882,10 +883,10 @@ uint8_t cmd_exec (int8_t * cmd)
 			stdio_write("Loading new program from serial port\n");
 			stdio_write("Press BRK to exit...\n");
 			serial_flush();
-			handle_display = 0;
+			enable_display_scanning(0);
 			display_refresh_force();
 			i = basic_loads(bprog,BPROG_LEN);
-			handle_display = 1;
+			enable_display_scanning(1);
 			sprintf(stdio_buff,"\nOK, received %d bytes.\n",i);
 			stdio_write(stdio_buff);
 			}	
@@ -908,7 +909,7 @@ uint8_t cmd_exec (int8_t * cmd)
 					break;
 					}
 				} 	while(!ubasic_finished());
-			handle_display = 1;
+			enable_display_scanning(1);
 			stdio_write("\n");
 			}
 		else 

@@ -21,8 +21,8 @@
 #else
 #define INLINE inline
 
-extern const uint8_t kernel_11_rom[];
-#define ROM_NAME kernel_11_rom
+//extern const uint8_t kernel_11_rom[];
+//#define ROM_NAME kernel_11_rom
 #define ROM_SIZE 4096
 #endif
 

@@ -192,4 +192,10 @@ uint32_t millis(void);
 extern int8_t disp_buffer[DISP_BUFFER_HIGH+1][DISP_BUFFER_WIDE];
 extern int8_t color_buffer[DISP_BUFFER_HIGH+1][DISP_BUFFER_WIDE];
 
+extern uint8_t iosim_mode;
+extern uint8_t disk_temp[128];
+#if ENABLE_BASIC
+extern int8_t bprog[BPROG_LEN+1];
+extern int8_t bprog_init[700];
+#endif
 #endif

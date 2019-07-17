@@ -54,7 +54,7 @@
 #define	FLASH_BUFFERING
 
 // Enable Z80 emulator
-#define ENABLE_Z80 0
+#define ENABLE_Z80 1
 
 // Enable Basic (requires Z80, for some weird reason)
 #define ENABLE_BASIC 0
