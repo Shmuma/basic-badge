@@ -111,7 +111,7 @@
         <targetDevice>PIC32MX370F512H</targetDevice>
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
-        <platformTool>PICkit3PlatformTool</platformTool>
+        <platformTool>pk4hybrid</platformTool>
         <languageToolchain>XC32</languageToolchain>
         <languageToolchainVersion>2.15</languageToolchainVersion>
         <platform>4</platform>
@@ -811,7 +811,83 @@
                   value=""/>
         <property key="warningmessagebreakoptions.warningmessages" value="holdstate"/>
       </Simulator>
-      <item path="src/Z80/fdefs.h" ex="true" overriding="false">
+      <pk4hybrid>
+        <property key="ADC 1" value="true"/>
+        <property key="AutoSelectMemRanges" value="auto"/>
+        <property key="CHANGE NOTICE" value="true"/>
+        <property key="COMPARATOR" value="true"/>
+        <property key="CTMU" value="true"/>
+        <property key="DMA" value="true"/>
+        <property key="Freeze All Other Peripherals" value="true"/>
+        <property key="I2C1" value="true"/>
+        <property key="I2C2" value="true"/>
+        <property key="INPUT CAPTURE 1" value="true"/>
+        <property key="INPUT CAPTURE 2" value="true"/>
+        <property key="INPUT CAPTURE 3" value="true"/>
+        <property key="INPUT CAPTURE 4" value="true"/>
+        <property key="INPUT CAPTURE 5" value="true"/>
+        <property key="INTERRUPT CONTROL" value="true"/>
+        <property key="OUTPUT COMPARE 1" value="true"/>
+        <property key="OUTPUT COMPARE 2" value="true"/>
+        <property key="OUTPUT COMPARE 3" value="true"/>
+        <property key="OUTPUT COMPARE 4" value="true"/>
+        <property key="OUTPUT COMPARE 5" value="true"/>
+        <property key="PARALLEL MASTER/SLAVE PORT" value="true"/>
+        <property key="REAL TIME CLOCK" value="true"/>
+        <property key="SPI/I2S 1" value="true"/>
+        <property key="SPI/I2S 2" value="true"/>
+        <property key="SecureSegment.SegmentProgramming" value="FullChipProgramming"/>
+        <property key="TIMER1" value="true"/>
+        <property key="TIMER2" value="true"/>
+        <property key="TIMER3" value="true"/>
+        <property key="TIMER4" value="true"/>
+        <property key="TIMER5" value="true"/>
+        <property key="ToolFirmwareFilePath"
+                  value="Press to browse for a specific firmware version"/>
+        <property key="ToolFirmwareOption.UpdateOptions"
+                  value="ToolFirmwareOption.UseLatest"/>
+        <property key="UART1" value="true"/>
+        <property key="UART2" value="true"/>
+        <property key="UART3" value="true"/>
+        <property key="UART4" value="true"/>
+        <property key="communication.interface" value=""/>
+        <property key="communication.speed" value="${communication.speed.default}"/>
+        <property key="debugoptions.useswbreakpoints" value="false"/>
+        <property key="memories.aux" value="false"/>
+        <property key="memories.bootflash" value="true"/>
+        <property key="memories.configurationmemory" value="true"/>
+        <property key="memories.configurationmemory2" value="true"/>
+        <property key="memories.dataflash" value="true"/>
+        <property key="memories.eeprom" value="true"/>
+        <property key="memories.exclude.configurationmemory" value="true"/>
+        <property key="memories.flashdata" value="true"/>
+        <property key="memories.id" value="true"/>
+        <property key="memories.instruction.ram.ranges"
+                  value="${memories.instruction.ram.ranges}"/>
+        <property key="memories.programmemory" value="true"/>
+        <property key="memories.programmemory.ranges" value="1d000000-1d07ffff"/>
+        <property key="poweroptions.powerenable" value="false"/>
+        <property key="programoptions.donoteraseauxmem" value="false"/>
+        <property key="programoptions.eraseb4program" value="true"/>
+        <property key="programoptions.ledbrightness" value="5"/>
+        <property key="programoptions.pgcconfig" value="pull down"/>
+        <property key="programoptions.pgcresistor.value" value="4.7"/>
+        <property key="programoptions.pgdconfig" value="pull down"/>
+        <property key="programoptions.pgdresistor.value" value="4.7"/>
+        <property key="programoptions.pgmentry.voltage" value="low"/>
+        <property key="programoptions.pgmspeed" value="Med"/>
+        <property key="programoptions.preservedataflash" value="false"/>
+        <property key="programoptions.preserveeeprom" value="false"/>
+        <property key="programoptions.preserveeeprom.ranges" value=""/>
+        <property key="programoptions.preserveprogram.ranges" value="1d000000-1d07ffff"/>
+        <property key="programoptions.preserveprogramrange" value="false"/>
+        <property key="programoptions.preserveuserid" value="false"/>
+        <property key="programoptions.programcalmem" value="false"/>
+        <property key="programoptions.programuserotp" value="false"/>
+        <property key="programoptions.testmodeentrymethod" value="VDDFirst"/>
+        <property key="voltagevalue" value="3.25"/>
+      </pk4hybrid>
+      <item path="src/Z80/fdefs.h" ex="false" overriding="false">
         <C32>
         </C32>
         <C32-AR>
@@ -825,7 +901,7 @@
         <C32Global>
         </C32Global>
       </item>
-      <item path="src/Z80/hwz.c" ex="true" overriding="false">
+      <item path="src/Z80/hwz.c" ex="false" overriding="false">
         <C32>
         </C32>
         <C32-AR>
@@ -839,7 +915,7 @@
         <C32Global>
         </C32Global>
       </item>
-      <item path="src/Z80/hwz.h" ex="true" overriding="false">
+      <item path="src/Z80/hwz.h" ex="false" overriding="false">
         <C32>
         </C32>
         <C32-AR>
@@ -853,7 +929,7 @@
         <C32Global>
         </C32Global>
       </item>
-      <item path="src/Z80/iosim.c" ex="true" overriding="false">
+      <item path="src/Z80/iosim.c" ex="false" overriding="false">
         <C32>
         </C32>
         <C32-AR>
@@ -867,7 +943,7 @@
         <C32Global>
         </C32Global>
       </item>
-      <item path="src/Z80/sim.h" ex="true" overriding="false">
+      <item path="src/Z80/sim.h" ex="false" overriding="false">
         <C32>
         </C32>
         <C32-AR>
@@ -881,7 +957,7 @@
         <C32Global>
         </C32Global>
       </item>
-      <item path="src/Z80/sim1.c" ex="true" overriding="false">
+      <item path="src/Z80/sim1.c" ex="false" overriding="false">
         <C32>
         </C32>
         <C32-AR>
@@ -895,7 +971,7 @@
         <C32Global>
         </C32Global>
       </item>
-      <item path="src/Z80/sim2.c" ex="true" overriding="false">
+      <item path="src/Z80/sim2.c" ex="false" overriding="false">
         <C32>
         </C32>
         <C32-AR>
@@ -909,7 +985,7 @@
         <C32Global>
         </C32Global>
       </item>
-      <item path="src/Z80/sim3.c" ex="true" overriding="false">
+      <item path="src/Z80/sim3.c" ex="false" overriding="false">
         <C32>
         </C32>
         <C32-AR>
@@ -923,7 +999,7 @@
         <C32Global>
         </C32Global>
       </item>
-      <item path="src/Z80/sim4.c" ex="true" overriding="false">
+      <item path="src/Z80/sim4.c" ex="false" overriding="false">
         <C32>
         </C32>
         <C32-AR>
@@ -937,7 +1013,7 @@
         <C32Global>
         </C32Global>
       </item>
-      <item path="src/Z80/sim5.c" ex="true" overriding="false">
+      <item path="src/Z80/sim5.c" ex="false" overriding="false">
         <C32>
         </C32>
         <C32-AR>
@@ -951,7 +1027,7 @@
         <C32Global>
         </C32Global>
       </item>
-      <item path="src/Z80/sim6.c" ex="true" overriding="false">
+      <item path="src/Z80/sim6.c" ex="false" overriding="false">
         <C32>
         </C32>
         <C32-AR>
@@ -965,7 +1041,7 @@
         <C32Global>
         </C32Global>
       </item>
-      <item path="src/Z80/sim7.c" ex="true" overriding="false">
+      <item path="src/Z80/sim7.c" ex="false" overriding="false">
         <C32>
         </C32>
         <C32-AR>
@@ -979,7 +1055,7 @@
         <C32Global>
         </C32Global>
       </item>
-      <item path="src/Z80/simfun.c" ex="true" overriding="false">
+      <item path="src/Z80/simfun.c" ex="false" overriding="false">
         <C32>
         </C32>
         <C32-AR>
@@ -993,7 +1069,7 @@
         <C32Global>
         </C32Global>
       </item>
-      <item path="src/Z80/simglb.c" ex="true" overriding="false">
+      <item path="src/Z80/simglb.c" ex="false" overriding="false">
         <C32>
         </C32>
         <C32-AR>
@@ -1007,7 +1083,7 @@
         <C32Global>
         </C32Global>
       </item>
-      <item path="src/Z80/simglb.h" ex="true" overriding="false">
+      <item path="src/Z80/simglb.h" ex="false" overriding="false">
         <C32>
         </C32>
         <C32-AR>
@@ -1021,7 +1097,11 @@
         <C32Global>
         </C32Global>
       </item>
-      <item path="src/basic/tokenizer.c" ex="true" overriding="false">
+      <item path="src/atari/roms/kernel_01.c" ex="true" overriding="false">
+      </item>
+      <item path="src/atari/roms/kernel_11.c" ex="true" overriding="false">
+      </item>
+      <item path="src/basic/tokenizer.c" ex="false" overriding="false">
         <C32>
         </C32>
         <C32-AR>
@@ -1035,7 +1115,7 @@
         <C32Global>
         </C32Global>
       </item>
-      <item path="src/basic/tokenizer.h" ex="true" overriding="false">
+      <item path="src/basic/tokenizer.h" ex="false" overriding="false">
         <C32>
         </C32>
         <C32-AR>
@@ -1049,7 +1129,7 @@
         <C32Global>
         </C32Global>
       </item>
-      <item path="src/basic/ubasic.c" ex="true" overriding="false">
+      <item path="src/basic/ubasic.c" ex="false" overriding="false">
         <C32>
         </C32>
         <C32-AR>
@@ -1063,7 +1143,7 @@
         <C32Global>
         </C32Global>
       </item>
-      <item path="src/basic/ubasic.h" ex="true" overriding="false">
+      <item path="src/basic/ubasic.h" ex="false" overriding="false">
         <C32>
         </C32>
         <C32-AR>
