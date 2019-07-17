@@ -42,7 +42,7 @@
 //if off, disables all CP/M stuff and leaves "empty" Z80 machine
 #define	USE_RAM_IMAGE	
 //first ROM disk, full of utils, mapped as disk B. you can disable this one
-#define	USE_ROMDISK
+//#define	USE_ROMDISK
 //second ROM disk, with games, mapped as disk C. you can disable this one
 #define	USE_ROMDISK2
 //RAM disk, you can save 22kb of RAM by disabling it
@@ -57,7 +57,7 @@
 #define ENABLE_Z80 1
 
 // Enable Basic (requires Z80, for some weird reason)
-#define ENABLE_BASIC 0
+#define ENABLE_BASIC 1
 
 // Enable Atari emulator
 #define ENABLE_ATARI 1
