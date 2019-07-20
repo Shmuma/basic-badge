@@ -37,7 +37,7 @@ void tia_mpu_cycles(uint8_t cycles) {
 #ifdef TRACE_TIA
             printf("SV TIA: VSYNC: %d\n", val != 0);
 #endif
-            tia.vsync_enabled = val != 0;
+            tia.vsync_enabled = val & 0b10;
             tia.scanline = 0;
             tia.p0_mask = tia.p1_mask = 0;
             break;
@@ -85,10 +85,10 @@ void tia_mpu_cycles(uint8_t cycles) {
             tia.pf = (tia.pf & ~0xFF000) | (val << 12);
             break;
         case REFP0:
-            tia.ref_p0 = val;
+            tia.ref_p0 = val & 0b1000;
             break;
         case REFP1:
-            tia.ref_p1 = val;
+            tia.ref_p1 = val & 0b1000;
             break;
         case RESP0:
             tia.p0_pos = tia.color_clock;
@@ -252,11 +252,12 @@ void draw_pixels(uint8_t count) {
   
     while (count--) { 
         if (_is_player_clock(tia.nusiz0.bits.psize_count, tia.color_clock, tia.p0_pos)) {
-            tia.p0_mask = 1 << (tia.ref_p0 ? 7 : 0);
+            tia.p0_mask = 1 << (tia.ref_p0 ? 0 : 7);
             tia.p0_mask_cnt = tia.p0_mask_clocks = _mask_clocks_from_psize(tia.nusiz0.bits.psize_count);
         }
         if (_is_player_clock(tia.nusiz1.bits.psize_count, tia.color_clock, tia.p1_pos)) {
-            tia.p1_mask = 1 << (tia.ref_p1 ? 7 : 0);
+//            printf("P1 matched, P1=%02X, ref=%d\n", (tia.vdelp1 ? tia.p1_d : tia.p1), tia.ref_p1);
+            tia.p1_mask = 1 << (tia.ref_p1 ? 0 : 7);
             tia.p1_mask_cnt = tia.p1_mask_clocks = _mask_clocks_from_psize(tia.nusiz1.bits.psize_count);
         }
         if (tia.enabl && tia.bl_pos == tia.color_clock) {
@@ -281,9 +282,9 @@ void draw_pixels(uint8_t count) {
                     draw_p0 = tia.p0_mask & (tia.vdelp0 ? tia.p0_d : tia.p0);
                     if (--tia.p0_mask_cnt == 0) {
                         if (tia.ref_p0)
-                            tia.p0_mask >>= 1;
-                        else
                             tia.p0_mask <<= 1;
+                        else
+                            tia.p0_mask >>= 1;
                         tia.p0_mask_cnt = tia.p0_mask_clocks;
                     }
                 }
@@ -291,9 +292,9 @@ void draw_pixels(uint8_t count) {
                     draw_p1 = tia.p1_mask & (tia.vdelp1 ? tia.p1_d : tia.p1);
                     if (--tia.p1_mask_cnt == 0) {
                         if (tia.ref_p1)
-                            tia.p1_mask >>= 1;
-                        else
                             tia.p1_mask <<= 1;
+                        else
+                            tia.p1_mask >>= 1;
                         tia.p1_mask_cnt = tia.p1_mask_clocks;
                     }
                 }
