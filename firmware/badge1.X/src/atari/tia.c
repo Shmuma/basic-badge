@@ -48,10 +48,10 @@ void tia_mpu_cycles(uint8_t cycles) {
             tia.draw_enabled = !(val & (1 << 1));
             tia.scanline = 0;
             tia.inpt45_latched = val & (1 << 6);
-            if (!tia.inpt45_latched) {
-                tia.fire.bits.p0 = 0;
-                tia.fire.bits.p1 = 0;
-            }
+//            if (!tia.inpt45_latched) {
+//                tia.fire.bits.p0 = 0;
+//                tia.fire.bits.p1 = 0;
+//            }
             break;
         case WSYNC:
 #ifdef TRACE_TIA
@@ -200,9 +200,9 @@ uint8_t peek_tia(uint16_t addr) {
         case TIA_RD_CXPPMM:
             return tia.cx.bits.p0p1 << 7 | tia.cx.bits.m0m1 << 6;
         case TIA_RD_INPT4:
-            return (1-tia.fire.bits.p0) << 7;
+            return ~(tia.fire.bits.p0 << 7);
         case TIA_RD_INPT5:
-            return (1-tia.fire.bits.p1) << 7;
+            return ~(tia.fire.bits.p1 << 7);
         default:
             return 0xFF;
     }
