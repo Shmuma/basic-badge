@@ -252,17 +252,11 @@ void draw_pixels(uint8_t count) {
   
     while (count--) { 
         if (_is_player_clock(tia.nusiz0.bits.psize_count, tia.color_clock, tia.p0_pos)) {
-//            if (tia.vdelp0)
-//                tia.vdelp0 = 0;
-//            else {
-            tia.p0_mask = 1 << (tia.ref_p0 ? 0 : 7);
+            tia.p0_mask = 1 << (tia.ref_p0 ? 7 : 0);
             tia.p0_mask_cnt = tia.p0_mask_clocks = _mask_clocks_from_psize(tia.nusiz0.bits.psize_count);
         }
         if (_is_player_clock(tia.nusiz1.bits.psize_count, tia.color_clock, tia.p1_pos)) {
-//            if (tia.vdelp1)
-//                tia.vdelp1 = 0;
-//            else {
-            tia.p1_mask = 1 << (tia.ref_p1 ? 0 : 7);
+            tia.p1_mask = 1 << (tia.ref_p1 ? 7 : 0);
             tia.p1_mask_cnt = tia.p1_mask_clocks = _mask_clocks_from_psize(tia.nusiz1.bits.psize_count);
         }
         if (tia.enabl && tia.bl_pos == tia.color_clock) {
@@ -287,9 +281,9 @@ void draw_pixels(uint8_t count) {
                     draw_p0 = tia.p0_mask & (tia.vdelp0 ? tia.p0_d : tia.p0);
                     if (--tia.p0_mask_cnt == 0) {
                         if (tia.ref_p0)
-                            tia.p0_mask <<= 1;
-                        else
                             tia.p0_mask >>= 1;
+                        else
+                            tia.p0_mask <<= 1;
                         tia.p0_mask_cnt = tia.p0_mask_clocks;
                     }
                 }
@@ -297,9 +291,9 @@ void draw_pixels(uint8_t count) {
                     draw_p1 = tia.p1_mask & (tia.vdelp1 ? tia.p1_d : tia.p1);
                     if (--tia.p1_mask_cnt == 0) {
                         if (tia.ref_p1)
-                            tia.p1_mask <<= 1;
-                        else
                             tia.p1_mask >>= 1;
+                        else
+                            tia.p1_mask <<= 1;
                         tia.p1_mask_cnt = tia.p1_mask_clocks;
                     }
                 }
@@ -394,19 +388,19 @@ void draw_pixels(uint8_t count) {
         }
         
 #ifdef TRACE_TIA
+        if (frame >= 18)
         printf("TIA: frm=%d, col=%d, scan=%d, colubk=%02X, clr_stored=%02X, p0=%02X, p0_pos=%d, p0m=%02X, p0_cnt=%d\n", 
                 frame, tia.color_clock, tia.scanline, tia.colu[3], col, tia.p0, tia.p0_pos,
                 tia.p0_mask, tia.p0_mask_cnt);
-        if (frame == 8 && tia.color_clock == 104 && tia.scanline == 1)
+        if (frame == 19 && tia.color_clock == 68 && tia.scanline == 0 && col == 0xD6)
             printf("Time to debug!\n");
 #endif        
         if (++tia.color_clock >= CLK_HOR) {
             tia.color_clock = 0;
             if (tia.draw_enabled && !tia.vsync_enabled) {
                 tia_line_ready(tia.scanline++);
-//                tia.p0_d = tia.p0;
-//                tia.p1_d = tia.p1;
             }
+            tia.p0_mask = tia.p1_mask = 0;
         }
     }
 }
