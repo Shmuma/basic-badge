@@ -389,7 +389,6 @@ void draw_pixels(uint8_t count) {
         }
         
 #ifdef TRACE_TIA
-        if (frame >= 18)
         printf("TIA: frm=%d, col=%d, scan=%d, colubk=%02X, clr_stored=%02X, p0=%02X, p0_pos=%d, p0m=%02X, p0_cnt=%d\n", 
                 frame, tia.color_clock, tia.scanline, tia.colu[3], col, tia.p0, tia.p0_pos,
                 tia.p0_mask, tia.p0_mask_cnt);
