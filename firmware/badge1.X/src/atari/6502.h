@@ -78,4 +78,5 @@ void _NMI(void);
  */
 int16_t mpu(void);
 
+#define DIFF_PAGES(a1, a2) (((a1)>>8) != ((a2)>>8))
 #endif

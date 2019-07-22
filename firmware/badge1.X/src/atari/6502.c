@@ -100,7 +100,6 @@ FF,  6, FF, FF,  3,  3,  3, FF,  2, FF,  2, FF,  4,  4,  4, FF, // 128...143 80-
 
 // equals 1 if last call to address() crossed page boundary
 uint8_t _address_page_crossed = 0;
-uint8_t _branch_taken = 0;
 
 /*
  * Push to stack
@@ -324,6 +323,7 @@ mpu(void)
 	uint16_t acc;		/* Accumulator + Carry */
 	uint8_t op1;		/* Operand 1 */
 	uint8_t op2;		/* Operand 2 */
+    uint8_t _extra_clocks = 0;
 
 	opcode = peek(reg.PC++);
 	if (opcode == 0xFF)
@@ -331,7 +331,6 @@ mpu(void)
 	mode = _mode[opcode];
 	if (mode == 0xFF)
 		return (ILLEGAL);
-    _branch_taken = 0;
     
 	switch (_instruction[opcode]) {
 
@@ -376,8 +375,9 @@ mpu(void)
 
 	case  3: /* BCC */
 		if (!(reg.SR & CARRY)) {
-			reg.PC = address(mode);
-            _branch_taken = 1;
+            addr = address(mode);
+            _extra_clocks = 1 + DIFF_PAGES(reg.PC, addr);
+			reg.PC = addr;
         }
 		else
 			reg.PC++;
@@ -385,8 +385,9 @@ mpu(void)
 
 	case  4: /* BCS */
 		if (reg.SR & CARRY) {
-			reg.PC = address(mode);
-            _branch_taken = 1;
+            addr = address(mode);
+            _extra_clocks = 1 + DIFF_PAGES(reg.PC, addr);
+			reg.PC = addr;
         }
 		else
 			reg.PC++;
@@ -394,8 +395,9 @@ mpu(void)
 
 	case  5: /* BEQ */
 		if (reg.SR & ZERO) {
-			reg.PC = address(mode);
-            _branch_taken = 1;
+            addr = address(mode);
+            _extra_clocks = 1 + DIFF_PAGES(reg.PC, addr);
+			reg.PC = addr;
         }
 		else
 			reg.PC++;
@@ -412,8 +414,9 @@ mpu(void)
 
 	case  7: /* BMI */
 		if (reg.SR & NEGATIVE) {
-			reg.PC = address(mode);
-            _branch_taken = 1;
+            addr = address(mode);
+            _extra_clocks = 1 + DIFF_PAGES(reg.PC, addr);
+			reg.PC = addr;
         }
 		else
 			reg.PC++;
@@ -421,8 +424,9 @@ mpu(void)
 
 	case  8: /* BNE */
 		if (!(reg.SR & ZERO)) {
-			reg.PC = address(mode);
-            _branch_taken = 1;
+            addr = address(mode);
+            _extra_clocks = 1 + DIFF_PAGES(reg.PC, addr);
+			reg.PC = addr;
         }
 		else
 			reg.PC++;
@@ -430,8 +434,9 @@ mpu(void)
 
 	case  9: /* BPL */
 		if (!(reg.SR & NEGATIVE)) {
-			reg.PC = address(mode);
-            _branch_taken = 1;
+            addr = address(mode);
+            _extra_clocks = 1 + DIFF_PAGES(reg.PC, addr);
+			reg.PC = addr;
         }
 		else
 			reg.PC++;
@@ -449,8 +454,9 @@ mpu(void)
 
 	case 11: /* BVC */
 		if (!(reg.SR & OVERFLOW)) {
-			reg.PC = address(mode);
-            _branch_taken = 1;
+            addr = address(mode);
+            _extra_clocks = 1 + DIFF_PAGES(reg.PC, addr);
+			reg.PC = addr;
         }
 		else
 			reg.PC++;
@@ -458,8 +464,9 @@ mpu(void)
 
 	case 12: /* BVS */
 		if (reg.SR & OVERFLOW) {
-			reg.PC = address(mode);
-            _branch_taken = 1;
+            addr = address(mode);
+            _extra_clocks = 1 + DIFF_PAGES(reg.PC, addr);
+			reg.PC = addr;
         }
 		else
 			reg.PC++;
@@ -733,7 +740,7 @@ mpu(void)
         rc = _cycles[opcode];
         if (rc < 0)
             rc = -rc + _address_page_crossed;
-        rc += _branch_taken;
+        rc += _extra_clocks;
         rc = -rc;
     }
 
