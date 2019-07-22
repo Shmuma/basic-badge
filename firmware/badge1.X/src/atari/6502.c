@@ -81,25 +81,26 @@ FF,  9, FF, FF,  3,  3,  3, FF,  0, FF,  0, FF,  6,  6,  6, FF, // 128...143 80-
  */
 const int8_t _cycles[256] = {
  7,  6, FF, FF, FF,  3,  5, FF,  3,  2,  2, FF, FF,  4,  6, FF, // 000...015 00-0f
- 3, -5, FF, FF, FF,  4,  6, FF,  2, -4, FF, FF, FF, -4,  7, FF, // 016...031 10-1f
+ 2, -5, FF, FF, FF,  4,  6, FF,  2, -4, FF, FF, FF, -4,  7, FF, // 016...031 10-1f
  6,  6, FF, FF,  3,  3,  5, FF,  4,  2,  2, FF,  4,  4,  6, FF, // 032...047 20-2f
- 3, -5, FF, FF, FF,  4,  6, FF,  2, -4, FF, FF, FF, -4,  7, FF, // 048...063 30-3f
+ 2, -5, FF, FF, FF,  4,  6, FF,  2, -4, FF, FF, FF, -4,  7, FF, // 048...063 30-3f
  6,  6, FF, FF, FF,  3,  5, FF,  3,  2,  2, FF,  3,  4,  6, FF, // 064...079 40-4f
- 3, -5, FF, FF, FF,  4,  6, FF,  2, -4, FF, FF, FF, -4,  7, FF, // 080...095 50-5f
+ 2, -5, FF, FF, FF,  4,  6, FF,  2, -4, FF, FF, FF, -4,  7, FF, // 080...095 50-5f
  6,  6, FF, FF, FF,  3,  5, FF,  4,  2,  2, FF,  5,  4,  6, FF, // 096...111 60-6f
- 3, -5, FF, FF, FF,  4,  6, FF,  2, -4, FF, FF, FF, -4,  7, FF, // 112...127 70-7f
+ 2, -5, FF, FF, FF,  4,  6, FF,  2, -4, FF, FF, FF, -4,  7, FF, // 112...127 70-7f
 FF,  6, FF, FF,  3,  3,  3, FF,  2, FF,  2, FF,  4,  4,  4, FF, // 128...143 80-8f
- 3,  6, FF, FF,  4,  4,  4, FF,  2,  5,  2, FF, FF,  4, FF, FF, // 144...159 90-9f
+ 2,  6, FF, FF,  4,  4,  4, FF,  2,  5,  2, FF, FF,  4, FF, FF, // 144...159 90-9f
  2,  6,  2, FF,  3,  3,  3, FF,  2,  2,  2, FF,  4,  4,  4, FF, // 160...175 a0-af
- 3, -5, FF, FF,  4,  4,  4, FF,  2, -4,  2, FF, -4, -4, -4, FF, // 176...191 b0-bf
+ 2, -5, FF, FF,  4,  4,  4, FF,  2, -4,  2, FF, -4, -4, -4, FF, // 176...191 b0-bf
  2,  6, FF, FF,  3,  3,  5, FF,  2,  2,  2, FF,  4,  4,  6, FF, // 192...207 c0-cf
- 3, -5, FF, FF, FF,  4,  6, FF,  2, -4, FF, FF, FF, -4,  7, FF, // 208...223 d0-df
+ 2, -5, FF, FF, FF,  4,  6, FF,  2, -4, FF, FF, FF, -4,  7, FF, // 208...223 d0-df
  2,  6, FF, FF,  3,  3,  5, FF,  2,  2,  2, FF,  4,  4,  6, FF, // 224...239 e0-ef
- 3, -5, FF, FF, FF,  4,  6, FF,  2, -4, FF, FF, FF, -4,  7, FF, // 240...255 f0-ff
+ 2, -5, FF, FF, FF,  4,  6, FF,  2, -4, FF, FF, FF, -4,  7, FF, // 240...255 f0-ff
 };
 
 // equals 1 if last call to address() crossed page boundary
 uint8_t _address_page_crossed = 0;
+uint8_t _branch_taken = 0;
 
 /*
  * Push to stack
@@ -330,6 +331,7 @@ mpu(void)
 	mode = _mode[opcode];
 	if (mode == 0xFF)
 		return (ILLEGAL);
+    _branch_taken = 0;
     
 	switch (_instruction[opcode]) {
 
@@ -373,22 +375,28 @@ mpu(void)
 		break;
 
 	case  3: /* BCC */
-		if (!(reg.SR & CARRY))
+		if (!(reg.SR & CARRY)) {
 			reg.PC = address(mode);
+            _branch_taken = 1;
+        }
 		else
 			reg.PC++;
 		break;
 
 	case  4: /* BCS */
-		if (reg.SR & CARRY)
+		if (reg.SR & CARRY) {
 			reg.PC = address(mode);
+            _branch_taken = 1;
+        }
 		else
 			reg.PC++;
 		break;
 
 	case  5: /* BEQ */
-		if (reg.SR & ZERO)
+		if (reg.SR & ZERO) {
 			reg.PC = address(mode);
+            _branch_taken = 1;
+        }
 		else
 			reg.PC++;
 		break;
@@ -403,22 +411,28 @@ mpu(void)
 		break;
 
 	case  7: /* BMI */
-		if (reg.SR & NEGATIVE)
+		if (reg.SR & NEGATIVE) {
 			reg.PC = address(mode);
+            _branch_taken = 1;
+        }
 		else
 			reg.PC++;
 		break;
 
 	case  8: /* BNE */
-		if (!(reg.SR & ZERO))
+		if (!(reg.SR & ZERO)) {
 			reg.PC = address(mode);
+            _branch_taken = 1;
+        }
 		else
 			reg.PC++;
 		break;
 
 	case  9: /* BPL */
-		if (!(reg.SR & NEGATIVE))
+		if (!(reg.SR & NEGATIVE)) {
 			reg.PC = address(mode);
+            _branch_taken = 1;
+        }
 		else
 			reg.PC++;
 		break;
@@ -434,15 +448,19 @@ mpu(void)
 		break;
 
 	case 11: /* BVC */
-		if (!(reg.SR & OVERFLOW))
+		if (!(reg.SR & OVERFLOW)) {
 			reg.PC = address(mode);
+            _branch_taken = 1;
+        }
 		else
 			reg.PC++;
 		break;
 
 	case 12: /* BVS */
-		if (reg.SR & OVERFLOW)
+		if (reg.SR & OVERFLOW) {
 			reg.PC = address(mode);
+            _branch_taken = 1;
+        }
 		else
 			reg.PC++;
 		break;
@@ -711,12 +729,11 @@ mpu(void)
 	default:break;
 	}
     
-    
-    
     if (!rc) {
         rc = _cycles[opcode];
         if (rc < 0)
             rc = -rc + _address_page_crossed;
+        rc += _branch_taken;
         rc = -rc;
     }
 
