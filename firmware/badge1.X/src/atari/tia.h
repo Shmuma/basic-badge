@@ -22,7 +22,8 @@
 struct tia_state {
   uint8_t draw_enabled, vsync_enabled;
   uint8_t queue_addr, queue_val;
-  int16_t scanline, abs_scanline;       // scanline is visible line, abs_ includes vblank lines
+  int16_t scanline;         // scanline is visible line
+  uint8_t inpt_scanline;    // scanlines since input ground
   uint8_t color_clock;
   uint8_t p0_pos, p1_pos, m0_pos, m1_pos, bl_pos;    // position of objects (as offset from visible)
   uint8_t p0_mask;              // mask of p0 to be drawn
@@ -187,7 +188,7 @@ void tia_fire(uint8_t p0, uint8_t set);
 void tia_pod_move(uint8_t pod_idx, int8_t dv);
 void tia_pod_set(uint8_t pod_idx, uint8_t val);
 
-#define TIA_MIN_INPUT_POS   20
+#define TIA_MIN_INPUT_POS   0
 #define TIA_MAX_INPUT_POS   100
 
 #endif

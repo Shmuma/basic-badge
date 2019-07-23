@@ -12,6 +12,7 @@ extern uint32_t frame;
 
 void init_tia() {
     memset(&tia, 0, sizeof(tia));
+    tia.inpt_pos[0] = tia.inpt_pos[1] = tia.inpt_pos[2] = tia.inpt_pos[3] = TIA_MIN_INPUT_POS;
 }
 
 
@@ -47,18 +48,19 @@ uint8_t tia_mpu_cycles(uint8_t cycles) {
 #ifdef TRACE_TIA
             printf("SV TIA: VBLANK: %02X\n", val);
 #endif
-            if (tia.draw_enabled && (val & ~2))
-                tia.abs_scanline = 0;
             tia.draw_enabled = !(val & (1 << 1));
             tia.scanline = 0;
             tia.inpt45_latched = val & (1 << 6);
             // switch from grounded to free, start charging capacitors
             if (tia.inpt03_grounded && (val & ~0x80)) {
-                tia.inpt_pos[0] = tia.inpt_pos[1] = tia.inpt_pos[1] = tia.inpt_pos[1] = 0;
+//                tia.inpt_pos[0] = tia.inpt_pos[1] = tia.inpt_pos[2] = tia.inpt_pos[3] = TIA_MIN_INPUT_POS;
+//                printf("INPT: pos reset, bits %02X\n", tia.fire.bits.inpt);
+                tia.inpt_scanline = 0;
             }
             tia.inpt03_grounded = val & 0x80;
             if (tia.inpt03_grounded) {
                 tia.fire.bits.inpt = 0;
+//                printf("INPT: grounded, bits reset\n");
             }
             break;
         case WSYNC:
@@ -434,8 +436,9 @@ void draw_pixels(uint8_t count) {
 #endif        
         if (++tia.color_clock >= CLK_HOR) {
             tia.color_clock = 0;
-            if (!tia.vsync_enabled)
-                tia.abs_scanline++;
+            if (!tia.vsync_enabled && tia.inpt_scanline < TIA_MAX_INPUT_POS) {
+                tia.inpt_scanline++;
+            }
             if (!tia.inpt03_grounded)
                 tia_handle_input_capacitors();
             if (tia.draw_enabled && !tia.vsync_enabled) {
@@ -470,9 +473,14 @@ void tia_pod_set(uint8_t pod_idx, uint8_t val) {
 
 void tia_handle_input_capacitors() {
     uint8_t i;
+#ifdef TRACE_TIA
+    printf("INPT: scanline=%d, bits=%X, poses=[%d %d %d %d]\n",
+        tia.inpt_scanline, tia.fire.bits.inpt, tia.inpt_pos[0], 
+        tia.inpt_pos[1], tia.inpt_pos[2], tia.inpt_pos[3]);
+#endif    
     
     for (i = 0; i < 4; i++) {
-        if (tia.abs_scanline > tia.inpt_pos[i])
+        if (tia.inpt_scanline > tia.inpt_pos[i])
             tia.fire.bits.inpt |= 1 << i;
     }
 }

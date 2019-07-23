@@ -37,6 +37,7 @@ struct pia_state {
     uint8_t     timer_val;              // count of intervals left in timer
     uint16_t    interval_clocks;        // size of interval set
     uint8_t     interval_left;          // counter of interval in MPU cycles
+    uint8_t     reached_zero;           // 1 if reached zero recently (and wasn't read since then)
 };
 
 // PIA addresses

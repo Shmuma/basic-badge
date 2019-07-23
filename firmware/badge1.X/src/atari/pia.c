@@ -43,6 +43,7 @@ uint8_t peek_pia(uint16_t address) {
         case SWCHB:
             return pia.pb.val;
         case INTIM:
+            pia.reached_zero = 0;
             return pia.timer_val;
     }
     return 0xFF;
@@ -55,12 +56,12 @@ void mpu_clock_pia(uint8_t clocks) {
         printf("PIA: clocks %d, int %d, val %02X, left %d -> ",
                clocks, pia.interval_clocks, pia.timer_val, pia.interval_left);
 #endif
-        if (pia.interval_clocks == 1)
+        if (pia.interval_clocks == 1 || pia.reached_zero)
             pia.timer_val -= clocks;
         else {
             if (pia.interval_left < clocks) {
                 if (!pia.timer_val)
-                    pia.interval_clocks = 1;
+                    pia.reached_zero = 1;
                 else {                
                     pia.timer_val--;
                     pia.interval_left += pia.interval_clocks - clocks;

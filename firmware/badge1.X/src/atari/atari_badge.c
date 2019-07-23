@@ -191,7 +191,8 @@ void show_debug_info() {
     if (!frame_idx) {
         if (last_debug_ms) {
             dt = (millis() - last_debug_ms)/10;
-            snprintf(buf, sizeof(buf), "fps=%.1f (%d ms)", 1000.0/dt, dt);
+            snprintf(buf, sizeof(buf), "fps=%.1f (%d ms), i0=%d   ", 
+                    1000.0/dt, dt, tia.inpt_pos[0]);
             for (i = 0; i < sizeof(buf) && buf[i]; i++) 
                 tft_print_char(buf[i], i*8, FB_HEIGHT+1, 0xFFFFFF, 0);
         }
