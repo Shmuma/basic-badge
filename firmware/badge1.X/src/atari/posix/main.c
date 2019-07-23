@@ -123,8 +123,6 @@ int main(int argc, char** argv) {
     printf("Reset vector: %04X\n", reg.PC);
 
     while (1) {
-        if (reg.PC == 0xF1EB)
-            printf("Break!\n");
         rc = mpu();
         if (rc < 0) {
             tia_mpu_cycles(-rc);

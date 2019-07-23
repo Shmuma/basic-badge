@@ -237,14 +237,29 @@ void atari_keyboard() {
             case K_RT:
                 pia_pa_set(DIR_RT, 1);
                 break;
-            case '/':
+            case '-':
                 pia_reset();
                 break;
-            case 'a':
+            case K_DEL:
                 pia_select();
                 break;
             case '=':
                 tia_fire(1, 1);
+                break;
+            case 'q':
+                tia_pod_move(0, -2);
+                break;
+            case 'a':
+                tia_pod_move(0, 2);
+                break;
+            case 'w':
+                tia_pod_set(0, TIA_MIN_INPUT_POS);
+                break;
+            case 's':
+                tia_pod_set(0, (TIA_MIN_INPUT_POS+TIA_MAX_INPUT_POS)>>1);
+                break;
+            case 'x':
+                tia_pod_set(0, TIA_MAX_INPUT_POS);
                 break;
         }
     }

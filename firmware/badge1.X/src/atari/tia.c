@@ -4,6 +4,7 @@
 struct tia_state tia = {0};
 
 void draw_pixels(uint8_t count);        // draw given amount of pixels
+void tia_handle_input_capacitors();
 
 #ifdef TRACE_TIA
 extern uint32_t frame;
@@ -45,13 +46,19 @@ void tia_mpu_cycles(uint8_t cycles) {
 #ifdef TRACE_TIA
             printf("SV TIA: VBLANK: %02X\n", val);
 #endif
+            if (tia.draw_enabled && (val & ~2))
+                tia.abs_scanline = 0;
             tia.draw_enabled = !(val & (1 << 1));
             tia.scanline = 0;
             tia.inpt45_latched = val & (1 << 6);
-//            if (!tia.inpt45_latched) {
-//                tia.fire.bits.p0 = 0;
-//                tia.fire.bits.p1 = 0;
-//            }
+            // switch from grounded to free, start charging capacitors
+            if (tia.inpt03_grounded && (val & ~0x80)) {
+                tia.inpt_pos[0] = tia.inpt_pos[1] = tia.inpt_pos[1] = tia.inpt_pos[1] = 0;
+            }
+            tia.inpt03_grounded = val & 0x80;
+            if (tia.inpt03_grounded) {
+                tia.fire.bits.inpt = 0;
+            }
             break;
         case WSYNC:
 #ifdef TRACE_TIA
@@ -199,6 +206,14 @@ uint8_t peek_tia(uint16_t addr) {
             return tia.cx.bits.blpf << 7;
         case TIA_RD_CXPPMM:
             return tia.cx.bits.p0p1 << 7 | tia.cx.bits.m0m1 << 6;
+        case TIA_RD_INPT0:
+            return (tia.fire.bits.inpt & 0b0001) << 7;
+        case TIA_RD_INPT1:
+            return (tia.fire.bits.inpt & 0b0010) << 6;
+        case TIA_RD_INPT2:
+            return (tia.fire.bits.inpt & 0b0100) << 5;
+        case TIA_RD_INPT3:
+            return (tia.fire.bits.inpt & 0b1000) << 4;
         case TIA_RD_INPT4:
             return ~(tia.fire.bits.p0 << 7);
         case TIA_RD_INPT5:
@@ -397,6 +412,10 @@ void draw_pixels(uint8_t count) {
 #endif        
         if (++tia.color_clock >= CLK_HOR) {
             tia.color_clock = 0;
+            if (!tia.vsync_enabled)
+                tia.abs_scanline++;
+            if (!tia.inpt03_grounded)
+                tia_handle_input_capacitors();
             if (tia.draw_enabled && !tia.vsync_enabled) {
                 tia_line_ready(tia.scanline++);
             }
@@ -414,4 +433,24 @@ void tia_fire(uint8_t p0, uint8_t set) {
         tia.fire.bits.p0 = set != 0;
     else
         tia.fire.bits.p1 = set != 0;
+}
+
+
+void tia_pod_move(uint8_t pod_idx, int8_t dv) {
+    tia.inpt_pos[pod_idx] = min(max(tia.inpt_pos[pod_idx] + dv, TIA_MIN_INPUT_POS), TIA_MAX_INPUT_POS);
+}
+
+
+void tia_pod_set(uint8_t pod_idx, uint8_t val) {
+    if (val >= TIA_MIN_INPUT_POS && val <= TIA_MAX_INPUT_POS)
+        tia.inpt_pos[pod_idx] = val;
+}
+
+void tia_handle_input_capacitors() {
+    uint8_t i;
+    
+    for (i = 0; i < 4; i++) {
+        if (tia.abs_scanline > tia.inpt_pos[i])
+            tia.fire.bits.inpt |= 1 << i;
+    }
 }

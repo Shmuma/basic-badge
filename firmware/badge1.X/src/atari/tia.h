@@ -22,7 +22,7 @@
 struct tia_state {
   uint8_t draw_enabled, vsync_enabled;
   uint8_t queue_addr, queue_val;
-  int16_t scanline;
+  int16_t scanline, abs_scanline;       // scanline is visible line, abs_ includes vblank lines
   uint8_t color_clock;
   uint8_t p0_pos, p1_pos, m0_pos, m1_pos, bl_pos;    // position of objects (as offset from visible)
   uint8_t p0_mask;              // mask of p0 to be drawn
@@ -36,10 +36,9 @@ struct tia_state {
       struct {
           uint8_t p0:1;
           uint8_t p1:1;
-      }bits;
-  } fire;                       // fire button states, 0 - depressed, 1 - pressed
-  
-  uint8_t fire_buttons;         // zero and first bits
+          uint8_t inpt:4;
+      } bits;
+  } fire;                       // fire button and input triggers
   
   uint8_t colu[4];          // P0, P1, PF, BK
   union {
@@ -103,6 +102,8 @@ struct tia_state {
   } cx;
   
   uint8_t inpt45_latched;
+  uint8_t inpt03_grounded;
+  uint8_t inpt_pos[4];          // on which scanline to trigger input
   
   uint8_t fb[FB_WIDTH];
 };
@@ -183,5 +184,10 @@ uint8_t peek_tia(uint16_t);
 
 void tia_line_ready(uint8_t line);
 void tia_fire(uint8_t p0, uint8_t set);
+void tia_pod_move(uint8_t pod_idx, int8_t dv);
+void tia_pod_set(uint8_t pod_idx, uint8_t val);
+
+#define TIA_MIN_INPUT_POS   20
+#define TIA_MAX_INPUT_POS   100
 
 #endif
