@@ -99,9 +99,13 @@ void tia_mpu_cycles(uint8_t cycles) {
             break;
         case RESP0:
             tia.p0_pos = tia.color_clock;
+            if (tia.resmp0)
+                tia.m0_pos = tia.p0_pos;
             break;
         case RESP1:
             tia.p1_pos = tia.color_clock;
+            if (tia.resmp1)
+                tia.m1_pos = tia.p1_pos;
             break;
         case RESM0:
             tia.m0_pos = tia.color_clock;
@@ -156,20 +160,34 @@ void tia_mpu_cycles(uint8_t cycles) {
             tia.vdelbl = val & 1;
             break;
         case RESMP0:
-            if (tia.resmp0 && !(val & 0b10))
-                tia.enam0 = 1;
-            tia.resmp0 = (val >> 1) & 1;
+            if (val & 0b10) {
+                tia.enam0 = 0;
+                tia.m0_pos = tia.p0_pos;
+                tia.resmp0 = 1;
+            }
+            else
+                tia.resmp0 = 0;
             break;
         case RESMP1:
-            if (tia.resmp1 && !(val & 0b10))
-                tia.enam1 = 1;
-            tia.resmp1 = (val >> 1) & 1;
+            if (val & 0b10) {
+                tia.enam1 = 0;
+                tia.m1_pos = tia.p1_pos;
+                tia.resmp1 = 1;
+            }
+            else
+                tia.resmp1 = 0;
             break;
         case HMOVE:
             tia.p0_pos = _normalize_clock_pos(tia.p0_pos - tia.hmp0);
             tia.p1_pos = _normalize_clock_pos(tia.p1_pos - tia.hmp1);
-            tia.m0_pos = _normalize_clock_pos(tia.m0_pos - tia.hmm0);
-            tia.m1_pos = _normalize_clock_pos(tia.m1_pos - tia.hmm1);
+            if (tia.resmp0)
+                tia.m0_pos = tia.p0_pos;
+            else
+                tia.m0_pos = _normalize_clock_pos(tia.m0_pos - tia.hmm0);
+            if (tia.resmp1)
+                tia.m1_pos = tia.p1_pos;
+            else
+                tia.m1_pos = _normalize_clock_pos(tia.m1_pos - tia.hmm1);
             tia.bl_pos = _normalize_clock_pos(tia.bl_pos - tia.hmbl);
             break;
         case HMCLR:

@@ -31,6 +31,14 @@
 
 #define SLEN (256)
 
+#ifndef max
+#define max(a,b)        (((a) > (b)) ? (a) : (b))
+#endif
+
+#ifndef min
+#define min(a,b)        (((a) < (b)) ? (a) : (b))
+#endif
+
 #include "6502.h"
 #include "mem.h"
 #include "tia.h"
