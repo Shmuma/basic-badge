@@ -156,8 +156,8 @@ void tia_mpu_cycles(uint8_t cycles) {
             tia.vdelbl = val & 1;
             break;
         case RESMP0:
-            if (tia.resmp1 && !(val & 0b10))
-                tia.enam1 = 1;
+            if (tia.resmp0 && !(val & 0b10))
+                tia.enam0 = 1;
             tia.resmp0 = (val >> 1) & 1;
             break;
         case RESMP1:
