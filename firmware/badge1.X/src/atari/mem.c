@@ -78,6 +78,7 @@ poke(uint16_t address, uint8_t value)
         address &= 0xFF;
 
     if (address < RAM_ADDR) {
+        address &= 0b111111;
 #ifdef TRACE_MEM
         printf("poke tia: %02X <- %02X\n", address, value);
 #endif

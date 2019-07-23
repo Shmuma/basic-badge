@@ -24,14 +24,15 @@ static inline uint8_t _normalize_clock_pos(uint8_t pos) {
 }
 
 // need to be called after execution of MPU opcode with amount of CPU cycles
-void tia_mpu_cycles(uint8_t cycles) {
-    uint8_t addr, val;
+// returns extra cycles spent on hardware
+uint8_t tia_mpu_cycles(uint8_t cycles) {
+    uint8_t addr, val, res = 0;
     draw_pixels(cycles*3);
     
     addr = tia.queue_addr;
     val = tia.queue_val;
     if (!addr)
-        return;
+        return 0;
 
     switch (addr) {
         case VSYNC:
@@ -64,8 +65,10 @@ void tia_mpu_cycles(uint8_t cycles) {
 #ifdef TRACE_TIA
             printf("SV TIA: WSYNC: draw %d pixels\n", CLK_HOR - tia.color_clock);
 #endif
-            if (tia.color_clock > 0)
+            if (tia.color_clock > 0) {
                 draw_pixels(CLK_HOR - tia.color_clock);
+                res = (CLK_HOR - tia.color_clock) / 3;
+            }
             break;
         case COLUP0:
         case COLUP1:
@@ -198,6 +201,7 @@ void tia_mpu_cycles(uint8_t cycles) {
             break;
     }
     tia.queue_addr = 0;
+    return res;
 }
 
 void poke_tia(uint16_t addr, uint8_t val) {
@@ -289,7 +293,6 @@ void draw_pixels(uint8_t count) {
             tia.p0_mask_cnt = tia.p0_mask_clocks = _mask_clocks_from_psize(tia.nusiz0.bits.psize_count);
         }
         if (_is_player_clock(tia.nusiz1.bits.psize_count, tia.color_clock, tia.p1_pos)) {
-//            printf("P1 matched, P1=%02X, ref=%d\n", (tia.vdelp1 ? tia.p1_d : tia.p1), tia.ref_p1);
             tia.p1_mask = 1 << (tia.ref_p1 ? 0 : 7);
             tia.p1_mask_cnt = tia.p1_mask_clocks = _mask_clocks_from_psize(tia.nusiz1.bits.psize_count);
         }
@@ -380,8 +383,9 @@ void draw_pixels(uint8_t count) {
                     tia.cx.bits.p0p1 = 1;
                 if (tia.bl_clocks > 0) {
                     // if PF has a priority over player or no player at all, draw ball
-                    if (tia.ctrlpf.bits.pf_prio || (draw_p0 == 0 && draw_p1 == 0))
+                    if (tia.ctrlpf.bits.pf_prio || (draw_p0 == 0 && draw_p1 == 0)) {
                         col = tia.colu[2];      // COLUPF
+                    }
                     tia.bl_clocks--;
                     if (draw_p0)
                         tia.cx.bits.p0bl = 1;
@@ -422,8 +426,8 @@ void draw_pixels(uint8_t count) {
         }
         
 #ifdef TRACE_TIA
-        printf("TIA: frm=%d, col=%d, scan=%d, colubk=%02X, clr_stored=%02X, p0=%02X, p0_pos=%d, p0m=%02X, p0_cnt=%d\n", 
-                frame, tia.color_clock, tia.scanline, tia.colu[3], col, tia.p0, tia.p0_pos,
+        printf("TIA: frm=%d, col=%d, scan=%d, colubk=%02X, clr_stored=%02X, p0=%02X, p0_d=%02X, p0_pos=%d, p0m=%02X, p0_cnt=%d\n", 
+                frame, tia.color_clock, tia.scanline, tia.colu[3], col, tia.p0, tia.p0_d, tia.p0_pos,
                 tia.p0_mask, tia.p0_mask_cnt);
         if (frame == 19 && tia.color_clock == 68 && tia.scanline == 0 && col == 0xD6)
             printf("Time to debug!\n");

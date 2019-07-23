@@ -106,6 +106,7 @@ void test() {
 int main(int argc, char** argv) {
     char* file_name = ROM_FILE;
     int16_t rc;
+    uint8_t extra;
     uint32_t step = 0;
     test();
 
@@ -123,13 +124,16 @@ int main(int argc, char** argv) {
     printf("Reset vector: %04X\n", reg.PC);
 
     while (1) {
+        if (reg.PC == 0xF603 && frame == 5)
+            printf("Debug!\n");
         rc = mpu();
         if (rc < 0) {
-            tia_mpu_cycles(-rc);
-            mpu_clock_pia(-rc);
+            extra = tia_mpu_cycles(-rc);
+            mpu_clock_pia(-rc + extra);
+            step += -rc + extra;
         }
         registers();
-        printf("%d: rc = %d\n", step++, rc);
+        printf("%d: rc = %d\n", step, rc);
         if (rc > 0)
             break;
     }
