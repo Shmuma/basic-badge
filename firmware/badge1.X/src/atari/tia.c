@@ -12,7 +12,8 @@ extern uint32_t frame;
 
 void init_tia() {
     memset(&tia, 0, sizeof(tia));
-    tia.inpt_pos[0] = tia.inpt_pos[1] = tia.inpt_pos[2] = tia.inpt_pos[3] = TIA_MIN_INPUT_POS;
+    tia.inpt_pos[0] = tia.inpt_pos[1] = tia.inpt_pos[2] = tia.inpt_pos[3] = \
+            (TIA_MAX_INPUT_POS - TIA_MIN_INPUT_POS) >> 1;
 }
 
 
@@ -52,8 +53,7 @@ uint8_t tia_mpu_cycles(uint8_t cycles) {
             tia.scanline = 0;
             tia.inpt45_latched = val & (1 << 6);
             // switch from grounded to free, start charging capacitors
-            if (tia.inpt03_grounded && (val & ~0x80)) {
-//                tia.inpt_pos[0] = tia.inpt_pos[1] = tia.inpt_pos[2] = tia.inpt_pos[3] = TIA_MIN_INPUT_POS;
+            if (tia.inpt03_grounded && !(val & 0x80)) {
 //                printf("INPT: pos reset, bits %02X\n", tia.fire.bits.inpt);
                 tia.inpt_scanline = 0;
             }

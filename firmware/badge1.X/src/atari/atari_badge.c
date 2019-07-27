@@ -262,6 +262,21 @@ void atari_keyboard() {
             case 'x':
                 tia_pod_set(0, TIA_MAX_INPUT_POS);
                 break;
+            case 'e':
+                tia_pod_move(1, -2);
+                break;
+            case 'd':
+                tia_pod_move(1, 2);
+                break;
+            case 'r':
+                tia_pod_set(1, TIA_MIN_INPUT_POS);
+                break;
+            case 'f':
+                tia_pod_set(1, (TIA_MIN_INPUT_POS+TIA_MAX_INPUT_POS)>>1);
+                break;
+            case 'v':
+                tia_pod_set(1, TIA_MAX_INPUT_POS);
+                break;
         }
     }
     // allow keys to repeat
