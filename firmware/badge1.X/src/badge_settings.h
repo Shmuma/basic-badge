@@ -62,4 +62,7 @@
 // Enable Atari emulator
 #define ENABLE_ATARI 1
 
+// go to sleep after this millis without keypress
+#define SLEEP_AFTER_IDLE_MILLIS     300000L
+
 #endif

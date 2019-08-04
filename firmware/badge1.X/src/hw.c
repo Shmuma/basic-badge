@@ -464,8 +464,7 @@ void hw_init (void)
 		RCON = 0;
 		led_state = 0;
 		}
-	set_led_word(led_state);	
-	
+	set_led_word(led_state);
   	}
 
 
@@ -891,6 +890,7 @@ uint8_t stdio_local_len=0;
 
 volatile int8_t stdio_src;
 volatile uint32_t ticks;			// millisecond timer incremented in ISR
+volatile uint32_t _last_keypress_millis = 0;    // time of last key pressed, updated in ISR
 volatile uint8_t handle_display = 1;
 volatile int8_t brk_key;
 extern volatile uint16_t bufsize;
@@ -1080,8 +1080,10 @@ void __ISR(_TIMER_5_VECTOR, IPL3AUTO) Timer5Handler(void)
     if (handle_display)
 		tft_disp_buffer_refresh_part((uint8_t *)(disp_buffer),(uint8_t *)color_buffer);
     key_temp = keyb_tasks();
-    if (key_temp>0)
+    if (key_temp>0) {
 		key_buffer[key_buffer_ptr++] = key_temp;
+        _last_keypress_millis = ticks;
+    }
 }
 
 void __ISR(_TIMER_1_VECTOR, IPL4AUTO) Timer1Handler(void)
@@ -1100,6 +1102,7 @@ void badge_init (void)
 	//B_BDG009
 	start_after_wake = &wake_return; //Function pointer for waking from sleep
 	ticks = 0;
+    _last_keypress_millis = 0;
 	stdio_src = STDIO_LOCAL;
 //	stdio_src = STDIO_TTY1;
 	term_init();
@@ -1121,6 +1124,7 @@ void loop_badge(void)
 		while (K_PWR==0);
 		wait_ms(100);
 		hw_sleep();
+        _last_keypress_millis = millis();
 		wait_ms(30);
 		while (K_PWR==0);
 		wait_ms(300);
@@ -1144,4 +1148,13 @@ void loop_badge(void)
 		}
 	else
 		brk_is_pressed = 0;
+#ifdef SLEEP_AFTER_IDLE_MILLIS
+    if (!_last_keypress_millis)
+        _last_keypress_millis = millis();
+    if (millis() - _last_keypress_millis > SLEEP_AFTER_IDLE_MILLIS) {
+        hw_sleep();
+        _last_keypress_millis = millis();
+        wait_ms(300);
+    }
+#endif    
 	}
