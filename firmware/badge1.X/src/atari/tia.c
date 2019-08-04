@@ -68,8 +68,8 @@ uint8_t tia_mpu_cycles(uint8_t cycles) {
             printf("SV TIA: WSYNC: draw %d pixels\n", CLK_HOR - tia.color_clock);
 #endif
             if (tia.color_clock > 0) {
-                draw_pixels(CLK_HOR - tia.color_clock);
                 res = (CLK_HOR - tia.color_clock) / 3;
+                draw_pixels(CLK_HOR - tia.color_clock);
             }
             break;
         case COLUP0:

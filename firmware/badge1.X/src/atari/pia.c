@@ -60,8 +60,12 @@ void mpu_clock_pia(uint8_t clocks) {
             pia.timer_val -= clocks;
         else {
             if (pia.interval_left < clocks) {
-                if (!pia.timer_val)
+                if (!pia.timer_val) {
                     pia.reached_zero = 1;
+                    clocks -= pia.interval_left;
+                    pia.interval_left = 1;
+                    pia.timer_val = 255 - clocks;
+                }
                 else {                
                     pia.timer_val--;
                     pia.interval_left += pia.interval_clocks - clocks;
@@ -71,13 +75,14 @@ void mpu_clock_pia(uint8_t clocks) {
                 pia.interval_left -= clocks;
         }
 #ifdef TRACE_PIA
-        printf("val %02X, left %d\n", pia.timer_val, pia.interval_left);
+        printf("val %02X, left %d (%x)\n", pia.timer_val, pia.interval_left,
+                pia.interval_left);
 #endif
     }
     if (pia.reset_clocks > 0) {
         pia.timer_val = pia.reset_val;
         pia.interval_clocks = pia.reset_clocks;
-        pia.interval_left = 0;
+        pia.interval_left = 1;
         pia.reset_val = 0;
         pia.reset_clocks = 0;
 #ifdef TRACE_PIA

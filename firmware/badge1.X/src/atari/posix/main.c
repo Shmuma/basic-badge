@@ -129,6 +129,9 @@ int main(int argc, char** argv) {
         rc = mpu();
         if (rc < 0) {
             extra = tia_mpu_cycles(-rc);
+            if (extra > 0) {
+                printf("Extra clocks: %d\n", extra);
+            }
             mpu_clock_pia(-rc + extra);
             step += -rc + extra;
         }
