@@ -128,6 +128,8 @@ uint8_t tia_mpu_cycles(uint8_t cycles) {
         case GRP1:
             tia.p1 = val;
             tia.p0_d = tia.p0;
+            if (tia.enabl > 1)
+                tia.enabl = 1;
             break;
         case ENAM0:
             tia.enam0 = (val >> 1) & 1;
@@ -299,9 +301,9 @@ void draw_pixels(uint8_t count) {
             tia.p1_mask_cnt = tia.p1_mask_clocks = _mask_clocks_from_psize(tia.nusiz1.bits.psize_count);
         }
         if (tia.enabl && tia.bl_pos == tia.color_clock) {
-            if (tia.enabl > 1)
-                tia.enabl = 1;
-            else
+            if (tia.enabl == 1)
+//                tia.enabl = 1;
+//            else
                 tia.bl_clocks = 1 << tia.ctrlpf.bits.ballsize;
         }
         if (tia.enam0 && tia.m0_pos == tia.color_clock) {
@@ -428,9 +430,10 @@ void draw_pixels(uint8_t count) {
         }
         
 #ifdef TRACE_TIA
-        printf("TIA: frm=%d, col=%d, scan=%d, colubk=%02X, clr_stored=%02X, p0=%02X, p0_d=%02X, p0_pos=%d, p0m=%02X, p0_cnt=%d\n", 
-                frame, tia.color_clock, tia.scanline, tia.colu[3], col, tia.p0, tia.p0_d, tia.p0_pos,
-                tia.p0_mask, tia.p0_mask_cnt);
+        printf("TIA: frm=%d, col=%d, scan=%d, colubk=%02X, clr_stored=%02X, p0=%02X, p0_d=%02X, p0_pos=%d, p0m=%02X, p0_cnt=%d, p1=%02X, p1_d=%02X, p1_pos=%d, p1m=%02X, p1_cnt=%d\n", 
+                frame, tia.color_clock, tia.scanline, tia.colu[3], col, 
+                tia.p0, tia.p0_d, tia.p0_pos, tia.p0_mask, tia.p0_mask_cnt,
+                tia.p1, tia.p1_d, tia.p1_pos, tia.p1_mask, tia.p1_mask_cnt);
         if (frame == 19 && tia.color_clock == 68 && tia.scanline == 0 && col == 0xD6)
             printf("Time to debug!\n");
 #endif        

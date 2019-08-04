@@ -22,6 +22,7 @@
 struct tia_state {
   uint8_t draw_enabled, vsync_enabled;
   uint8_t queue_addr, queue_val;
+  
   int16_t scanline;         // scanline is visible line
   uint8_t inpt_scanline;    // scanlines since input ground
   uint8_t color_clock;
