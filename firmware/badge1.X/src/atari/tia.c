@@ -29,6 +29,31 @@ static inline uint8_t _normalize_clock_pos(uint8_t pos) {
 // returns extra cycles spent on hardware
 uint8_t tia_mpu_cycles(uint8_t cycles) {
     uint8_t addr, val, res = 0;
+    
+    if (tia.pg_idx > 0) {
+        switch (tia.pg_idx) {
+            case 1:         // PG0
+                if (tia.vdelp0)
+                    tia.p0_d = tia.pg_val;
+                else
+                    tia.p0 = tia.pg_val;
+                if (tia.vdelp1)
+                    tia.p1 = tia.p1_d;
+                break;
+            case 2:
+                if (tia.vdelp1)
+                    tia.p1_d = tia.pg_val;
+                else
+                    tia.p1 = tia.pg_val;
+                if (tia.vdelp0)
+                    tia.p0 = tia.p0_d;
+                if (tia.enabl > 1)
+                    tia.enabl = 1;
+                break;
+        }
+        tia.pg_idx = 0;
+    }
+    
     draw_pixels(cycles*3);
     
     addr = tia.queue_addr;
@@ -103,12 +128,12 @@ uint8_t tia_mpu_cycles(uint8_t cycles) {
             tia.ref_p1 = val & 0b1000;
             break;
         case RESP0:
-            tia.p0_pos = tia.color_clock;
+            tia.p0_pos = tia.color_clock+5;
             if (tia.resmp0)
                 tia.m0_pos = tia.p0_pos;
             break;
         case RESP1:
-            tia.p1_pos = tia.color_clock;
+            tia.p1_pos = tia.color_clock+5;
             if (tia.resmp1)
                 tia.m1_pos = tia.p1_pos;
             break;
@@ -122,14 +147,12 @@ uint8_t tia_mpu_cycles(uint8_t cycles) {
             tia.bl_pos = tia.color_clock;
             break;
         case GRP0:
-            tia.p0 = val;
-            tia.p1_d = tia.p1;
+            tia.pg_idx = 1;
+            tia.pg_val = val;
             break;
         case GRP1:
-            tia.p1 = val;
-            tia.p0_d = tia.p0;
-            if (tia.enabl > 1)
-                tia.enabl = 1;
+            tia.pg_idx = 2;
+            tia.pg_val = val;
             break;
         case ENAM0:
             tia.enam0 = (val >> 1) & 1;
@@ -158,9 +181,13 @@ uint8_t tia_mpu_cycles(uint8_t cycles) {
             tia.hmbl = FOURBITS_2COMPL_TO_INT(val >> 4);
             break;
         case VDELP0:
+            if ((val & 1) != tia.vdelp0)
+                tia.p0_d = tia.p0;
             tia.vdelp0 = val & 1;
             break;
         case VDELP1:
+            if ((val & 1) != tia.vdelp1)
+                tia.p1_d = tia.p1;
             tia.vdelp1 = val & 1;
             break;
         case VDELBL:
@@ -319,7 +346,7 @@ void draw_pixels(uint8_t count) {
                 col = tia.colu[3];      // COLUBK
                 draw_p0 = draw_p1 = draw_pf = 0;
                 if (tia.p0_mask) {
-                    draw_p0 = tia.p0_mask & (tia.vdelp0 ? tia.p0_d : tia.p0);
+                    draw_p0 = tia.p0_mask & tia.p0;
                     if (--tia.p0_mask_cnt == 0) {
                         if (tia.ref_p0)
                             tia.p0_mask <<= 1;
@@ -329,7 +356,7 @@ void draw_pixels(uint8_t count) {
                     }
                 }
                 if (tia.p1_mask) {
-                    draw_p1 = tia.p1_mask & (tia.vdelp1 ? tia.p1_d : tia.p1);
+                    draw_p1 = tia.p1_mask & tia.p1;
                     if (--tia.p1_mask_cnt == 0) {
                         if (tia.ref_p1)
                             tia.p1_mask <<= 1;
@@ -430,12 +457,13 @@ void draw_pixels(uint8_t count) {
         }
         
 #ifdef TRACE_TIA
-        printf("TIA: frm=%d, col=%d, scan=%d, colubk=%02X, clr_stored=%02X, p0=%02X, p0_d=%02X, p0_pos=%d, p0m=%02X, p0_cnt=%d, p1=%02X, p1_d=%02X, p1_pos=%d, p1m=%02X, p1_cnt=%d\n", 
-                frame, tia.color_clock, tia.scanline, tia.colu[3], col, 
+        printf("TIA: frm=%d, col=%d, scan=%d, colubk=%02X, clr_stored=%02X, enam0=%d, p0=%02X, p0_d=%02X, p0_pos=%d, p0m=%02X, p0_cnt=%d, p1=%02X, p1_d=%02X, p1_pos=%d, p1m=%02X, p1_cnt=%d\n", 
+                frame, tia.color_clock, tia.scanline, tia.colu[3], col, tia.enam0,
                 tia.p0, tia.p0_d, tia.p0_pos, tia.p0_mask, tia.p0_mask_cnt,
                 tia.p1, tia.p1_d, tia.p1_pos, tia.p1_mask, tia.p1_mask_cnt);
-        if (frame == 19 && tia.color_clock == 68 && tia.scanline == 0 && col == 0xD6)
-            printf("Time to debug!\n");
+//        printf("TIA: frm=%d, col=%d, scan=%d, colubk=%02X, clr_stored=%02X, p0=%02X, p0_d=%02X, p1=%02X, p1_d=%02X\n", 
+//                frame, tia.color_clock, tia.scanline, tia.colu[3], col, 
+//                tia.p0, tia.p0_d, tia.p1, tia.p1_d);
 #endif        
         if (++tia.color_clock >= CLK_HOR) {
             tia.color_clock = 0;
