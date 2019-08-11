@@ -13,7 +13,8 @@ extern uint32_t frame;
 void init_tia() {
     memset(&tia, 0, sizeof(tia));
     tia.inpt_pos[0] = tia.inpt_pos[1] = tia.inpt_pos[2] = tia.inpt_pos[3] = \
-            (TIA_MAX_INPUT_POS - TIA_MIN_INPUT_POS) >> 1;
+            0xC0-4;     // value for Pong debugging
+            //(TIA_MAX_INPUT_POS - TIA_MIN_INPUT_POS) >> 1;
 }
 
 
@@ -155,10 +156,12 @@ uint8_t tia_mpu_cycles(uint8_t cycles) {
             tia.pg_val = val;
             break;
         case ENAM0:
-            tia.enam0 = (val >> 1) & 1;
+            if (!tia.resmp0)
+                tia.enam0 = (val >> 1) & 1;
             break;
         case ENAM1:
-            tia.enam1 = (val >> 1) & 1;
+            if (!tia.resmp1)
+                tia.enam1 = (val >> 1) & 1;
             break;
         case ENABL:
             tia.enabl = (val >> 1) & 1;
@@ -457,8 +460,8 @@ void draw_pixels(uint8_t count) {
         }
         
 #ifdef TRACE_TIA
-        printf("TIA: frm=%d, col=%d, scan=%d, colubk=%02X, clr_stored=%02X, enam0=%d, p0=%02X, p0_d=%02X, p0_pos=%d, p0m=%02X, p0_cnt=%d, p1=%02X, p1_d=%02X, p1_pos=%d, p1m=%02X, p1_cnt=%d\n", 
-                frame, tia.color_clock, tia.scanline, tia.colu[3], col, tia.enam0,
+        printf("TIA: frm=%d, col=%d, scan=%d, colubk=%02X, clr_stored=%02X, enam0=%d, resmp0=%d, p0=%02X, p0_d=%02X, p0_pos=%d, p0m=%02X, p0_cnt=%d, p1=%02X, p1_d=%02X, p1_pos=%d, p1m=%02X, p1_cnt=%d\n", 
+                frame, tia.color_clock, tia.scanline, tia.colu[3], col, tia.enam0, tia.resmp0,
                 tia.p0, tia.p0_d, tia.p0_pos, tia.p0_mask, tia.p0_mask_cnt,
                 tia.p1, tia.p1_d, tia.p1_pos, tia.p1_mask, tia.p1_mask_cnt);
 //        printf("TIA: frm=%d, col=%d, scan=%d, colubk=%02X, clr_stored=%02X, p0=%02X, p0_d=%02X, p1=%02X, p1_d=%02X\n", 

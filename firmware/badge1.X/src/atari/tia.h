@@ -192,6 +192,6 @@ void tia_pod_move(uint8_t pod_idx, int8_t dv);
 void tia_pod_set(uint8_t pod_idx, uint8_t val);
 
 #define TIA_MIN_INPUT_POS   0
-#define TIA_MAX_INPUT_POS   0x99
+#define TIA_MAX_INPUT_POS   0xF0
 
 #endif
