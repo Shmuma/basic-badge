@@ -164,9 +164,12 @@ uint8_t tia_mpu_cycles(uint8_t cycles) {
                 tia.enam1 = (val >> 1) & 1;
             break;
         case ENABL:
-            tia.enabl = (val >> 1) & 1;
-            if (tia.enabl && tia.vdelbl)
-                tia.enabl = 2;
+            // enable delay only if ball was disabled
+            if (tia.enabl != ((val >> 1) & 1)) {
+                tia.enabl = (val >> 1) & 1;
+                if (tia.enabl && tia.vdelbl)
+                    tia.enabl = 2;
+            }
             break;
         case HMP0:
             tia.hmp0 = FOURBITS_2COMPL_TO_INT(val >> 4);
