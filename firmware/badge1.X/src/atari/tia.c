@@ -127,23 +127,23 @@ uint8_t tia_mpu_cycles(uint8_t cycles) {
             tia.ref_p1 = val & 0b1000;
             break;
         case RESP0:
-            tia.p0_pos = tia.color_clock+5;
+            tia.p0_pos = tia.color_clock + POS_CLOCK_OFS;
             if (tia.resmp0)
                 tia.m0_pos = tia.p0_pos;
             break;
         case RESP1:
-            tia.p1_pos = tia.color_clock+5;
+            tia.p1_pos = tia.color_clock + POS_CLOCK_OFS;
             if (tia.resmp1)
                 tia.m1_pos = tia.p1_pos;
             break;
         case RESM0:
-            tia.m0_pos = tia.color_clock;
+            tia.m0_pos = tia.color_clock + POS_CLOCK_OFS-1;
             break;
         case RESM1:
-            tia.m1_pos = tia.color_clock;
+            tia.m1_pos = tia.color_clock + POS_CLOCK_OFS-1;
             break;
         case RESBL:
-            tia.bl_pos = tia.color_clock;
+            tia.bl_pos = tia.color_clock + POS_CLOCK_OFS;
             break;
         case GRP0:
             tia.pg_idx = 1;
@@ -343,6 +343,7 @@ void draw_pixels(uint8_t count) {
             if (tia.draw_enabled && !tia.vsync_enabled) {
                 ofs = tia.color_clock - CLK_HORBLANK;
                 col = tia.colu[3];      // COLUBK
+                
                 draw_p0 = draw_p1 = draw_pf = 0;
                 if (tia.p0_mask) {
                     draw_p0 = tia.p0_mask & tia.p0;
@@ -364,7 +365,7 @@ void draw_pixels(uint8_t count) {
                         tia.p1_mask_cnt = tia.p1_mask_clocks;
                     }
                 }
-                
+
                 if (ofs < PF_RIGHT) {
                     if (_check_pf(ofs)) {
                         draw_pf = 1;
@@ -393,6 +394,7 @@ void draw_pixels(uint8_t count) {
                             draw_p0 = draw_p1 = 0;
                     }
                 }
+
                 if (draw_p0)
                     col = tia.colu[0];
                 else if (draw_p1)
@@ -438,7 +440,8 @@ void draw_pixels(uint8_t count) {
                         tia.cx.bits.m0p1 = 1;
                     if (draw_pf)
                         tia.cx.bits.m0pf = 1;
-                }
+                }                    
+                
                 tia.fb[ofs] = col;
             }
         }

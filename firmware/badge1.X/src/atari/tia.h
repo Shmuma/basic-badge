@@ -19,6 +19,8 @@
 
 #define PF_RIGHT        80
 
+#define POS_CLOCK_OFS   5
+
 struct tia_state {
   uint8_t draw_enabled, vsync_enabled;
   uint8_t queue_addr, queue_val;
