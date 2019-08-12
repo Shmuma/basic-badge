@@ -317,7 +317,7 @@ static inline uint8_t _is_player_clock(uint8_t nusiz, uint8_t color_clock, uint8
 }
 
 void draw_pixels(uint8_t count) {
-    uint8_t ofs, col = 0, pf_col;
+    uint8_t ofs, col = 0, ofs2;
     uint8_t draw_p0, draw_p1, draw_pf;
   
     while (count--) { 
@@ -378,31 +378,19 @@ void draw_pixels(uint8_t count) {
                     }
                 }
                 else { // right side of the field
-                    if (tia.ctrlpf.bits.pf_ref) {
-                        // reflect the playfield
-                        if (_check_pf(PF_RIGHT - (ofs - PF_RIGHT) - 1)) {
-                            draw_pf = 1;
-                            col = tia.ctrlpf.bits.pf_score ? tia.colu[1] : tia.colu[2];
-                            if (draw_p0)
-                                tia.cx.bits.p0pf = 1;
-                            if (draw_p1)
-                                tia.cx.bits.p1pf = 1;
-                            if (tia.ctrlpf.bits.pf_prio)
-                                draw_p0 = draw_p1 = 0;
-                        }
-                    }
-                    else {
-                        // direct playfield
-                        if (_check_pf(ofs - PF_RIGHT)) {
-                            draw_pf = 1;
-                            col = tia.ctrlpf.bits.pf_score ? tia.colu[1] : tia.colu[2];
-                            if (draw_p0)
-                                tia.cx.bits.p0pf = 1;
-                            if (draw_p1)
-                                tia.cx.bits.p1pf = 1;
-                            if (tia.ctrlpf.bits.pf_prio)
-                                draw_p0 = draw_p1 = 0;
-                        }
+                    if (tia.ctrlpf.bits.pf_ref)
+                        ofs2 = PF_RIGHT - (ofs - PF_RIGHT) - 1;
+                    else
+                        ofs2 = ofs - PF_RIGHT;
+                    if (_check_pf(ofs2)) {
+                        draw_pf = 1;
+                        col = tia.ctrlpf.bits.pf_score ? tia.colu[1] : tia.colu[2];
+                        if (draw_p0)
+                            tia.cx.bits.p0pf = 1;
+                        if (draw_p1)
+                            tia.cx.bits.p1pf = 1;
+                        if (tia.ctrlpf.bits.pf_prio)
+                            draw_p0 = draw_p1 = 0;
                     }
                 }
                 if (draw_p0)
