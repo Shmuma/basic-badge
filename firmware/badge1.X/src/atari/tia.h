@@ -80,7 +80,7 @@ struct tia_state {
       uint8_t val;
   } nusiz1;
   
-  uint8_t enam0, enam1, enabl;          // 0 - disabled, 1 - enabled, 2 - enabled, but need to wait a line
+  uint8_t enam0, enam1, enabl, enabl_d;   // if vdelbl=1, enabl_d -> enabl at wsync
   uint8_t vdelp0, vdelp1, vdelbl;
   uint8_t resmp0, resmp1;
   

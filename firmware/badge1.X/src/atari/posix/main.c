@@ -51,8 +51,8 @@ void tia_line_ready(uint8_t line) {
     if (line == 0) {
         atari_every_frame();
         // start the game
-//        if (frame > 4 && frame < 7)
-//            pia_reset();
+        if (frame > 4 && frame < 7)
+            pia_reset();
         frame++;
     }
   

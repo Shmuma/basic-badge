@@ -48,8 +48,6 @@ uint8_t tia_mpu_cycles(uint8_t cycles) {
                     tia.p1 = tia.pg_val;
                 if (tia.vdelp0)
                     tia.p0 = tia.p0_d;
-                if (tia.enabl > 1)
-                    tia.enabl = 1;
                 break;
         }
         tia.pg_idx = 0;
@@ -164,12 +162,10 @@ uint8_t tia_mpu_cycles(uint8_t cycles) {
                 tia.enam1 = (val >> 1) & 1;
             break;
         case ENABL:
-            // enable delay only if ball was disabled
-            if (tia.enabl != ((val >> 1) & 1)) {
+            if (tia.vdelbl)
+                tia.enabl_d = (val >> 1) & 1;
+            else
                 tia.enabl = (val >> 1) & 1;
-                if (tia.enabl && tia.vdelbl)
-                    tia.enabl = 2;
-            }
             break;
         case HMP0:
             tia.hmp0 = FOURBITS_2COMPL_TO_INT(val >> 4);
@@ -334,10 +330,7 @@ void draw_pixels(uint8_t count) {
             tia.p1_mask_cnt = tia.p1_mask_clocks = _mask_clocks_from_psize(tia.nusiz1.bits.psize_count);
         }
         if (tia.enabl && tia.bl_pos == tia.color_clock) {
-            if (tia.enabl == 1)
-//                tia.enabl = 1;
-//            else
-                tia.bl_clocks = 1 << tia.ctrlpf.bits.ballsize;
+            tia.bl_clocks = 1 << tia.ctrlpf.bits.ballsize;
         }
         if (tia.enam0 && tia.m0_pos == tia.color_clock) {
             tia.m0_clocks = 1 << tia.nusiz0.bits.msize;
@@ -482,6 +475,8 @@ void draw_pixels(uint8_t count) {
                 tia_line_ready(tia.scanline++);
             }
             tia.p0_mask = tia.p1_mask = 0;
+            if (tia.vdelbl)
+                tia.enabl = tia.enabl_d;
         }
     }
 }
