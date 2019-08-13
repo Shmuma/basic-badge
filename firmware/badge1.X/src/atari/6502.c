@@ -191,20 +191,20 @@ address(uint8_t mode)
 		break;
 
 	case ABSOLUTE:
-		addr = peek(reg.PC++);
-		addr |= peek(reg.PC++) << 8;
+        addr = peek2(reg.PC);
+        reg.PC += 2;
 		break;
 
 	case ABSOLUTEX:
-		addr = peek(reg.PC++);
-		addr |= peek(reg.PC++) << 8;
+        addr = peek2(reg.PC);
+        reg.PC += 2;
 		addr += reg.XR;
         _address_page_crossed = ((addr & 0xFF) < reg.XR);
 		break;
 
 	case ABSOLUTEY:
-		addr = peek(reg.PC++);
-		addr |= peek(reg.PC++) << 8;
+        addr = peek2(reg.PC);
+        reg.PC += 2;
 		addr += reg.YR;
         _address_page_crossed = ((addr & 0xFF) < reg.YR);
 		break;
@@ -214,9 +214,7 @@ address(uint8_t mode)
 		uint16_t i;
 
 		i = (reg.XR + peek(reg.PC++)) & 0xFF;
-
-		addr = peek(i++);
-		addr |= peek(i) << 8;
+        addr = peek2(i);
 		}
 		break;
 
@@ -225,9 +223,7 @@ address(uint8_t mode)
 		uint16_t i;
 
 		i = peek(reg.PC++);
-
-		addr = peek(i++);
-		addr |= peek(i) << 8;
+        addr = peek2(i);		
 		addr += reg.YR;
         _address_page_crossed = ((addr & 0xFF) < reg.YR);
 		}

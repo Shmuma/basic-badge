@@ -19,6 +19,36 @@ long rom_size = ROM_SIZE;
 
 #define ROM_ADDR (0xF000)
 
+uint16_t
+peek2(uint16_t address) {
+    if (address >= ROM_ADDR) {
+        address &= 0xFFF;
+        address %= rom_size;
+        
+#ifdef TRACE_MEM
+        printf("peek2 rom: %04X -> %04X\n", address + ROM_ADDR, 
+                *(uint16_t*)(rom+address));
+#endif
+        return rom[address] | (rom[address+1] << 8);
+        // why version below crashes?
+//        return *(const uint16_t*)(rom + address);
+    }
+
+    if (address < PAGE_TWO)
+        address &= 0xFF;
+
+    if (address <= RAM_ENDS) {
+        address -= RAM_ADDR;
+#ifdef TRACE_MEM
+        printf("peek2 ram %04X -> %04X\n", address + RAM_ADDR, 
+                *(uint16_t*)(memory+address));
+#endif    
+        return memory[address] | (memory[address+1] << 8);
+    }    
+    
+    return peek(address) | (peek(address+1) << 8);
+}
+
 uint8_t
 peek(uint16_t address)
 {
@@ -53,7 +83,7 @@ peek(uint16_t address)
     }
   
     if (address >= ROM_ADDR) {
-        address -= ROM_ADDR;
+        address &= 0xFFF;
         address %= rom_size;
 #ifdef TRACE_MEM
         printf("peek rom: %02X -> %02X\n", address + ROM_ADDR, rom[address]);
