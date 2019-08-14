@@ -78,13 +78,11 @@ uint8_t tia_mpu_cycles(uint8_t cycles) {
             tia.inpt45_latched = val & (1 << 6);
             // switch from grounded to free, start charging capacitors
             if (tia.inpt03_grounded && !(val & 0x80)) {
-//                printf("INPT: pos reset, bits %02X\n", tia.fire.bits.inpt);
                 tia.inpt_scanline = 0;
             }
             tia.inpt03_grounded = val & 0x80;
             if (tia.inpt03_grounded) {
                 tia.fire.bits.inpt = 0;
-//                printf("INPT: grounded, bits reset\n");
             }
             break;
         case WSYNC:
@@ -321,26 +319,26 @@ void draw_pixels(uint8_t count) {
     uint8_t draw_p0, draw_p1, draw_pf;
   
     while (count--) { 
-        if (_is_player_clock(tia.nusiz0.bits.psize_count, tia.color_clock, tia.p0_pos)) {
-            tia.p0_mask = 1 << (tia.ref_p0 ? 0 : 7);
-            tia.p0_mask_cnt = tia.p0_mask_clocks = _mask_clocks_from_psize(tia.nusiz0.bits.psize_count);
-        }
-        if (_is_player_clock(tia.nusiz1.bits.psize_count, tia.color_clock, tia.p1_pos)) {
-            tia.p1_mask = 1 << (tia.ref_p1 ? 0 : 7);
-            tia.p1_mask_cnt = tia.p1_mask_clocks = _mask_clocks_from_psize(tia.nusiz1.bits.psize_count);
-        }
-        if (tia.enabl && tia.bl_pos == tia.color_clock) {
-            tia.bl_clocks = 1 << tia.ctrlpf.bits.ballsize;
-        }
-        if (tia.enam0 && tia.m0_pos == tia.color_clock) {
-            tia.m0_clocks = 1 << tia.nusiz0.bits.msize;
-        }
-        if (tia.enam1 && tia.m1_pos == tia.color_clock) {
-            tia.m1_clocks = 1 << tia.nusiz1.bits.msize;
-        }
-        
         if (tia.color_clock >= CLK_HORBLANK) {
             if (tia.draw_enabled && !tia.vsync_enabled) {
+                if (_is_player_clock(tia.nusiz0.bits.psize_count, tia.color_clock, tia.p0_pos)) {
+                    tia.p0_mask = 1 << (tia.ref_p0 ? 0 : 7);
+                    tia.p0_mask_cnt = tia.p0_mask_clocks = _mask_clocks_from_psize(tia.nusiz0.bits.psize_count);
+                }
+                if (_is_player_clock(tia.nusiz1.bits.psize_count, tia.color_clock, tia.p1_pos)) {
+                    tia.p1_mask = 1 << (tia.ref_p1 ? 0 : 7);
+                    tia.p1_mask_cnt = tia.p1_mask_clocks = _mask_clocks_from_psize(tia.nusiz1.bits.psize_count);
+                }
+                if (tia.enabl && tia.bl_pos == tia.color_clock) {
+                    tia.bl_clocks = 1 << tia.ctrlpf.bits.ballsize;
+                }
+                if (tia.enam0 && tia.m0_pos == tia.color_clock) {
+                    tia.m0_clocks = 1 << tia.nusiz0.bits.msize;
+                }
+                if (tia.enam1 && tia.m1_pos == tia.color_clock) {
+                    tia.m1_clocks = 1 << tia.nusiz1.bits.msize;
+                }
+
                 ofs = tia.color_clock - CLK_HORBLANK;
                 col = tia.colu[3];      // COLUBK
                 
