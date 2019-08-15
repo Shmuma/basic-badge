@@ -58,8 +58,13 @@ struct tia_state {
     uint8_t val;
   } ctrlpf;
 
-  uint32_t pf;                      // pf register combined as pf0, pf1, pf2 
-                                    // in LSB (left-to right order)
+  union {
+    struct {
+        uint64_t left:20;
+        uint64_t right:20;
+    } parts;
+    uint64_t full;                      // 40 bits of PF, built from pf0, pf1, pf2
+  } pf;
   uint8_t p0, p0_d, p1, p1_d;       // graphics for P0 and P1 (including vdels)
   uint8_t ref_p0, ref_p1;           // reflect players
   int8_t hmp0, hmp1, hmm0, hmm1, hmbl;  // horizontal move registers (decoded into signed val)

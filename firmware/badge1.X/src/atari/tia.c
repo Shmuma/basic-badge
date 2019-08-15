@@ -26,10 +26,24 @@ static inline uint8_t _normalize_clock_pos(uint8_t pos) {
     return pos;
 }
 
+// reflect 20 bits of input
+static inline uint32_t reflect_playfield(uint32_t x) {
+    // center our playfield in 32 bits
+    x <<= 6;
+    // swap bits in 32 bits
+    x = (x & 0x55555555) << 1  | (x & 0xAAAAAAAA) >> 1;
+    x = (x & 0x33333333) << 2  | (x & 0xCCCCCCCC) >> 2;
+    x = (x & 0x0F0F0F0F) << 4  | (x & 0xF0F0F0F0) >> 4;
+    x = (x & 0x00FF00FF) << 8  | (x & 0xFF00FF00) >> 8;
+    x = (x & 0x0000FFFF) << 16 | (x & 0xFFFF0000) >> 16;
+    // move our playfield back
+    return x >> 6;
+}
+
 // need to be called after execution of MPU opcode with amount of CPU cycles
 // returns extra cycles spent on hardware
 uint8_t tia_mpu_cycles(uint8_t cycles) {
-    uint8_t addr, val, res = 0;
+    uint8_t addr, val, res = 0, tmp;
     
     if (tia.pg_idx > 0) {
         switch (tia.pg_idx) {
@@ -101,6 +115,9 @@ uint8_t tia_mpu_cycles(uint8_t cycles) {
             tia.colu[addr - COLUP0] = val & ~1;
             break;
         case CTRLPF:
+            // if first bit was changed, need to reflect right side of the playfield
+            if ((val & 1) ^ (tia.ctrlpf.val & 1))
+                tia.pf.parts.right = reflect_playfield(tia.pf.parts.right);
             tia.ctrlpf.val = val;
             break;
         case NUSIZ0:
@@ -110,13 +127,40 @@ uint8_t tia_mpu_cycles(uint8_t cycles) {
             tia.nusiz1.val = val;
             break;
         case PF0:
-            tia.pf = (tia.pf & ~0xFF) | (val >> 4);
+            tia.pf.parts.left = (tia.pf.parts.left & ~0xFF) | (val >> 4);
+            if (tia.ctrlpf.bits.pf_ref)
+                tia.pf.parts.right = reflect_playfield(tia.pf.parts.left);
+            else
+                tia.pf.parts.right = tia.pf.parts.left;
+#ifdef TRACE_TIA
+            printf("Set PF0: ref=%d, %llX, left %X, right %X\n", 
+                    tia.ctrlpf.bits.pf_ref, tia.pf.full, tia.pf.parts.left,
+                    tia.pf.parts.right);
+#endif            
             break;
         case PF1:
-            tia.pf = (tia.pf & ~0xFF0) | (invert_bits_byte(val) << 4);
+            tia.pf.parts.left = (tia.pf.parts.left & ~0xFF0) | (invert_bits_byte(val) << 4);
+            if (tia.ctrlpf.bits.pf_ref)
+                tia.pf.parts.right = reflect_playfield(tia.pf.parts.left);
+            else
+                tia.pf.parts.right = tia.pf.parts.left;
+#ifdef TRACE_TIA
+            printf("Set PF1: ref=%d, %llX, left %X, right %X\n", 
+                    tia.ctrlpf.bits.pf_ref, tia.pf.full, tia.pf.parts.left,
+                    tia.pf.parts.right);
+#endif            
             break;
         case PF2:
-            tia.pf = (tia.pf & ~0xFF000) | (val << 12);
+            tia.pf.parts.left = (tia.pf.parts.left & ~0xFF000) | (val << 12);
+            if (tia.ctrlpf.bits.pf_ref)
+                tia.pf.parts.right = reflect_playfield(tia.pf.parts.left);
+            else
+                tia.pf.parts.right = tia.pf.parts.left;
+#ifdef TRACE_TIA
+            printf("Set PF2: ref=%d, %llX, left %X, right %X\n", 
+                    tia.ctrlpf.bits.pf_ref, tia.pf.full, tia.pf.parts.left,
+                    tia.pf.parts.right);
+#endif            
             break;
         case REFP0:
             tia.ref_p0 = val & 0b1000;
@@ -278,7 +322,7 @@ uint8_t peek_tia(uint16_t addr) {
 
 // check the playfield bit at this pixel offset (0..80)
 static inline uint8_t _check_pf(uint8_t pixel_ofs) {
-    return (tia.pf & (1 << (pixel_ofs>>2))) != 0;
+    return (tia.pf.full & (1 << (pixel_ofs>>2))) != 0;
 }
 
 INLINE uint8_t _mask_clocks_from_psize(uint8_t psize) {
@@ -314,6 +358,42 @@ static inline uint8_t _is_player_clock(uint8_t nusiz, uint8_t color_clock, uint8
     return 0;
 }
 
+
+#if 0
+static inline uint8_t update_min_pos(uint8_t dist, uint8_t pos) {
+    if (tia.color_clock < pos)
+        return min(dist, pos - tia.color_clock);
+    return dist;
+}
+
+
+// count amount of clocks we can draw without any object (player, missile or ball)
+// GIVEN that no tia registers will be touched
+static inline uint8_t clocks_to_object() {
+    uint8_t res = FB_WIDTH - (tia.color_clock - CLK_HORBLANK);
+    
+    if (tia.enabl)
+        res = update_min_pos(res, tia.bl_pos);
+    
+    if (tia.enam0)
+        res = update_min_pos(res, tia.m0_pos);
+
+    if (tia.enam1)
+        res = update_min_pos(res, tia.m1_pos);
+    
+    if (tia.p0) {
+        res = update_min_pos(res, tia.p0_pos);
+    }
+
+    if (tia.p1) {
+        res = update_min_pos(res, tia.p1_pos);
+    }
+    
+    return res;
+}
+#endif
+
+
 void draw_pixels(uint8_t count) {
     uint8_t ofs, col = 0, ofs2;
     uint8_t draw_p0, draw_p1, draw_pf;
@@ -321,11 +401,11 @@ void draw_pixels(uint8_t count) {
     while (count--) { 
         if (tia.color_clock >= CLK_HORBLANK) {
             if (tia.draw_enabled && !tia.vsync_enabled) {
-                if (_is_player_clock(tia.nusiz0.bits.psize_count, tia.color_clock, tia.p0_pos)) {
+                if (tia.p0 && _is_player_clock(tia.nusiz0.bits.psize_count, tia.color_clock, tia.p0_pos)) {
                     tia.p0_mask = 1 << (tia.ref_p0 ? 0 : 7);
                     tia.p0_mask_cnt = tia.p0_mask_clocks = _mask_clocks_from_psize(tia.nusiz0.bits.psize_count);
                 }
-                if (_is_player_clock(tia.nusiz1.bits.psize_count, tia.color_clock, tia.p1_pos)) {
+                if (tia.p1 && _is_player_clock(tia.nusiz1.bits.psize_count, tia.color_clock, tia.p1_pos)) {
                     tia.p1_mask = 1 << (tia.ref_p1 ? 0 : 7);
                     tia.p1_mask_cnt = tia.p1_mask_clocks = _mask_clocks_from_psize(tia.nusiz1.bits.psize_count);
                 }
@@ -364,33 +444,16 @@ void draw_pixels(uint8_t count) {
                     }
                 }
 
-                if (ofs < PF_RIGHT) {
-                    if (_check_pf(ofs)) {
-                        draw_pf = 1;
-                        col = tia.ctrlpf.bits.pf_score ? tia.colu[0] : tia.colu[2];
-                        if (draw_p0)
-                            tia.cx.bits.p0pf = 1;
-                        if (draw_p1)
-                            tia.cx.bits.p1pf = 1;
-                        if (tia.ctrlpf.bits.pf_prio)
-                            draw_p0 = draw_p1 = 0;
-                    }
-                }
-                else { // right side of the field
-                    if (tia.ctrlpf.bits.pf_ref)
-                        ofs2 = PF_RIGHT - (ofs - PF_RIGHT) - 1;
-                    else
-                        ofs2 = ofs - PF_RIGHT;
-                    if (_check_pf(ofs2)) {
-                        draw_pf = 1;
-                        col = tia.ctrlpf.bits.pf_score ? tia.colu[1] : tia.colu[2];
-                        if (draw_p0)
-                            tia.cx.bits.p0pf = 1;
-                        if (draw_p1)
-                            tia.cx.bits.p1pf = 1;
-                        if (tia.ctrlpf.bits.pf_prio)
-                            draw_p0 = draw_p1 = 0;
-                    }
+                if (_check_pf(ofs)) {
+                    draw_pf = 1;
+                    col = tia.ctrlpf.bits.pf_score == 0 ? tia.colu[2] : 
+                        (ofs < PF_RIGHT ? tia.colu[0] : tia.colu[1]);
+                    if (draw_p0)
+                        tia.cx.bits.p0pf = 1;
+                    if (draw_p1)
+                        tia.cx.bits.p1pf = 1;
+                    if (tia.ctrlpf.bits.pf_prio)
+                        draw_p0 = draw_p1 = 0;
                 }
 
                 if (draw_p0)

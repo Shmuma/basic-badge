@@ -95,12 +95,16 @@ int read_rom(const char* file_name) {
     return 1;
 }
 
+
 void test() {
 //    uint8_t x = 0b00010110;
 //    
 //    printf("res: %02X\n", invert_bits_byte(x));
-    printf("res: %d\n", FOURBITS_2COMPL_TO_INT(0b1010));
+//    printf("res: %d\n", FOURBITS_2COMPL_TO_INT(0b1010));    
+//    uint32_t x = 0b10100000000000001111;
+//    printf("X=%X, R=%X\n", x, reflect_playfield(x));
 }
+
 
 
 int main(int argc, char** argv) {
