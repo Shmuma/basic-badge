@@ -40,10 +40,52 @@ static inline uint32_t reflect_playfield(uint32_t x) {
     return x >> 6;
 }
 
+
+// fills playfield
+static void fill_pf() {
+    uint8_t ofs = 0;
+    uint8_t col_lt, col_rt;
+    uint64_t pf = tia.pf.full;
+    
+    if (!pf) {
+        memset(tia.fb+ofs, tia.colu_bk, FB_WIDTH-ofs);
+        return;
+    }
+    
+#ifdef TRACE_TIA
+    printf("fill_pf: ofs=%d, pf=%llX\n", ofs, pf);
+#endif
+    
+    if (tia.ctrlpf.bits.pf_score == 0)
+        col_lt = col_rt = tia.colu_pf;
+    else {
+        col_lt = tia.colu_p0;
+        col_rt = tia.colu_p1;
+    }
+    
+    while (ofs < PF_RIGHT) {
+        tia.fb[ofs] = tia.fb[ofs+1] = tia.fb[ofs+2] = tia.fb[ofs+3] = \
+            (pf & 1) ? col_lt : tia.colu_bk;
+        ofs += 4;
+        pf >>= 1;
+    }
+
+        while (ofs < FB_WIDTH) {
+        tia.fb[ofs] = tia.fb[ofs+1] = tia.fb[ofs+2] = tia.fb[ofs+3] = \
+            (pf & 1) ? col_rt : tia.colu_bk;
+        ofs += 4;
+        pf >>= 1;
+    }
+    
+#ifdef TRACE_TIA
+    peek_fb_line(tia.scanline);
+#endif
+}
+
 // need to be called after execution of MPU opcode with amount of CPU cycles
 // returns extra cycles spent on hardware
 uint8_t tia_mpu_cycles(uint8_t cycles) {
-    uint8_t addr, val, res = 0, tmp;
+    uint8_t addr, val, res = 0;
     
     if (tia.pg_idx > 0) {
         switch (tia.pg_idx) {
@@ -109,15 +151,22 @@ uint8_t tia_mpu_cycles(uint8_t cycles) {
             }
             break;
         case COLUP0:
+            tia.colu_p0 = val & ~1;
+            break;
         case COLUP1:
+            tia.colu_p1 = val & ~1;
+            break;
         case COLUPF:
+            tia.colu_pf = val & ~1;
+            break;
         case COLUBK:
-            tia.colu[addr - COLUP0] = val & ~1;
+            tia.colu_bk = val & ~1;
             break;
         case CTRLPF:
             // if first bit was changed, need to reflect right side of the playfield
-            if ((val & 1) ^ (tia.ctrlpf.val & 1))
+            if ((val & 1) ^ (tia.ctrlpf.val & 1)) {
                 tia.pf.parts.right = reflect_playfield(tia.pf.parts.right);
+            }
             tia.ctrlpf.val = val;
             break;
         case NUSIZ0:
@@ -126,42 +175,54 @@ uint8_t tia_mpu_cycles(uint8_t cycles) {
         case NUSIZ1:
             tia.nusiz1.val = val;
             break;
-        case PF0:
-            tia.pf.parts.left = (tia.pf.parts.left & ~0xFF) | (val >> 4);
-            if (tia.ctrlpf.bits.pf_ref)
-                tia.pf.parts.right = reflect_playfield(tia.pf.parts.left);
-            else
-                tia.pf.parts.right = tia.pf.parts.left;
+        case PF0: {
+            uint32_t tmp = (tia.pf.parts.left & ~0xFF) | (val >> 4);
+            if (tia.pf.parts.left != tmp) {
+                tia.pf.parts.left = tmp;
+                if (tia.ctrlpf.bits.pf_ref)
+                    tia.pf.parts.right = reflect_playfield(tia.pf.parts.left);
+                else
+                    tia.pf.parts.right = tia.pf.parts.left;
 #ifdef TRACE_TIA
-            printf("Set PF0: ref=%d, %llX, left %X, right %X\n", 
-                    tia.ctrlpf.bits.pf_ref, tia.pf.full, tia.pf.parts.left,
-                    tia.pf.parts.right);
+                printf("Set PF0: ref=%d, %llX, left %X, right %X\n", 
+                        tia.ctrlpf.bits.pf_ref, tia.pf.full, tia.pf.parts.left,
+                        tia.pf.parts.right);
 #endif            
+            }
             break;
-        case PF1:
-            tia.pf.parts.left = (tia.pf.parts.left & ~0xFF0) | (invert_bits_byte(val) << 4);
-            if (tia.ctrlpf.bits.pf_ref)
-                tia.pf.parts.right = reflect_playfield(tia.pf.parts.left);
-            else
-                tia.pf.parts.right = tia.pf.parts.left;
+        }
+        case PF1: {
+            uint32_t tmp = (tia.pf.parts.left & ~0xFF0) | (invert_bits_byte(val) << 4);
+            if (tia.pf.parts.left != tmp) {
+                tia.pf.parts.left = tmp;
+                if (tia.ctrlpf.bits.pf_ref)
+                    tia.pf.parts.right = reflect_playfield(tia.pf.parts.left);
+                else
+                    tia.pf.parts.right = tia.pf.parts.left;
 #ifdef TRACE_TIA
-            printf("Set PF1: ref=%d, %llX, left %X, right %X\n", 
-                    tia.ctrlpf.bits.pf_ref, tia.pf.full, tia.pf.parts.left,
-                    tia.pf.parts.right);
+                printf("Set PF1: ref=%d, %llX, left %X, right %X\n", 
+                        tia.ctrlpf.bits.pf_ref, tia.pf.full, tia.pf.parts.left,
+                        tia.pf.parts.right);
 #endif            
+            }
             break;
-        case PF2:
-            tia.pf.parts.left = (tia.pf.parts.left & ~0xFF000) | (val << 12);
-            if (tia.ctrlpf.bits.pf_ref)
-                tia.pf.parts.right = reflect_playfield(tia.pf.parts.left);
-            else
-                tia.pf.parts.right = tia.pf.parts.left;
+        }
+        case PF2: {
+            uint32_t tmp = (tia.pf.parts.left & ~0xFF000) | (val << 12);
+            if (tia.pf.parts.left != tmp) {
+                tia.pf.parts.left = tmp;
+                if (tia.ctrlpf.bits.pf_ref)
+                    tia.pf.parts.right = reflect_playfield(tia.pf.parts.left);
+                else
+                    tia.pf.parts.right = tia.pf.parts.left;
 #ifdef TRACE_TIA
-            printf("Set PF2: ref=%d, %llX, left %X, right %X\n", 
-                    tia.ctrlpf.bits.pf_ref, tia.pf.full, tia.pf.parts.left,
-                    tia.pf.parts.right);
+                printf("Set PF2: ref=%d, %llX, left %X, right %X\n", 
+                        tia.ctrlpf.bits.pf_ref, tia.pf.full, tia.pf.parts.left,
+                        tia.pf.parts.right);
 #endif            
+            }
             break;
+        }
         case REFP0:
             tia.ref_p0 = val & 0b1000;
             break;
@@ -284,7 +345,6 @@ void poke_tia(uint16_t addr, uint8_t val) {
     tia.queue_val = val;
 }
 
-
 uint8_t peek_tia(uint16_t addr) {
     switch (addr)  {
         case TIA_RD_CXM0P:
@@ -318,11 +378,6 @@ uint8_t peek_tia(uint16_t addr) {
         default:
             return 0xFF;
     }
-}
-
-// check the playfield bit at this pixel offset (0..80)
-static inline uint8_t _check_pf(uint8_t pixel_ofs) {
-    return (tia.pf.full & (1 << (pixel_ofs>>2))) != 0;
 }
 
 INLINE uint8_t _mask_clocks_from_psize(uint8_t psize) {
@@ -395,8 +450,8 @@ static inline uint8_t clocks_to_object() {
 
 
 void draw_pixels(uint8_t count) {
-    uint8_t ofs, col = 0, ofs2;
-    uint8_t draw_p0, draw_p1, draw_pf;
+    uint8_t ofs, col = COL_NONE, ofs2;
+    uint8_t draw_p0, draw_p1;
   
     while (count--) { 
         if (tia.color_clock >= CLK_HORBLANK) {
@@ -420,9 +475,9 @@ void draw_pixels(uint8_t count) {
                 }
 
                 ofs = tia.color_clock - CLK_HORBLANK;
-                col = tia.colu[3];      // COLUBK
+                col = COL_NONE;
                 
-                draw_p0 = draw_p1 = draw_pf = 0;
+                draw_p0 = draw_p1 = 0;
                 if (tia.p0_mask) {
                     draw_p0 = tia.p0_mask & tia.p0;
                     if (--tia.p0_mask_cnt == 0) {
@@ -444,36 +499,40 @@ void draw_pixels(uint8_t count) {
                     }
                 }
 
-                if (_check_pf(ofs)) {
-                    draw_pf = 1;
-                    col = tia.ctrlpf.bits.pf_score == 0 ? tia.colu[2] : 
-                        (ofs < PF_RIGHT ? tia.colu[0] : tia.colu[1]);
-                    if (draw_p0)
-                        tia.cx.bits.p0pf = 1;
-                    if (draw_p1)
-                        tia.cx.bits.p1pf = 1;
-                    if (tia.ctrlpf.bits.pf_prio)
-                        draw_p0 = draw_p1 = 0;
+                // check pf to detect collisions
+                if (draw_p0 || draw_p1 || tia.bl_clocks > 0 || tia.m0_clocks > 0 || tia.m1_clocks > 0) {
+                    if (tia.pf.full & (1ull << (ofs>>2))) {
+                        if (draw_p0)
+                            tia.cx.bits.p0pf = 1;
+                        if (draw_p1)
+                            tia.cx.bits.p1pf = 1;
+                        if (tia.bl_clocks > 0)
+                            tia.cx.bits.blpf = 1;
+                        if (tia.m0_clocks > 0)
+                            tia.cx.bits.m0pf = 1;
+                        if (tia.m1_clocks > 0)  
+                            tia.cx.bits.m1pf = 1;
+                        if (tia.ctrlpf.bits.pf_prio)
+                            draw_p0 = draw_p1 = 0;                        
+                    }
                 }
-
+                
                 if (draw_p0)
-                    col = tia.colu[0];
+                    col = tia.colu_p0;
                 else if (draw_p1)
-                    col = tia.colu[1];
+                    col = tia.colu_p1;
                 if (draw_p0 && draw_p1)
                     tia.cx.bits.p0p1 = 1;
                 if (tia.bl_clocks > 0) {
                     // if PF has a priority over player or no player at all, draw ball
                     if (tia.ctrlpf.bits.pf_prio || (draw_p0 == 0 && draw_p1 == 0)) {
-                        col = tia.colu[2];      // COLUPF
+                        col = tia.colu_pf;      // COLUPF
                     }
                     tia.bl_clocks--;
                     if (draw_p0)
                         tia.cx.bits.p0bl = 1;
                     if (draw_p1)
                         tia.cx.bits.p1bl = 1;
-                    if (draw_pf)
-                        tia.cx.bits.blpf = 1;
                     if (tia.m0_clocks > 0)
                         tia.cx.bits.m0bl = 1;
                     if (tia.m1_clocks > 0)
@@ -481,41 +540,37 @@ void draw_pixels(uint8_t count) {
                 }
                 if (tia.m1_clocks > 0) {
                     tia.m1_clocks--;
-                    col = tia.colu[1];
+                    col = tia.colu_p1;
                     if (draw_p0)
                         tia.cx.bits.m1p0 = 1;
                     if (draw_p1)
                         tia.cx.bits.m1p1 = 1;
-                    if (draw_pf)
-                        tia.cx.bits.m1pf = 1;
                     if (tia.m1_clocks > 0)
                         tia.cx.bits.m0m1 = 1;
                 }
                 // checking M0 last as it has higher priority than M1, so, we'll draw over
                 if (tia.m0_clocks > 0) {
                     tia.m0_clocks--;
-                    col = tia.colu[0];
+                    col = tia.colu_p0;
                     if (draw_p0)
                         tia.cx.bits.m0p0 = 1;
                     if (draw_p1)
                         tia.cx.bits.m0p1 = 1;
-                    if (draw_pf)
-                        tia.cx.bits.m0pf = 1;
                 }                    
                 
-                tia.fb[ofs] = col;
+                if (col != COL_NONE) {
+                    tia.fb[ofs] = col;
+                }
             }
         }
-        
+
 #ifdef TRACE_TIA
         printf("TIA: frm=%d, col=%d, scan=%d, colubk=%02X, clr_stored=%02X, enam0=%d, resmp0=%d, p0=%02X, p0_d=%02X, p0_pos=%d, p0m=%02X, p0_cnt=%d, p1=%02X, p1_d=%02X, p1_pos=%d, p1m=%02X, p1_cnt=%d\n", 
-                frame, tia.color_clock, tia.scanline, tia.colu[3], col, tia.enam0, tia.resmp0,
+                frame, tia.color_clock, tia.scanline, tia.colu_bk, col, tia.enam0, tia.resmp0,
                 tia.p0, tia.p0_d, tia.p0_pos, tia.p0_mask, tia.p0_mask_cnt,
                 tia.p1, tia.p1_d, tia.p1_pos, tia.p1_mask, tia.p1_mask_cnt);
-//        printf("TIA: frm=%d, col=%d, scan=%d, colubk=%02X, clr_stored=%02X, p0=%02X, p0_d=%02X, p1=%02X, p1_d=%02X\n", 
-//                frame, tia.color_clock, tia.scanline, tia.colu[3], col, 
-//                tia.p0, tia.p0_d, tia.p1, tia.p1_d);
 #endif        
+        
         if (++tia.color_clock >= CLK_HOR) {
             tia.color_clock = 0;
             if (!tia.vsync_enabled && tia.inpt_scanline < TIA_MAX_INPUT_POS) {
@@ -525,6 +580,7 @@ void draw_pixels(uint8_t count) {
                 tia_handle_input_capacitors();
             if (tia.draw_enabled && !tia.vsync_enabled) {
                 tia_line_ready(tia.scanline++);
+                fill_pf();
             }
             tia.p0_mask = tia.p1_mask = 0;
             if (tia.vdelbl)

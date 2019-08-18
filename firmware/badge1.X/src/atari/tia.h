@@ -46,7 +46,8 @@ struct tia_state {
       } bits;
   } fire;                       // fire button and input triggers
   
-  uint8_t colu[4];          // P0, P1, PF, BK
+  //uint8_t colu[4];          // P0, P1, PF, BK
+  uint8_t colu_p0, colu_p1, colu_pf, colu_bk;
   union {
     struct {
         uint8_t pf_ref:1;         // reflect playfield

@@ -44,9 +44,19 @@ registers()
 }
 
 
-void tia_line_ready(uint8_t line) {
+void peek_fb_line(uint8_t line) {
     uint8_t c;
     
+    printf("SC %04d, %03d: ", frame, line);
+    for (c = 0; c < FB_WIDTH; c++) {
+        printf("\x1B[38;5;%dm#", tia.fb[c]);
+    }
+    printf("\x1B[0m\n");    
+}
+
+
+void tia_line_ready(uint8_t line) {
+    uint8_t c;
     
     if (line == 0) {
         atari_every_frame();
