@@ -450,7 +450,7 @@ static inline uint8_t clocks_to_object() {
 
 
 void draw_pixels(uint8_t count) {
-    uint8_t ofs, col = COL_NONE, ofs2;
+    uint8_t ofs, col = COL_NONE;
     uint8_t draw_p0, draw_p1;
   
     while (count--) { 
