@@ -501,7 +501,7 @@ void draw_pixels(uint8_t count) {
 
                 // check pf to detect collisions
                 if (draw_p0 || draw_p1 || tia.bl_clocks > 0 || tia.m0_clocks > 0 || tia.m1_clocks > 0) {
-                    if (tia.pf.full & (1ull << (ofs>>2))) {
+                    if (tia.pf_cur & 1) {
                         if (draw_p0)
                             tia.cx.bits.p0pf = 1;
                         if (draw_p1)
@@ -561,6 +561,9 @@ void draw_pixels(uint8_t count) {
                 if (col != COL_NONE) {
                     tia.fb[ofs] = col;
                 }
+                if ((ofs & 0b11) == 0b11) {
+                    tia.pf_cur >>= 1;
+                }                
             }
         }
 
@@ -573,6 +576,7 @@ void draw_pixels(uint8_t count) {
         
         if (++tia.color_clock >= CLK_HOR) {
             tia.color_clock = 0;
+            tia.pf_cur = tia.pf.full;
             if (!tia.vsync_enabled && tia.inpt_scanline < TIA_MAX_INPUT_POS) {
                 tia.inpt_scanline++;
             }
@@ -586,6 +590,7 @@ void draw_pixels(uint8_t count) {
             if (tia.vdelbl)
                 tia.enabl = tia.enabl_d;
         }
+        
     }
 }
 

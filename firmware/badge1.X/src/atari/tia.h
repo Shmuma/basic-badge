@@ -46,7 +46,6 @@ struct tia_state {
       } bits;
   } fire;                       // fire button and input triggers
   
-  //uint8_t colu[4];          // P0, P1, PF, BK
   uint8_t colu_p0, colu_p1, colu_pf, colu_bk;
   union {
     struct {
@@ -66,6 +65,8 @@ struct tia_state {
     } parts;
     uint64_t full;                      // 40 bits of PF, built from pf0, pf1, pf2
   } pf;
+  uint64_t pf_cur;                  // pf.full, but shifted according to the current clock
+  
   uint8_t p0, p0_d, p1, p1_d;       // graphics for P0 and P1 (including vdels)
   uint8_t ref_p0, ref_p1;           // reflect players
   int8_t hmp0, hmp1, hmm0, hmm1, hmbl;  // horizontal move registers (decoded into signed val)
