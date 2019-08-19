@@ -13,8 +13,8 @@ extern uint32_t frame;
 void init_tia() {
     memset(&tia, 0, sizeof(tia));
     tia.inpt_pos[0] = tia.inpt_pos[1] = tia.inpt_pos[2] = tia.inpt_pos[3] = \
-            0xC0-4;     // value for Pong debugging
-            //(TIA_MAX_INPUT_POS - TIA_MIN_INPUT_POS) >> 1;
+            (TIA_MAX_INPUT_POS - TIA_MIN_INPUT_POS) >> 1;
+            //0xC0-4;     // value for Pong debugging
 }
 
 
@@ -389,32 +389,38 @@ INLINE uint8_t _mask_clocks_from_psize(uint8_t psize) {
 }
 
 
-static inline uint8_t _is_player_clock(uint8_t nusiz, uint8_t color_clock, uint8_t pos) {
+static inline uint8_t _is_player_clock(uint8_t nusiz, uint8_t pos) {
     uint8_t ofs = 0;
     
-    if (color_clock == pos)
+    if (tia.color_clock == pos)
         return 1;
-    if (nusiz == NUSIZ_TWO_8 || nusiz == NUSIZ_THREE_8)
-        ofs = 8+8;
-    else if (nusiz == NUSIZ_TWO_24 || nusiz == NUSIZ_THREE_24)
-        ofs = 24+8;
-    else if (nusiz == NUSIZ_TWO_56)
-        ofs = 56+8;
-    else
-        return 0;
+    switch (nusiz) {
+        case NUSIZ_TWO_8:
+        case NUSIZ_THREE_8:
+            ofs = 8+8;
+            break;
+        case NUSIZ_TWO_24:
+        case NUSIZ_THREE_24:
+            ofs = 24+8;
+            break;
+        case NUSIZ_TWO_56:
+            ofs = 56+8;
+            break;
+        default:
+            return 0;
+    }
 
     pos = _normalize_clock_pos(pos + ofs);
-    if (color_clock == pos)
+    if (tia.color_clock == pos)
         return 1;
     if (nusiz == NUSIZ_THREE_8 || nusiz == NUSIZ_THREE_24) {
-        if (color_clock == _normalize_clock_pos(pos + ofs))
+        if (tia.color_clock == _normalize_clock_pos(pos + ofs))
             return 1;        
     }
     return 0;
 }
 
 
-#if 0
 static inline uint8_t update_min_pos(uint8_t dist, uint8_t pos) {
     if (tia.color_clock < pos)
         return min(dist, pos - tia.color_clock);
@@ -438,29 +444,61 @@ static inline uint8_t clocks_to_object() {
     
     if (tia.p0) {
         res = update_min_pos(res, tia.p0_pos);
+        switch (tia.nusiz0.bits.psize_count) {
+            case NUSIZ_THREE_8:
+                res = update_min_pos(res, _normalize_clock_pos(tia.p0_pos + 8*4));
+            case NUSIZ_TWO_8:
+                res = update_min_pos(res, _normalize_clock_pos(tia.p0_pos + 8*2));
+                break;
+            case NUSIZ_THREE_24:
+                res = update_min_pos(res, _normalize_clock_pos(tia.p0_pos + (8+24)*2));
+            case NUSIZ_TWO_24:
+                res = update_min_pos(res, _normalize_clock_pos(tia.p0_pos + 8+24));
+                break;
+            case NUSIZ_TWO_56:
+                res = update_min_pos(res, _normalize_clock_pos(tia.p0_pos + 8+56));
+                break;                
+        }
     }
 
     if (tia.p1) {
         res = update_min_pos(res, tia.p1_pos);
+        switch (tia.nusiz1.bits.psize_count) {
+            case NUSIZ_THREE_8:
+                res = update_min_pos(res, _normalize_clock_pos(tia.p1_pos + 8*4));
+            case NUSIZ_TWO_8:
+                res = update_min_pos(res, _normalize_clock_pos(tia.p1_pos + 8*2));
+                break;
+            case NUSIZ_THREE_24:
+                res = update_min_pos(res, _normalize_clock_pos(tia.p1_pos + (8+24)*2));
+            case NUSIZ_TWO_24:
+                res = update_min_pos(res, _normalize_clock_pos(tia.p1_pos + 8+24));
+                break;
+            case NUSIZ_TWO_56:
+                res = update_min_pos(res, _normalize_clock_pos(tia.p1_pos + 8+56));
+                break;                
+        }        
     }
     
     return res;
 }
-#endif
 
 
 void draw_pixels(uint8_t count) {
     uint8_t ofs, col = COL_NONE;
-    uint8_t draw_p0, draw_p1;
+    uint8_t draw_p0, draw_p1, skip = 0;
   
     while (count--) { 
         if (tia.color_clock >= CLK_HORBLANK) {
-            if (tia.draw_enabled && !tia.vsync_enabled) {
-                if (tia.p0 && _is_player_clock(tia.nusiz0.bits.psize_count, tia.color_clock, tia.p0_pos)) {
+            if (skip > 0) {
+                skip--;
+            }
+            else if (tia.draw_enabled && !tia.vsync_enabled) {
+                if (tia.p0 && _is_player_clock(tia.nusiz0.bits.psize_count, tia.p0_pos)) {
                     tia.p0_mask = 1 << (tia.ref_p0 ? 0 : 7);
                     tia.p0_mask_cnt = tia.p0_mask_clocks = _mask_clocks_from_psize(tia.nusiz0.bits.psize_count);
                 }
-                if (tia.p1 && _is_player_clock(tia.nusiz1.bits.psize_count, tia.color_clock, tia.p1_pos)) {
+                if (tia.p1 && _is_player_clock(tia.nusiz1.bits.psize_count, tia.p1_pos)) {
                     tia.p1_mask = 1 << (tia.ref_p1 ? 0 : 7);
                     tia.p1_mask_cnt = tia.p1_mask_clocks = _mask_clocks_from_psize(tia.nusiz1.bits.psize_count);
                 }
@@ -561,11 +599,20 @@ void draw_pixels(uint8_t count) {
                 if (col != COL_NONE) {
                     tia.fb[ofs] = col;
                 }
-                if ((ofs & 0b11) == 0b11) {
-                    tia.pf_cur >>= 1;
-                }                
+                else {
+                    if (tia.p0_mask == 0 && tia.p1_mask == 0) {
+                        skip = clocks_to_object()-1;
+#ifdef TRACE_TIA
+                        printf("Can skip %d clocks\n", skip);
+#endif                    
+                    }
+                }
             }
         }
+
+        if ((tia.color_clock & 0b11) == 0b11) {
+            tia.pf_cur >>= 1;
+        }                
 
 #ifdef TRACE_TIA
         printf("TIA: frm=%d, col=%d, scan=%d, colubk=%02X, clr_stored=%02X, enam0=%d, resmp0=%d, p0=%02X, p0_d=%02X, p0_pos=%d, p0m=%02X, p0_cnt=%d, p1=%02X, p1_d=%02X, p1_pos=%d, p1m=%02X, p1_cnt=%d\n", 
@@ -589,8 +636,7 @@ void draw_pixels(uint8_t count) {
             tia.p0_mask = tia.p1_mask = 0;
             if (tia.vdelbl)
                 tia.enabl = tia.enabl_d;
-        }
-        
+        }    
     }
 }
 
