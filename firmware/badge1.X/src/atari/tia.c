@@ -608,11 +608,10 @@ void draw_pixels(uint8_t count) {
                     }
                 }
             }
+            if ((tia.color_clock & 0b11) == 0b11) {
+                tia.pf_cur >>= 1;
+            }                
         }
-
-        if ((tia.color_clock & 0b11) == 0b11) {
-            tia.pf_cur >>= 1;
-        }                
 
 #ifdef TRACE_TIA
         printf("TIA: frm=%d, col=%d, scan=%d, colubk=%02X, clr_stored=%02X, enam0=%d, resmp0=%d, p0=%02X, p0_d=%02X, p0_pos=%d, p0m=%02X, p0_cnt=%d, p1=%02X, p1_d=%02X, p1_pos=%d, p1m=%02X, p1_cnt=%d\n", 
