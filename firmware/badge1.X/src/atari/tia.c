@@ -494,6 +494,7 @@ void draw_pixels(uint8_t count) {
                 skip--;
             }
             else if (tia.draw_enabled && !tia.vsync_enabled) {
+                // TODO: calculate player clocks only once per scanline
                 if (tia.p0 && _is_player_clock(tia.nusiz0.bits.psize_count, tia.p0_pos)) {
                     tia.p0_mask = 1 << (tia.ref_p0 ? 0 : 7);
                     tia.p0_mask_cnt = tia.p0_mask_clocks = _mask_clocks_from_psize(tia.nusiz0.bits.psize_count);
@@ -515,6 +516,7 @@ void draw_pixels(uint8_t count) {
                 ofs = tia.color_clock - CLK_HORBLANK;
                 col = COL_NONE;
                 
+                // P0 and P1 sprites could be cached to avoid masks fiddling
                 draw_p0 = draw_p1 = 0;
                 if (tia.p0_mask) {
                     draw_p0 = tia.p0_mask & tia.p0;
